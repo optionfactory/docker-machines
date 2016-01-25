@@ -10,8 +10,6 @@ COPY Docker-entrypoint.sh /entrypoint.sh
 RUN groupadd -r tomcat && useradd -r -g tomcat tomcat
 RUN chown -R tomcat:tomcat /opt/apache-tomcat
 
-USER tomcat
-
 EXPOSE 8084
 
 ENTRYPOINT ["/entrypoint.sh"]

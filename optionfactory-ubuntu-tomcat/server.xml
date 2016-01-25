@@ -11,7 +11,12 @@
   <Service name="Catalina">
     <Connector URIEncoding="utf-8" connectionTimeout="20000" port="8084" protocol="HTTP/1.1"/>    
     <Engine name="Catalina" defaultHost="localhost">
-      <Host name="localhost"  appBase="webapps" unpackWARs="true" autoDeploy="true" />
+      <Host name="localhost"  appBase="webapps" unpackWARs="true" autoDeploy="true" >
+        <Valve className="org.apache.catalina.valves.RemoteIpValve"
+            remoteIpHeader="x-forwarded-for"
+            proxiesHeader="x-forwarded-by"
+            protocolHeader="x-forwarded-proto" />
+      </Host>
     </Engine>
   </Service>
 </Server>

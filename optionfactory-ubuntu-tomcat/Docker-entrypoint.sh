@@ -1,7 +1,8 @@
 #!/bin/bash -e
 
 if [ $# -eq 0 ]; then
-	exec /opt/apache-tomcat/bin/catalina.sh run
+	chown -R tomcat:tomcat /opt/apache-tomcat/webapps
+	exec gosu tomcat /opt/apache-tomcat/bin/catalina.sh run
 fi
 
 exec "$@"
