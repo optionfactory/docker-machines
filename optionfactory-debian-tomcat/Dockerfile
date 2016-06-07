@@ -1,4 +1,4 @@
-FROM optionfactory/ubuntu-jdk:latest
+FROM optionfactory/debian-jdk:latest
 MAINTAINER Roberto Ferranti
 
 

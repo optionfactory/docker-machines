@@ -1,12 +1,8 @@
-FROM ubuntu:16.04
+FROM opensuse:13.2
 MAINTAINER Roberto Ferranti
 
-
 COPY install-ps1.sh /etc/bash.bashrc
-RUN DEBIAN_FRONTEND=noninteractive apt-get update \
-   && DEBIAN_FRONTEND=noninteractive apt-get install -y -q tar curl wget unzip \
-   && DEBIAN_FRONTEND=noninteractive apt-get -y -q autoclean \
-   && DEBIAN_FRONTEND=noninteractive apt-get -y -q autoremove
+RUN zypper -n -q install tar curl && zypper -n -q clean --all
 
 COPY install-spawn-and-tail.sh /tmp/install-spawn-and-tail.sh
 RUN /tmp/install-spawn-and-tail.sh && rm /tmp/install-spawn-and-tail.sh

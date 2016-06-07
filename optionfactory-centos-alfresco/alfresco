@@ -1,0 +1,20 @@
+#!/bin/bash -e
+#$ALF_HOME/tomcat/scripts/ctl.sh start
+
+
+
+
+CATALINA_HOME=/opt/alfresco/tomcat
+TOMCAT_BINDIR=/opt/alfresco/tomcat/bin
+JRE_HOME=/opt/alfresco/java
+
+/opt/alfresco/postgresql/scripts/ctl.sh start
+
+
+exec sat \
+    --prefix "[tomcat]" \
+    --file "[alfresco] ":/opt/alfresco/alfresco.log \
+    --file "[solr] ":/opt/alfresco/solr.log \
+    --file "[share] ":/opt/alfresco/share.log \
+    -- \
+    /opt/alfresco/tomcat/bin/catalina.sh run

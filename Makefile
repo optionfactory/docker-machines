@@ -2,15 +2,27 @@
 DOCKER_BUILD_OPTIONS=--no-cache=false
 
 
-.PHONY: all docker-image
-
-docker-images: docker-optionfactory-ubuntu-jdk docker-optionfactory-ubuntu-tomcat
+.PHONY: docker-image
 
 
-docker-optionfactory-ubuntu-jdk: docker-image
-	docker build ${DOCKER_BUILD_OPTIONS} --tag=optionfactory/ubuntu-jdk:0.1 optionfactory-ubuntu-jdk
-	docker tag -f optionfactory/ubuntu-jdk:0.1 optionfactory/ubuntu-jdk:latest
+docker-images: $(addprefix docker-,$(wildcard optionfactory-*))
 
-docker-optionfactory-ubuntu-tomcat: docker-image
-	docker build ${DOCKER_BUILD_OPTIONS} --tag=optionfactory/ubuntu-tomcat:0.1 optionfactory-ubuntu-tomcat
-	docker tag -f optionfactory/ubuntu-tomcat:0.1 optionfactory/ubuntu-tomcat:latest
+
+docker-optionfactory-%: docker-image
+	$(eval name=$(subst docker-optionfactory-,,$@))
+	docker build ${DOCKER_BUILD_OPTIONS} --tag=optionfactory/$(name):0.1 optionfactory-$(name)
+	docker tag optionfactory/$(name):0.1 optionfactory/$(name):latest
+
+
+docker-image:
+	echo optionfactory-*-jdk | xargs -n 1 cp install-jdk.sh
+	echo optionfactory-*-tomcat | xargs -n 1 cp install-tomcat.sh
+	echo optionfactory-*-wildfly | xargs -n 1 cp install-wildfly.sh
+	echo optionfactory-*-jdk optionfactory-*-db2 optionfactory-*-mariadb | xargs -n 1 cp install-ps1.sh
+	echo optionfactory-*-jdk optionfactory-*-db2 optionfactory-*-mariadb | xargs -n 1 cp install-spawn-and-tail.sh
+	echo optionfactory-*-alfresco | xargs -n 1 cp install-alfresco.sh
+	#echo optionfactory-*-db2 | xargs -n 1 cp install-db2.sh
+        
+
+clean:
+	rm -rf optionfactory-*/install-*.sh

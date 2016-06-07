@@ -1,24 +1,23 @@
 #!/bin/bash -e
 MAJOR_VERSION=8
-MINOR_VERSION=66
-BUILD=b17
+MINOR_VERSION=102
+BUILD=b14
 VERSION=${MAJOR_VERSION}u${MINOR_VERSION}
 
-. /etc/profile.d/log.sh
 
+echo "installing oracle jdk ${VERSION}-${BUILD}"
 
-#log "installing libX11-6"
-#apt-get instaqll -qy install libx11-6 && zypper -n -q clean --all
+if [ ! -f /usr/sbin/update-alternatives ]; then
+    ln -s /usr/sbin/update-alternatives  /usr/sbin/alternatives
+fi
 
-log "installing oracle jdk ${VERSION}-${BUILD}"
-ln -s /usr/sbin/update-alternatives  /usr/sbin/alternatives
 jdkdir=/usr/java/jdk${VERSION}-${BUILD}
 jdkbindir=${jdkdir}/bin
 mkdir -p ${jdkdir}
 curl -# -j -k -L -H "Cookie: oraclelicense=accept-securebackup-cookie" http://download.oracle.com/otn-pub/java/jdk/${VERSION}-${BUILD}/jdk-${VERSION}-linux-x64.tar.gz | tar xz -C ${jdkdir} --strip-components 1
 chown -R root:root ${jdkdir}
 
-log "installing alternatives (java) for oracle jdk ${VERSION}-${BUILD}"
+echo "installing alternatives (java) for oracle jdk ${VERSION}-${BUILD}"
 update-alternatives --install \
 	/usr/bin/java java $jdkbindir/java 1${MAJOR_VERSION}0${MINOR_VERSION} \
 	--slave /usr/bin/javac javac $jdkbindir/javac \

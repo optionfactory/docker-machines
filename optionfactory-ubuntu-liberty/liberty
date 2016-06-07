@@ -1,0 +1,14 @@
+#!/bin/bash -e
+
+if [ $# -eq 0 ]; then    
+	sat \
+        --suppress-stdout \
+        --suppress-stderr \
+        --prefix "[liberty]" \
+        --file "[messages] ":/opt/liberty/usr/servers/defaultServer/logs/messages.log \
+        --file "[tracelog] ":/opt/liberty/usr/servers/defaultServer/logs/trace.log \
+        -- \
+        bin/server run defaultServer
+fi
+
+exec "$@"
