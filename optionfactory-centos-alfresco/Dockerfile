@@ -29,4 +29,6 @@ EXPOSE 21 137 138 139 445 7070 8009 8080
 
 WORKDIR /opt/alfresco
 
+RUN groupadd -r alfresco && useradd -r -g alfresco alfresco
+COPY gosu /gosu
 ENTRYPOINT ["/alfresco"]
