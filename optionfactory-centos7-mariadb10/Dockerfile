@@ -1,0 +1,17 @@
+FROM centos:centos7
+MAINTAINER Roberto Ferranti
+
+COPY deps /tmp/
+
+RUN cp /tmp/install-ps1.sh /etc/profile.d/ps1.sh
+RUN /tmp/install-spawn-and-tail.sh
+RUN /tmp/install-mariadb.sh
+RUN cp /tmp/init-mariadb.sh /mariadb
+
+RUN rm -rf /tmp/*
+
+USER mysql
+EXPOSE 3306
+
+VOLUME ["/var/lib/mysql", "/sql-init.d/"]
+ENTRYPOINT ["/mariadb"]

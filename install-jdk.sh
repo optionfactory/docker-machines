@@ -1,23 +1,23 @@
 #!/bin/bash -e
-MAJOR_VERSION=8
-MINOR_VERSION=102
-BUILD=b14
-VERSION=${MAJOR_VERSION}u${MINOR_VERSION}
-
-
-echo "installing oracle jdk ${VERSION}-${BUILD}"
+echo "installing jdk (Oracle)"
 
 if [ ! -f /usr/sbin/update-alternatives ]; then
     ln -s /usr/sbin/update-alternatives  /usr/sbin/alternatives
 fi
 
-jdkdir=/usr/java/jdk${VERSION}-${BUILD}
-jdkbindir=${jdkdir}/bin
-mkdir -p ${jdkdir}
-curl -# -j -k -L -H "Cookie: oraclelicense=accept-securebackup-cookie" http://download.oracle.com/otn-pub/java/jdk/${VERSION}-${BUILD}/jdk-${VERSION}-linux-x64.tar.gz | tar xz -C ${jdkdir} --strip-components 1
+#TODO: extract from path:
+MAJOR_VERSION=8
+MINOR_VERSION=102
+
+
+mkdir -p /usr/java
+cp -R /tmp/jdk* /usr/java/
+jdkdir=$(readlink -f /usr/java/jdk*)
+jdkbindir=$(readlink -f ${jdkdir}/bin)
+
 chown -R root:root ${jdkdir}
 
-echo "installing alternatives (java) for oracle jdk ${VERSION}-${BUILD}"
+echo "installing alternatives (java) for oracle jdk"
 update-alternatives --install \
 	/usr/bin/java java $jdkbindir/java 1${MAJOR_VERSION}0${MINOR_VERSION} \
 	--slave /usr/bin/javac javac $jdkbindir/javac \
