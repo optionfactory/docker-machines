@@ -26,7 +26,7 @@ _prompt() {
     local git="$(color 196 0 1 '◖')$(color 196 0 1 $(git branch|grep '*' |cut -c3-))$(color 196 0 1 '◗')"
   fi
   if [  "0" != "$(grep -c docker /proc/self/cgroup)" ]; then
-    local docker="$(color 140 0 1 '◖')$(color 140 0 1 $(grep docker /proc/self/cgroup | head -n1 | sed 's/.*\/\(.\{12\}\).*/\1/'))$(color 140 0 1 '◗')"    
+    local docker="$(color 140 0 1 '◖docker◗')"    
   fi
   local uid_color=$([ "$UID" = "0" ] && echo -en "196" || echo -en "118")
   local uid=$(color $uid_color 0 1 '\$')

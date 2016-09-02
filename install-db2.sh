@@ -14,11 +14,6 @@ if [ -f /etc/lsb-release ] ; then
     distro="ubuntu"
 fi
 
-if [ "unknown" == "${distro}" ]; then
-    echo "unknown/unsupported distribution"
-    exit
-fi
-
 if [ "debian" == "${distro}" ] ; then
     echo "working around debian not being supported"
     echo "DISTRIB_ID=Ubuntu"     >  /etc/lsb-release
@@ -72,9 +67,12 @@ echo db2inst1:db2inst1 | chpasswd
 echo db2fenc1:db2fenc1 | chpasswd
 echo dasusr1:dasusr1 | chpasswd
 
+#creates a DB2 administration server
 /opt/ibm/db2/instance/dascrt -u dasusr1
-/opt/ibm/db2/instance/db2icrt -p 50000 -u db2fenc1 db2inst1
 
 if [ "debian" == "${distro}" ] ; then
     rm -rf /etc/lsb-release
 fi
+
+mkdir -p /sql-init.d/
+chown -R db2inst1:db2iadm1 /sql-init.d/

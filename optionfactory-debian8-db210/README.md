@@ -2,15 +2,11 @@ this docker image needs a data volume (db2 uses O_DIRECT access, not supported b
 
 To create a data-only image: 
 
-# docker run --name=db2_data --label=data=true -v /home busybox true
-
-To initialize the db (in the data container):
-
-# docker run -u root --volumes-from=db2_data optionfactory/ubuntu-db2 init
+# docker run --name=db2_data --label=data=true -v /home/db2inst1/ busybox true
 
 To start db2 using the data-only image:
 
-# docker run --privileged -p 50000:50000 --volumes-from=db2_data optionfactory/ubuntu-db2
+# docker run -ti --privileged -p 50000:50000 --volumes-from=db2_data optionfactory/debian8-db210
 
 To test the image:
 
