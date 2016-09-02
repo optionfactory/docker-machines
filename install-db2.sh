@@ -32,10 +32,10 @@ if [ -f /usr/bin/apt-get ] ; then
     #looked up in the wrong place
     ln -s /lib/i386-linux-gnu/libpam.so.0 /lib/libpam.so.0    
 elif [ -f /usr/bin/zypper ] ; then
-    zypper -n -q install pam libstdc++6 libaio1 ksh binutils file libxml2
+    zypper -n -q install tar pam pam-32bit libstdc++6 libstdc++6-32bit libaio1 ksh binutils file libxml2
     zypper -n -q clean --all
 elif [ -f /usr/bin/yum ] ; then
-    yum install -q -y pam libaio libario.i386 compat-libstdc++-33 compat-libstdc++-33.i386 ksh binutils file libxml2
+    yum install -q -y pam pam.i686 libaio libario.i386 compat-libstdc++-33 compat-libstdc++-33.i686 ksh binutils file libxml2
     yum clean all
 else 
     echo "unknown or missing package manager"
