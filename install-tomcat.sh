@@ -2,7 +2,7 @@
 
 echo "Installing tomcat"
 mkdir -p /opt/apache-tomcat/conf
-cp -R /tmp/apache-tomcat* /opt/apache-tomcat
+cp -R /tmp/apache-tomcat*/* /opt/apache-tomcat
 rm -rf /opt/apache-tomcat/webapps/*
 
 cat <<-'EOF' > /opt/apache-tomcat/conf/logging.properties
