@@ -97,7 +97,7 @@ docker-image: deps/db210 deps/jdk8 deps/alfresco5 deps/liberty10 deps/nexus3 dep
 	@echo optionfactory-*-postgres9/deps | xargs -n 1 rsync -az install-postgres.sh
 	@echo optionfactory-*-postgres9/deps | xargs -n 1 rsync -az init-postgres.sh	
 	@echo "syncing gosu"
-	@echo optionfactory-*-db210/deps optionfactory-*-postgres9/deps optionfactory-*-alfresco5/deps | xargs -n 1 rsync -az deps/gosu-*
+	@echo optionfactory-*-tomcat8/deps optionfactory-*-db210/deps optionfactory-*-postgres9/deps optionfactory-*-alfresco5/deps | xargs -n 1 rsync -az deps/gosu-*
 
 
 deps/db210: deps/db2-${DB210_VERSION}

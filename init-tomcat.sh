@@ -2,7 +2,7 @@
 
 if [ $# -eq 0 ]; then
     chown -R tomcat:tomcat /opt/apache-tomcat/webapps
-    exec /opt/apache-tomcat/bin/catalina.sh run
+    exec gosu tomcat:tomcat /opt/apache-tomcat/bin/catalina.sh run
 fi
 
 exec "$@"
