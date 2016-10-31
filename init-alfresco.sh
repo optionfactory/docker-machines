@@ -19,7 +19,7 @@ done
 LOGDIR=/opt/alfresco/tomcat/logs/
 cd $LOGDIR
 
-exec /gosu alfresco:alfresco sat \
+exec gosu alfresco:alfresco sat \
     --prefix "[tomcat]" \
     --file "[alfresco] ":$LOGDIR/alfresco.log \
     --file "[solr] ":$LOGDIR/solr.log \
