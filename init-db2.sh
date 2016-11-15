@@ -21,6 +21,8 @@ if [ $# -eq 0 ]; then
 		echo "initializing database instance"
 		/opt/ibm/db2/instance/db2icrt -p 50000 -u db2fenc1 db2inst1	
 	fi
+	echo "updating permissions with db2iupdt"
+	/opt/ibm/db2/instance/db2iupdt -k db2inst1
     echo "starting db2"
 	. /home/db2inst1/sqllib/db2profile
     gosu db2inst1 /home/db2inst1/sqllib/adm/db2start
