@@ -69,7 +69,7 @@ docker-image: deps/db210 deps/jdk8 deps/alfresco5 deps/liberty10 deps/nexus3 dep
 	@echo optionfactory-*-wildfly8/deps | xargs -n 1 rsync -az init-wildfly.sh
 	@echo optionfactory-*-wildfly8/deps | xargs -n 1 rsync -az deps/wildfly-*
 	@echo "syncing ps1"
-	@echo optionfactory-*-db210/deps optionfactory-*-jdk8/deps optionfactory-*-db210/deps optionfactory-*-mariadb10/deps | xargs -n 1 rsync -az install-ps1.sh
+	@echo optionfactory-*-db210/deps optionfactory-*-jdk8/deps optionfactory-*-db210/deps optionfactory-*-mariadb10/deps optionfactory-*-postgres9/deps | xargs -n 1 rsync -az install-ps1.sh
 	@echo "syncing spawn-and-tail"
 	@echo optionfactory-*-jdk8/deps optionfactory-*-db210/deps optionfactory-*-mariadb10/deps | xargs -n 1 rsync -az install-spawn-and-tail.sh
 	@echo optionfactory-*-jdk8/deps optionfactory-*-db210/deps optionfactory-*-mariadb10/deps | xargs -n 1 rsync -az deps/spawn-and-tail
