@@ -12,7 +12,7 @@ MINOR_VERSION=102
 
 mkdir -p /usr/java
 cp -R /tmp/jdk* /usr/java/
-jdkdir=$(readlink -f /usr/java/jdk*)
+jdkdir=$(readlink -f /usr/java/jdk*${MAJOR_VERSION}*_${MINOR_VERSION})
 jdkbindir=$(readlink -f ${jdkdir}/bin)
 
 chown -R root:root ${jdkdir}
