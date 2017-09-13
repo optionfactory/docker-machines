@@ -1,8 +1,10 @@
 DOCKER_BUILD_OPTIONS=--no-cache=false
-JDK8_MINOR_VERSION=131
-JDK8_BUILD=b11
+TAG_VERSION=0.2
+
+JDK8_MINOR_VERSION=144
+JDK8_BUILD=b01
 JDK8_UID=d54c1d3a095b4ff2b6607d096fa80163
-TOMCAT8_VERSION=8.5.4
+TOMCAT8_VERSION=8.5.20
 ALFRESCO5_VERSION=201604
 ALFRESCO5_BUILD=00007
 WILDFLY8_VERSION=8.2.0.Final
@@ -50,11 +52,32 @@ docker-optionfactory-opensuse13-jdk8-wildfly8: docker-optionfactory-opensuse13-j
 docker-optionfactory-ubuntu16-jdk8-wildfly8: docker-optionfactory-ubuntu16-jdk8
 
 
-docker-optionfactory-%: docker-image
+docker-optionfactory-%: docker-image-%
 	@echo building $@
 	$(eval name=$(subst docker-optionfactory-,,$@))
-	docker build ${DOCKER_BUILD_OPTIONS} --tag=optionfactory/$(name):0.1 optionfactory-$(name)
-	docker tag optionfactory/$(name):0.1 optionfactory/$(name):latest
+	docker build ${DOCKER_BUILD_OPTIONS} --tag=optionfactory/$(name):${TAG_VERSION} optionfactory-$(name)
+	docker tag optionfactory/$(name):${TAG_VERSION} optionfactory/$(name):latest
+
+docker-image-ubuntu16-jdk8-tomcat8: deps/tomcat8 sync-common-deps
+	@echo "syncing tomcat 8"
+	@echo optionfactory-*-tomcat8/deps | xargs -n 1 rsync -az install-tomcat.sh
+	@echo optionfactory-*-tomcat8/deps | xargs -n 1 rsync -az init-tomcat.sh
+	@echo optionfactory-*-tomcat8/deps | xargs -n 1 rsync -az deps/apache-tomcat*
+
+docker-image-ubuntu16-jdk8: deps/jdk8 sync-common-deps
+	@echo "syncing jdk 8"
+	@echo optionfactory-*-jdk8/deps | xargs -n 1 rsync -az install-jdk.sh
+	@echo optionfactory-*-jdk8/deps | xargs -n 1 rsync -az deps/jdk*
+
+sync-common-deps: deps/gosu1 deps/spawn-and-tail
+	@echo "syncing gosu"
+	@echo optionfactory-*-tomcat8/deps optionfactory-*-db210/deps optionfactory-*-postgres9/deps optionfactory-*-alfresco5/deps | xargs -n 1 rsync -az deps/gosu-*		
+	@echo "syncing ps1"
+	@echo optionfactory-*-db210/deps optionfactory-*-jdk8/deps optionfactory-*-db210/deps optionfactory-*-mariadb10/deps | xargs -n 1 rsync -az install-ps1.sh
+	@echo "syncing spawn-and-tail"
+	@echo optionfactory-*-jdk8/deps optionfactory-*-db210/deps optionfactory-*-mariadb10/deps | xargs -n 1 rsync -az install-spawn-and-tail.sh
+	@echo optionfactory-*-jdk8/deps optionfactory-*-db210/deps optionfactory-*-mariadb10/deps | xargs -n 1 rsync -az deps/spawn-and-tail
+	
 
 docker-image: deps/db210 deps/jdk8 deps/alfresco5 deps/liberty10 deps/nexus3 deps/spawn-and-tail deps/tomcat8 deps/wildfly8 deps/gosu1
 	@echo "syncing jdk 8"
@@ -69,7 +92,7 @@ docker-image: deps/db210 deps/jdk8 deps/alfresco5 deps/liberty10 deps/nexus3 dep
 	@echo optionfactory-*-wildfly8/deps | xargs -n 1 rsync -az init-wildfly.sh
 	@echo optionfactory-*-wildfly8/deps | xargs -n 1 rsync -az deps/wildfly-*
 	@echo "syncing ps1"
-	@echo optionfactory-*-db210/deps optionfactory-*-jdk8/deps optionfactory-*-db210/deps optionfactory-*-mariadb10/deps optionfactory-*-postgres9/deps | xargs -n 1 rsync -az install-ps1.sh
+	@echo optionfactory-*-db210/deps optionfactory-*-jdk8/deps optionfactory-*-db210/deps optionfactory-*-mariadb10/deps | xargs -n 1 rsync -az install-ps1.sh
 	@echo "syncing spawn-and-tail"
 	@echo optionfactory-*-jdk8/deps optionfactory-*-db210/deps optionfactory-*-mariadb10/deps | xargs -n 1 rsync -az install-spawn-and-tail.sh
 	@echo optionfactory-*-jdk8/deps optionfactory-*-db210/deps optionfactory-*-mariadb10/deps | xargs -n 1 rsync -az deps/spawn-and-tail
@@ -97,7 +120,7 @@ docker-image: deps/db210 deps/jdk8 deps/alfresco5 deps/liberty10 deps/nexus3 dep
 	@echo optionfactory-*-postgres9/deps | xargs -n 1 rsync -az install-postgres.sh
 	@echo optionfactory-*-postgres9/deps | xargs -n 1 rsync -az init-postgres.sh	
 	@echo "syncing gosu"
-	@echo optionfactory-*-tomcat8/deps optionfactory-*-db210/deps optionfactory-*-postgres9/deps optionfactory-*-alfresco5/deps | xargs -n 1 rsync -az deps/gosu-*
+	@echo optionfactory-*-tomcat8/deps optionfactory-*-db210/deps optionfactory-*-postgres9/deps optionfactory-*-alfresco5/deps | xargs -n 1 rsync -az deps/gosu-*		
 
 
 deps/db210: deps/db2-${DB210_VERSION}
