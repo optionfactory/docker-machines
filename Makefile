@@ -1,7 +1,7 @@
 DOCKER_BUILD_OPTIONS=--no-cache=false
-
-JDK8_MINOR_VERSION=102
-JDK8_BUILD=b14
+JDK8_MINOR_VERSION=131
+JDK8_BUILD=b11
+JDK8_UID=d54c1d3a095b4ff2b6607d096fa80163
 TOMCAT8_VERSION=8.5.4
 ALFRESCO5_VERSION=201604
 ALFRESCO5_BUILD=00007
@@ -111,7 +111,7 @@ deps/gosu1: deps/gosu-${GOSU1_VERSION}
 
 
 deps/jdk1.8.0_${JDK8_MINOR_VERSION}:
-	curl -# -j -k -L -H "Cookie: oraclelicense=accept-securebackup-cookie" http://download.oracle.com/otn-pub/java/jdk/8u${JDK8_MINOR_VERSION}-${JDK8_BUILD}/jdk-8u${JDK8_MINOR_VERSION}-linux-x64.tar.gz | tar xz -C deps 
+	curl -# -j -k -L -H "Cookie: oraclelicense=accept-securebackup-cookie" http://download.oracle.com/otn-pub/java/jdk/8u${JDK8_MINOR_VERSION}-${JDK8_BUILD}/${JDK8_UID}/jdk-8u${JDK8_MINOR_VERSION}-linux-x64.tar.gz | tar xz -C deps 
 deps/apache-tomcat-${TOMCAT8_VERSION}:
 	curl -# -sSL -k https://archive.apache.org/dist/tomcat/tomcat-8/v${TOMCAT8_VERSION}/bin/apache-tomcat-${TOMCAT8_VERSION}.tar.gz | tar xz -C deps
 deps/alfresco-${ALFRESCO5_VERSION}/alfresco-installer.bin:

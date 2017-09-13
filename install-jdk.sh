@@ -7,8 +7,7 @@ fi
 
 #TODO: extract from path:
 MAJOR_VERSION=8
-MINOR_VERSION=102
-
+MINOR_VERSION=131
 
 mkdir -p /usr/java
 cp -R /tmp/jdk* /usr/java/

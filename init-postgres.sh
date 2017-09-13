@@ -11,11 +11,11 @@ if [ $# -eq 0 ]; then
 
     if [ ! -s "/var/lib/postgresql/data/PG_VERSION" ]; then
         echo "initializing a new database"
-        gosu postgres initdb /var/lib/postgresql/data -E 'UTF-8' --lc-collate='en_US.UTF-8' --lc-ctype='en_US.UTF-8'
+        gosu postgres /usr/lib/postgresql/*/bin/initdb /var/lib/postgresql/data -E 'UTF-8' --lc-collate='en_US.UTF-8' --lc-ctype='en_US.UTF-8'
         sed -ri "s/(logging_collector) .*/\1 = off/" /var/lib/postgresql/data/postgresql.conf
         sed -ri "s/(log_line_prefix) .*/\1 = '[postgres][%u@%h:%d] '/" /var/lib/postgresql/data/postgresql.conf
         echo "host all all 0.0.0.0/0 trust" >> "/var/lib/postgresql/data/pg_hba.conf"
-        gosu postgres pg_ctl -s -D "/var/lib/postgresql/data" -o "-c listen_addresses='localhost'" -w start
+        gosu postgres /usr/lib/postgresql/*/bin/pg_ctl -s -D "/var/lib/postgresql/data" -o "-c listen_addresses='localhost'" -w start
         psql=( psql -v ON_ERROR_STOP=1 --username "postgres" --dbname "postgres" )
         for f in /sql-init.d/*; do
             case "$f" in
@@ -26,14 +26,14 @@ if [ $# -eq 0 ]; then
             esac
         done
 
-        gosu postgres pg_ctl -s -D "/var/lib/postgresql/data" -m fast -w stop
+        gosu postgres /usr/lib/postgresql/*/bin/pg_ctl -s -D "/var/lib/postgresql/data" -m fast -w stop
 
         echo
         echo 'PostgreSQL init process complete; ready for start up.'
         echo
     fi
 
-    exec gosu postgres postgres -D /var/lib/postgresql/data
+    exec gosu postgres /usr/lib/postgresql/*/bin/postgres -D /var/lib/postgresql/data
 fi
 
 exec "$@"
