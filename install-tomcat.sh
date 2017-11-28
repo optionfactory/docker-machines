@@ -6,7 +6,7 @@ cp -R /tmp/apache-tomcat*/* /opt/apache-tomcat
 rm -rf /opt/apache-tomcat/webapps/*
 
 cat <<-'EOF' > /opt/apache-tomcat/bin/setenv.sh
-JAVA_OPTS=-Djava.security.egd=file:/dev/./urandom
+JAVA_OPTS="$JAVA_OPTS -Djava.security.egd=file:/dev/./urandom"
 EOF
 
 cat <<-'EOF' > /opt/apache-tomcat/conf/logging.properties
