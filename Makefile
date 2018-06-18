@@ -65,6 +65,8 @@ docker-optionfactory-debian9-jdk8-zookeeper3: docker-optionfactory-debian9-jdk8
 docker-optionfactory-opensuse15-jdk8-zookeeper3: docker-optionfactory-opensuse15-jdk8
 docker-optionfactory-ubuntu18-jdk8-zookeeper3: docker-optionfactory-ubuntu18-jdk8
 
+
+
 #docker-optionfactory-%-jdk8-alfresco5: $(subst -alfresco5,,$@)
 docker-optionfactory-centos7-jdk8-alfresco5: docker-optionfactory-centos7-jdk8
 docker-optionfactory-debian9-jdk8-alfresco5: docker-optionfactory-debian9-jdk8
@@ -130,14 +132,16 @@ sync: deps
 	@echo optionfactory-*-postgres9/deps | xargs -n 1 rsync -az install-postgres.sh
 	@echo optionfactory-*-postgres9/deps | xargs -n 1 rsync -az init-postgres.sh
 	@echo "syncing kafka1"
-	@echo optionfactory-*-kafka1/deps | xargs -n 1 rsync -az install-kafka.sh
+	@echo optionfactory-*-kafka1/deps optionfactory-*-kafka1-zookeeper3-standalone/deps | xargs -n 1 rsync -az install-kafka.sh
 	@echo optionfactory-*-kafka1/deps | xargs -n 1 rsync -az init-kafka.sh
-	@echo optionfactory-*-kafka1/deps | xargs -n 1 rsync -az deps/kafka_${KAFKA1_SCALA_VERSION}-${KAFKA1_VERSION}
+	@echo optionfactory-*-kafka1/deps optionfactory-*-kafka1-zookeeper3-standalone/deps | xargs -n 1 rsync -az deps/kafka_${KAFKA1_SCALA_VERSION}-${KAFKA1_VERSION}
 	@echo "syncing zookeeper3"
-	@echo optionfactory-*-zookeeper3/deps | xargs -n 1 rsync -az install-zookeeper.sh
+	@echo optionfactory-*-zookeeper3/deps optionfactory-*-kafka1-zookeeper3-standalone/deps | xargs -n 1 rsync -az install-zookeeper.sh
 	@echo optionfactory-*-zookeeper3/deps | xargs -n 1 rsync -az init-zookeeper.sh
-	@echo optionfactory-*-zookeeper3/deps | xargs -n 1 rsync -az deps/zookeeper-${ZOOKEEPER3_VERSION}
-
+	@echo optionfactory-*-zookeeper3/deps optionfactory-*-kafka1-zookeeper3-standalone/deps | xargs -n 1 rsync -az deps/zookeeper-${ZOOKEEPER3_VERSION}
+	@echo "syncing kafka1-zookeeper3-standalone"
+	@echo optionfactory-*-kafka1-zookeeper3-standalone/deps | xargs -n 1 rsync -az install-kafka-zookeeper-standalone.sh
+	@echo optionfactory-*-kafka1-zookeeper3-standalone/deps | xargs -n 1 rsync -az init-kafka-zookeeper-standalone.sh
 
 deps: deps/jdk8 deps/tomcat8 deps/alfresco5 deps/wildfly8 deps/nexus3 deps/gosu1 deps/spawn-and-tail1 deps/kafka1 deps/zookeeper3
 
