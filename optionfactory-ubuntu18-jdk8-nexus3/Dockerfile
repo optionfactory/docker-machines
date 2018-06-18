@@ -1,4 +1,4 @@
-FROM optionfactory/centos7-jdk8:latest
+FROM optionfactory/ubuntu18-jdk8:latest
 MAINTAINER Roberto Ferranti <roberto@optionfactory.net>
 
 COPY deps /tmp/

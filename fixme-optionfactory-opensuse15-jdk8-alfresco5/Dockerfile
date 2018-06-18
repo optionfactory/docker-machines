@@ -1,6 +1,6 @@
-FROM optionfactory/centos7-jdk8:latest
+FROM optionfactory/opensuse15-jdk8:latest
 #forked from: gui81/alfresco
-MAINTAINER Francesco Degrassi <francesco.degrassi@optionfactory.net>
+MAINTAINER Roberto Ferranti <roberto@optionfactory.net>
 
 COPY deps /tmp/
 

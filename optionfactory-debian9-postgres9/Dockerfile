@@ -1,4 +1,4 @@
-FROM optionfactory/centos7:latest
+FROM optionfactory/debian9:latest
 MAINTAINER Roberto Ferranti <roberto@optionfactory.net>
 
 COPY deps /tmp/
