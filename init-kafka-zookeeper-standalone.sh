@@ -71,6 +71,7 @@ sed -r -i "s/(log.dirs)=(.*)/\1=\/var\/lib\/kafka\//g" /opt/kafka/config/server.
 if [ ! -z "$KAFKA_BROKER_ID" ]; then
      echo "broker id: $KAFKA_BROKER_ID"
      sed -r -i "s/(broker.id)=(.*)/\1=$KAFKA_BROKER_ID/g" /opt/kafka/config/server.properties
+     sed -r -i "s/NODE_ID/$KAFKA_BROKER_ID/g" /opt/kafka/config/log4j.properties     
 fi
 
 if [ ! -z "$KAFKA_BROKER_ID_GENERATION_ENABLE" ]; then

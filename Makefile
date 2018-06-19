@@ -52,7 +52,6 @@ docker-optionfactory-debian9-postgres9: docker-optionfactory-debian9
 docker-optionfactory-opensuse15-postgres9: docker-optionfactory-opensuse15
 docker-optionfactory-ubuntu18-postgres9: docker-optionfactory-ubuntu18
 
-
 #docker-optionfactory-%-kafka1: $(subst -kafka1,,$@)
 docker-optionfactory-centos7-jdk8-kafka1: docker-optionfactory-centos7-jdk8
 docker-optionfactory-debian9-jdk8-kafka1: docker-optionfactory-debian9-jdk8
@@ -65,14 +64,11 @@ docker-optionfactory-debian9-jdk8-zookeeper3: docker-optionfactory-debian9-jdk8
 docker-optionfactory-opensuse15-jdk8-zookeeper3: docker-optionfactory-opensuse15-jdk8
 docker-optionfactory-ubuntu18-jdk8-zookeeper3: docker-optionfactory-ubuntu18-jdk8
 
-
-
 #docker-optionfactory-%-jdk8-alfresco5: $(subst -alfresco5,,$@)
 docker-optionfactory-centos7-jdk8-alfresco5: docker-optionfactory-centos7-jdk8
 docker-optionfactory-debian9-jdk8-alfresco5: docker-optionfactory-debian9-jdk8
 docker-optionfactory-opensuse15-jdk8-alfresco5: docker-optionfactory-opensuse15-jdk8
 docker-optionfactory-ubuntu18-jdk8-alfresco5: docker-optionfactory-ubuntu18-jdk8
-
 
 #docker-optionfactory-%-jdk8-nexus3: $(subst -nexus3,,$@)
 docker-optionfactory-centos7-jdk8-nexus3: docker-optionfactory-centos7-jdk8
