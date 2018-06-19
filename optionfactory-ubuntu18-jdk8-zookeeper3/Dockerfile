@@ -3,8 +3,8 @@ MAINTAINER Roberto Ferranti <roberto@optionfactory.net>
 
 COPY deps /tmp/
 
-RUN /tmp/install-zookeeper.sh
-RUN cp /tmp/init-zookeeper.sh /zookeeper
+RUN /tmp/install-zookeeper3.sh
+RUN cp /tmp/init-zookeeper3.sh /zookeeper
 RUN rm -rf /tmp/*
 
 EXPOSE 2181 2888 3888

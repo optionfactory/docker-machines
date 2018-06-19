@@ -2,8 +2,8 @@ FROM optionfactory/debian9:latest
 MAINTAINER Roberto Ferranti <roberto@optionfactory.net>
 
 COPY deps /tmp/
-RUN /tmp/install-postgres.sh
-RUN cp /tmp/init-postgres.sh /postgres
+RUN /tmp/install-postgres9.sh
+RUN cp /tmp/init-postgres9.sh /postgres
 
 RUN rm -rf /tmp/*
 

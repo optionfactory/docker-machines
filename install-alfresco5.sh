@@ -11,17 +11,18 @@ fi
 if [ -f /usr/bin/apt-get  ]; then
     DEBIAN_FRONTEND=noninteractive apt-get -y -q update
     DEBIAN_FRONTEND=noninteractive apt-get -y -q install libcups2 libcupscgi1 libcupsimage2 libcupsmime1 libcupsppdc1
-    DEBIAN_FRONTEND=noninteractive apt-get -y -q install libdbus-glib-1-2 fontconfig hostname libice6 libsm6 libxext6 libxinerama1 libxrender1 grep patch 
+    DEBIAN_FRONTEND=noninteractive apt-get -y -q install libdbus-glib-1-2 fontconfig hostname libice6 libsm6 libxext6 libxinerama1 libxrender1 grep patch
     DEBIAN_FRONTEND=noninteractive apt-get -y -q autoclean
     DEBIAN_FRONTEND=noninteractive apt-get -y -q autoremove
-    rm -rf /var/lib/apt/lists/*    
+    rm -rf /var/lib/apt/lists/*
 elif [ -f /usr/bin/zypper ] ; then
     zypper -n -q install cups-libs dbus-1-glib fontconfig net-tools libICE6  libSM6 libXext6 libXinerama1 libXrender1 grep patch
     zypper -n -q clean --all
 elif [ -f /usr/bin/yum ] ; then
-    yum install -q -y cups-libs dbus-glib fontconfig hostname libICE libSM libXext libXinerama libXrender grep patch 
+    yum install -q -y cups-libs dbus-glib fontconfig hostname libICE libSM libXext libXinerama libXrender grep patch
     yum clean all
-else 
+    rm -rf /var/cache/yum    
+else
     echo "unknown or missing package manager"
     exit 1
 fi

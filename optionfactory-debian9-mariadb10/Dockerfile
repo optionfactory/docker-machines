@@ -3,8 +3,8 @@ MAINTAINER Roberto Ferranti <roberto@optionfactory.net>
 
 COPY deps /tmp/
 
-RUN /tmp/install-mariadb.sh
-RUN cp /tmp/init-mariadb.sh /mariadb
+RUN /tmp/install-mariadb10.sh
+RUN cp /tmp/init-mariadb10.sh /mariadb
 
 RUN rm -rf /tmp/*
 

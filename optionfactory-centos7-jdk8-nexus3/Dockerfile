@@ -2,8 +2,8 @@ FROM optionfactory/centos7-jdk8:latest
 MAINTAINER Roberto Ferranti <roberto@optionfactory.net>
 
 COPY deps /tmp/
-RUN /tmp/install-nexus.sh
-RUN cp /tmp/init-nexus.sh /nexus
+RUN /tmp/install-nexus3.sh
+RUN cp /tmp/init-nexus3.sh /nexus
 RUN rm -rf /tmp/*
 
 VOLUME /opt/nexus/data

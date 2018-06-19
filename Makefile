@@ -121,57 +121,57 @@ sync-tools: deps/gosu1 deps/spawn-and-tail1
 	@echo optionfactory-centos7/deps optionfactory-debian9/deps optionfactory-opensuse15/deps optionfactory-ubuntu18/deps | xargs -n 1 rsync -az deps/spawn-and-tail-${SPAWN_AND_TAIL_VERSION}
 sync-jdk8: deps/jdk8
 	@echo "syncing jdk 8"
-	@echo optionfactory-*-jdk8/deps | xargs -n 1 rsync -az install-jdk.sh
+	@echo optionfactory-*-jdk8/deps | xargs -n 1 rsync -az install-jdk8.sh
 	@echo optionfactory-*-jdk8/deps | xargs -n 1 rsync -az deps/jdk1.8.0_${JDK8_MINOR_VERSION}
 sync-tomcat8: deps/tomcat8
 	@echo "syncing tomcat 8"
-	@echo optionfactory-*-tomcat8/deps | xargs -n 1 rsync -az install-tomcat.sh
-	@echo optionfactory-*-tomcat8/deps | xargs -n 1 rsync -az init-tomcat.sh
+	@echo optionfactory-*-tomcat8/deps | xargs -n 1 rsync -az install-tomcat8.sh
+	@echo optionfactory-*-tomcat8/deps | xargs -n 1 rsync -az init-tomcat8.sh
 	@echo optionfactory-*-tomcat8/deps | xargs -n 1 rsync -az deps/apache-tomcat-${TOMCAT8_VERSION}
 sync-wildfly8: deps/wildfly8
 	@echo "syncing wildfly 8"
-	@echo optionfactory-*-wildfly8/deps | xargs -n 1 rsync -az install-wildfly.sh
-	@echo optionfactory-*-wildfly8/deps | xargs -n 1 rsync -az init-wildfly.sh
+	@echo optionfactory-*-wildfly8/deps | xargs -n 1 rsync -az install-wildfly8.sh
+	@echo optionfactory-*-wildfly8/deps | xargs -n 1 rsync -az init-wildfly8.sh
 	@echo optionfactory-*-wildfly8/deps | xargs -n 1 rsync -az deps/wildfly-${WILDFLY8_VERSION}
 sync-alfresco5: deps/alfresco5
 	@echo "syncing alfresco 5"
-	@echo optionfactory-*-alfresco5/deps | xargs -n 1 rsync -az install-alfresco.sh
-	@echo optionfactory-*-alfresco5/deps | xargs -n 1 rsync -az init-alfresco.sh
+	@echo optionfactory-*-alfresco5/deps | xargs -n 1 rsync -az install-alfresco5.sh
+	@echo optionfactory-*-alfresco5/deps | xargs -n 1 rsync -az init-alfresco5.sh
 	@echo optionfactory-*-alfresco5/deps | xargs -n 1 rsync -az deps/alfresco-${ALFRESCO5_VERSION}
 sync-nexus3: deps/nexus3
 	@echo "syncing nexus 3"
-	@echo optionfactory-*-nexus3/deps | xargs -n 1 rsync -az install-nexus.sh
-	@echo optionfactory-*-nexus3/deps | xargs -n 1 rsync -az init-nexus.sh
+	@echo optionfactory-*-nexus3/deps | xargs -n 1 rsync -az install-nexus3.sh
+	@echo optionfactory-*-nexus3/deps | xargs -n 1 rsync -az init-nexus3.sh
 	@echo optionfactory-*-nexus3/deps | xargs -n 1 rsync -az deps/nexus-${NEXUS3_VERSION}
 sync-mariadb10: deps/mariadb10
 	@echo "syncing mariadb 10"
-	@echo optionfactory-*-mariadb10/deps | xargs -n 1 rsync -az install-mariadb.sh
-	@echo optionfactory-*-mariadb10/deps | xargs -n 1 rsync -az init-mariadb.sh
+	@echo optionfactory-*-mariadb10/deps | xargs -n 1 rsync -az install-mariadb10.sh
+	@echo optionfactory-*-mariadb10/deps | xargs -n 1 rsync -az init-mariadb10.sh
 sync-postgres9: deps/postgres9
 	@echo "syncing postgres 9"
-	@echo optionfactory-*-postgres9/deps | xargs -n 1 rsync -az install-postgres.sh
-	@echo optionfactory-*-postgres9/deps | xargs -n 1 rsync -az init-postgres.sh
+	@echo optionfactory-*-postgres9/deps | xargs -n 1 rsync -az install-postgres9.sh
+	@echo optionfactory-*-postgres9/deps | xargs -n 1 rsync -az init-postgres9.sh
 sync-kafka1: deps/kafka1
 	@echo "syncing kafka1"
-	@echo optionfactory-*-kafka1/deps | xargs -n 1 rsync -az install-kafka.sh
-	@echo optionfactory-*-kafka1/deps | xargs -n 1 rsync -az init-kafka.sh
+	@echo optionfactory-*-kafka1/deps | xargs -n 1 rsync -az install-kafka1.sh
+	@echo optionfactory-*-kafka1/deps | xargs -n 1 rsync -az init-kafka1.sh
 	@echo optionfactory-*-kafka1/deps | xargs -n 1 rsync -az deps/kafka_${KAFKA1_SCALA_VERSION}-${KAFKA1_VERSION}
 sync-zookeeper3: deps/zookeeper3
 	@echo "syncing zookeeper3"
-	@echo optionfactory-*-zookeeper3/deps | xargs -n 1 rsync -az install-zookeeper.sh
-	@echo optionfactory-*-zookeeper3/deps | xargs -n 1 rsync -az init-zookeeper.sh
+	@echo optionfactory-*-zookeeper3/deps | xargs -n 1 rsync -az install-zookeeper3.sh
+	@echo optionfactory-*-zookeeper3/deps | xargs -n 1 rsync -az init-zookeeper3.sh
 	@echo optionfactory-*-zookeeper3/deps | xargs -n 1 rsync -az deps/zookeeper-${ZOOKEEPER3_VERSION}
 sync-kafka1-zookeeper3-standalone: deps/zookeeper3 deps/kafka1
 	@echo "syncing kafka1-zookeeper3-standalone"
-	@echo optionfactory-*-kafka1-zookeeper3-standalone/deps | xargs -n 1 rsync -az install-zookeeper.sh
+	@echo optionfactory-*-kafka1-zookeeper3-standalone/deps | xargs -n 1 rsync -az install-zookeeper3.sh
 	@echo optionfactory-*-kafka1-zookeeper3-standalone/deps | xargs -n 1 rsync -az deps/zookeeper-${ZOOKEEPER3_VERSION}
-	@echo optionfactory-*-kafka1-zookeeper3-standalone/deps | xargs -n 1 rsync -az install-kafka.sh
+	@echo optionfactory-*-kafka1-zookeeper3-standalone/deps | xargs -n 1 rsync -az install-kafka1.sh
 	@echo optionfactory-*-kafka1-zookeeper3-standalone/deps | xargs -n 1 rsync -az deps/kafka_${KAFKA1_SCALA_VERSION}-${KAFKA1_VERSION}
-	@echo optionfactory-*-kafka1-zookeeper3-standalone/deps | xargs -n 1 rsync -az install-kafka-zookeeper-standalone.sh
-	@echo optionfactory-*-kafka1-zookeeper3-standalone/deps | xargs -n 1 rsync -az init-kafka-zookeeper-standalone.sh
+	@echo optionfactory-*-kafka1-zookeeper3-standalone/deps | xargs -n 1 rsync -az install-kafka1-zookeeper3-standalone.sh
+	@echo optionfactory-*-kafka1-zookeeper3-standalone/deps | xargs -n 1 rsync -az init-kafka1-zookeeper3-standalone.sh
 sync-golang1: deps/golang1
 	@echo "syncing golang"
-	@echo optionfactory-*-golang1/deps | xargs -n 1 rsync -az install-golang.sh
+	@echo optionfactory-*-golang1/deps | xargs -n 1 rsync -az install-golang1.sh
 	@echo optionfactory-*-golang1/deps | xargs -n 1 rsync -az deps/golang-${GOLANG1_VERSION}
 
 

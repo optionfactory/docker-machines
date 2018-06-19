@@ -1,11 +1,31 @@
 #!/bin/bash -e
 
-DEBIAN_FRONTEND=noninteractive apt-get -y -q update
-DEBIAN_FRONTEND=noninteractive apt-get install -y -q supervisor
-rm -rf /var/lib/apt/lists/*
-DEBIAN_FRONTEND=noninteractive apt-get -y -q clean
 
 
+if [ -f /usr/bin/apt-get  ]; then
+    DEBIAN_FRONTEND=noninteractive apt-get -y -q update
+    DEBIAN_FRONTEND=noninteractive apt-get install -y -q supervisor
+    DEBIAN_FRONTEND=noninteractive apt-get -y -q autoclean
+    DEBIAN_FRONTEND=noninteractive apt-get -y -q autoremove
+    rm -rf /var/lib/apt/lists/*
+elif [ -f /usr/bin/zypper ] ; then
+    zypper -n -q install python2-pip
+    pip install supervisor
+    zypper -n -q remove python2-pip
+    zypper -n -q clean --all
+elif [ -f /usr/bin/yum ] ; then
+    yum install -q -y python-setuptools
+    easy_install supervisor
+    yum remove -q -y python-setuptools
+    yum clean all
+    rm -rf /var/cache/yum
+else
+    echo "unknown or missing package manager"
+    exit 1
+fi
+
+
+mkdir -p /etc/supervisor/
 
 cat <<-'EOF' > /etc/supervisor/supervisord.conf
 [unix_http_server]

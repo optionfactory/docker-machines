@@ -1,17 +1,16 @@
 #!/bin/bash -e
 
-
 if [ -f /usr/bin/apt-get ]; then
     DEBIAN_FRONTEND=noninteractive apt-get -y -q update
-    DEBIAN_FRONTEND=noninteractive apt-get -y -q --no-install-recommends install ca-certificates g++ gcc libc6-dev make pkg-config inotify-tools git
+    DEBIAN_FRONTEND=noninteractive apt-get -y -q --no-install-recommends install ca-certificates gcc g++ libc6-dev make pkg-config inotify-tools git
     DEBIAN_FRONTEND=noninteractive apt-get -y -q autoclean
     DEBIAN_FRONTEND=noninteractive apt-get -y -q autoremove
     rm -rf /var/lib/apt/lists/*
 elif [ -f /usr/bin/zypper ] ; then
-    zypper -n -q install ca-certificates g++ gcc libc6-dev make pkg-config inotify-tools git
+    zypper -n -q install ca-certificates gcc gcc-c++ glibc-devel make pkg-config inotify-tools git
     zypper -n -q clean --all
 elif [ -f /usr/bin/yum ] ; then
-    yum install -q -y ca-certificates g++ gcc libc6-dev make pkg-config inotify-tools git
+    yum install -q -y ca-certificates gcc g++ libc6-dev make pkg-config inotify-tools git
     yum clean all
     rm -rf /var/cache/yum
 else
