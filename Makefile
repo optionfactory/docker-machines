@@ -13,7 +13,7 @@ ALFRESCO5_BUILD=00028
 
 WILDFLY8_VERSION=8.2.0.Final
 
-NEXUS3_VERSION=3.0.1-01
+NEXUS3_VERSION=3.12.1-01
 
 GOSU1_VERSION=1.9
 
@@ -29,66 +29,77 @@ GOLANG1_VERSION=1.10.3
 #/software versions
 
 help:
-	@echo make [clean-deps] [clean] sync docker-images
+	@echo usage: make [clean-deps] [clean] sync docker-images
+	@echo usage: make [clean-deps] [clean] docker-optionfactory-centos7-mariadb10
 	exit 1
 
 docker-images: $(addprefix docker-,$(wildcard optionfactory-*))
 
 
+docker-optionfactory-centos7: sync-tools
+docker-optionfactory-debian9: sync-tools
+docker-optionfactory-opensuse15: sync-tools
+docker-optionfactory-ubuntu18: sync-tools
 
 #docker-optionfactory-%-jdk8: $(subst -jdk8,,$@)
-docker-optionfactory-centos7-jdk8: docker-optionfactory-centos7
-docker-optionfactory-debian9-jdk8: docker-optionfactory-debian9
-docker-optionfactory-opensuse15-jdk8: docker-optionfactory-opensuse15
-docker-optionfactory-ubuntu18-jdk8: docker-optionfactory-ubuntu18
+docker-optionfactory-centos7-jdk8: sync-jdk8 docker-optionfactory-centos7
+docker-optionfactory-debian9-jdk8: sync-jdk8 docker-optionfactory-debian9
+docker-optionfactory-opensuse15-jdk8: sync-jdk8 docker-optionfactory-opensuse15
+docker-optionfactory-ubuntu18-jdk8: sync-jdk8 docker-optionfactory-ubuntu18
 
 #docker-optionfactory-%-mariadb10: $(subst -mariadb10,,$@)
-docker-optionfactory-centos7-mariadb10: docker-optionfactory-centos7
-docker-optionfactory-debian9-mariadb10: docker-optionfactory-debian9
-docker-optionfactory-opensuse15-mariadb10: docker-optionfactory-opensuse15
-docker-optionfactory-ubuntu18-mariadb10: docker-optionfactory-ubuntu18
+docker-optionfactory-centos7-mariadb10: sync-mariadb10 docker-optionfactory-centos7
+docker-optionfactory-debian9-mariadb10: sync-mariadb10 docker-optionfactory-debian9
+docker-optionfactory-opensuse15-mariadb10: sync-mariadb10 docker-optionfactory-opensuse15
+docker-optionfactory-ubuntu18-mariadb10: sync-mariadb10 docker-optionfactory-ubuntu18
 
 #docker-optionfactory-%-postgres9: $(subst -postgres9,,$@)
-docker-optionfactory-centos7-postgres9: docker-optionfactory-centos7
-docker-optionfactory-debian9-postgres9: docker-optionfactory-debian9
-docker-optionfactory-opensuse15-postgres9: docker-optionfactory-opensuse15
-docker-optionfactory-ubuntu18-postgres9: docker-optionfactory-ubuntu18
+docker-optionfactory-centos7-postgres9: sync-postgres9 docker-optionfactory-centos7
+docker-optionfactory-debian9-postgres9: sync-postgres9 docker-optionfactory-debian9
+docker-optionfactory-opensuse15-postgres9: sync-postgres9 docker-optionfactory-opensuse15
+docker-optionfactory-ubuntu18-postgres9: sync-postgres9 docker-optionfactory-ubuntu18
+
+#docker-optionfactory-%-golang1: $(subst -golang1,,$@)
+docker-optionfactory-centos7-golang1: sync-golang1 docker-optionfactory-centos7
+docker-optionfactory-debian9-golang1: sync-golang1 docker-optionfactory-debian9
+docker-optionfactory-opensuse15-golang1: sync-golang1 docker-optionfactory-opensuse15
+docker-optionfactory-ubuntu18-golang1: sync-golang1 docker-optionfactory-ubuntu18
 
 #docker-optionfactory-%-kafka1: $(subst -kafka1,,$@)
-docker-optionfactory-centos7-jdk8-kafka1: docker-optionfactory-centos7-jdk8
-docker-optionfactory-debian9-jdk8-kafka1: docker-optionfactory-debian9-jdk8
-docker-optionfactory-opensuse15-jdk8-kafka1: docker-optionfactory-opensuse15-jdk8
-docker-optionfactory-ubuntu18-jdk8-kafka1: docker-optionfactory-ubuntu18-jdk8
+docker-optionfactory-centos7-jdk8-kafka1: sync-kafka1 docker-optionfactory-centos7-jdk8
+docker-optionfactory-debian9-jdk8-kafka1: sync-kafka1 docker-optionfactory-debian9-jdk8
+docker-optionfactory-opensuse15-jdk8-kafka1: sync-kafka1 docker-optionfactory-opensuse15-jdk8
+docker-optionfactory-ubuntu18-jdk8-kafka1: sync-kafka1 docker-optionfactory-ubuntu18-jdk8
 
 #docker-optionfactory-%-zookeeper3: $(subst -zookeeper3,,$@)
-docker-optionfactory-centos7-jdk8-zookeeper3: docker-optionfactory-centos7-jdk8
-docker-optionfactory-debian9-jdk8-zookeeper3: docker-optionfactory-debian9-jdk8
-docker-optionfactory-opensuse15-jdk8-zookeeper3: docker-optionfactory-opensuse15-jdk8
-docker-optionfactory-ubuntu18-jdk8-zookeeper3: docker-optionfactory-ubuntu18-jdk8
+docker-optionfactory-centos7-jdk8-zookeeper3: sync-zookeeper3 docker-optionfactory-centos7-jdk8
+docker-optionfactory-debian9-jdk8-zookeeper3: sync-zookeeper3 docker-optionfactory-debian9-jdk8
+docker-optionfactory-opensuse15-jdk8-zookeeper3: sync-zookeeper3 docker-optionfactory-opensuse15-jdk8
+docker-optionfactory-ubuntu18-jdk8-zookeeper3: sync-zookeeper3 docker-optionfactory-ubuntu18-jdk8
 
 #docker-optionfactory-%-jdk8-alfresco5: $(subst -alfresco5,,$@)
-docker-optionfactory-centos7-jdk8-alfresco5: docker-optionfactory-centos7-jdk8
-docker-optionfactory-debian9-jdk8-alfresco5: docker-optionfactory-debian9-jdk8
-docker-optionfactory-opensuse15-jdk8-alfresco5: docker-optionfactory-opensuse15-jdk8
-docker-optionfactory-ubuntu18-jdk8-alfresco5: docker-optionfactory-ubuntu18-jdk8
+docker-optionfactory-centos7-jdk8-alfresco5: sync-alfresco5 docker-optionfactory-centos7-jdk8
+docker-optionfactory-debian9-jdk8-alfresco5: sync-alfresco5 docker-optionfactory-debian9-jdk8
+docker-optionfactory-opensuse15-jdk8-alfresco5: sync-alfresco5 docker-optionfactory-opensuse15-jdk8
+docker-optionfactory-ubuntu18-jdk8-alfresco5: sync-alfresco5 docker-optionfactory-ubuntu18-jdk8
 
 #docker-optionfactory-%-jdk8-nexus3: $(subst -nexus3,,$@)
-docker-optionfactory-centos7-jdk8-nexus3: docker-optionfactory-centos7-jdk8
-docker-optionfactory-debian9-jdk8-nexus3: docker-optionfactory-debian9-jdk8
-docker-optionfactory-opensuse15-jdk8-nexus3: docker-optionfactory-opensuse15-jdk8
-docker-optionfactory-ubuntu18-jdk8-nexus3: docker-optionfactory-ubuntu18-jdk8
+docker-optionfactory-centos7-jdk8-nexus3: sync-nexus3 docker-optionfactory-centos7-jdk8
+docker-optionfactory-debian9-jdk8-nexus3: sync-nexus3 docker-optionfactory-debian9-jdk8
+docker-optionfactory-opensuse15-jdk8-nexus3: sync-nexus3 docker-optionfactory-opensuse15-jdk8
+docker-optionfactory-ubuntu18-jdk8-nexus3: sync-nexus3 docker-optionfactory-ubuntu18-jdk8
 
 #docker-optionfactory-%-jdk8-tomcat8: $(subst -tomcat8,,$@)
-docker-optionfactory-centos7-jdk8-tomcat8: docker-optionfactory-centos7-jdk8
-docker-optionfactory-debian9-jdk8-tomcat8: docker-optionfactory-debian9-jdk8
-docker-optionfactory-opensuse15-jdk8-tomcat8: docker-optionfactory-opensuse15-jdk8
-docker-optionfactory-ubuntu18-jdk8-tomcat8: docker-optionfactory-ubuntu18-jdk8
+docker-optionfactory-centos7-jdk8-tomcat8: sync-tomcat8 docker-optionfactory-centos7-jdk8
+docker-optionfactory-debian9-jdk8-tomcat8: sync-tomcat8 docker-optionfactory-debian9-jdk8
+docker-optionfactory-opensuse15-jdk8-tomcat8: sync-tomcat8 docker-optionfactory-opensuse15-jdk8
+docker-optionfactory-ubuntu18-jdk8-tomcat8: sync-tomcat8 docker-optionfactory-ubuntu18-jdk8
 
 #docker-optionfactory-%-jdk8-wildfly8: $(subst -wildfly8,,$@)
-docker-optionfactory-centos7-jdk8-wildfly8: docker-optionfactory-centos7-jdk8
-docker-optionfactory-debian9-jdk8-wildfly8: docker-optionfactory-debian9-jdk8
-docker-optionfactory-opensuse15-jdk8-wildfly8: docker-optionfactory-opensuse15-jdk8
-docker-optionfactory-ubuntu18-jdk8-wildfly8: docker-optionfactory-ubuntu18-jdk8
+docker-optionfactory-centos7-jdk8-wildfly8: sync-wildfly8 docker-optionfactory-centos7-jdk8
+docker-optionfactory-debian9-jdk8-wildfly8: sync-wildfly8 docker-optionfactory-debian9-jdk8
+docker-optionfactory-opensuse15-jdk8-wildfly8: sync-wildfly8 docker-optionfactory-opensuse15-jdk8
+docker-optionfactory-ubuntu18-jdk8-wildfly8: sync-wildfly8 docker-optionfactory-ubuntu18-jdk8
 
 docker-optionfactory-%:
 	@echo building $@
@@ -96,7 +107,11 @@ docker-optionfactory-%:
 	docker build ${DOCKER_BUILD_OPTIONS} --tag=optionfactory/$(name):${TAG_VERSION} optionfactory-$(name)
 	docker tag optionfactory/$(name):${TAG_VERSION} optionfactory/$(name):latest
 
-sync: deps
+
+
+sync: sync-tools sync-jdk8 sync-tomcat8 sync-wildfly8 sync-alfresco5 sync-nexus3 sync-mariadb10 sync-postgres9 sync-kafka1 sync-zookeeper3 sync-kafka1-zookeeper3-standalone sync-golang1
+
+sync-tools: deps/gosu1 deps/spawn-and-tail1
 	@echo "syncing gosu"
 	@echo optionfactory-centos7/deps optionfactory-debian9/deps optionfactory-opensuse15/deps optionfactory-ubuntu18/deps | xargs -n 1 rsync -az deps/gosu-${GOSU1_VERSION}
 	@echo "syncing ps1"
@@ -104,56 +119,73 @@ sync: deps
 	@echo "syncing spawn-and-tail"
 	@echo optionfactory-centos7/deps optionfactory-debian9/deps optionfactory-opensuse15/deps optionfactory-ubuntu18/deps | xargs -n 1 rsync -az install-spawn-and-tail.sh
 	@echo optionfactory-centos7/deps optionfactory-debian9/deps optionfactory-opensuse15/deps optionfactory-ubuntu18/deps | xargs -n 1 rsync -az deps/spawn-and-tail-${SPAWN_AND_TAIL_VERSION}
+sync-jdk8: deps/jdk8
 	@echo "syncing jdk 8"
 	@echo optionfactory-*-jdk8/deps | xargs -n 1 rsync -az install-jdk.sh
 	@echo optionfactory-*-jdk8/deps | xargs -n 1 rsync -az deps/jdk1.8.0_${JDK8_MINOR_VERSION}
+sync-tomcat8: deps/tomcat8
 	@echo "syncing tomcat 8"
 	@echo optionfactory-*-tomcat8/deps | xargs -n 1 rsync -az install-tomcat.sh
 	@echo optionfactory-*-tomcat8/deps | xargs -n 1 rsync -az init-tomcat.sh
 	@echo optionfactory-*-tomcat8/deps | xargs -n 1 rsync -az deps/apache-tomcat-${TOMCAT8_VERSION}
+sync-wildfly8: deps/wildfly8
 	@echo "syncing wildfly 8"
 	@echo optionfactory-*-wildfly8/deps | xargs -n 1 rsync -az install-wildfly.sh
 	@echo optionfactory-*-wildfly8/deps | xargs -n 1 rsync -az init-wildfly.sh
 	@echo optionfactory-*-wildfly8/deps | xargs -n 1 rsync -az deps/wildfly-${WILDFLY8_VERSION}
+sync-alfresco5: deps/alfresco5
 	@echo "syncing alfresco 5"
 	@echo optionfactory-*-alfresco5/deps | xargs -n 1 rsync -az install-alfresco.sh
 	@echo optionfactory-*-alfresco5/deps | xargs -n 1 rsync -az init-alfresco.sh
 	@echo optionfactory-*-alfresco5/deps | xargs -n 1 rsync -az deps/alfresco-${ALFRESCO5_VERSION}
+sync-nexus3: deps/nexus3
 	@echo "syncing nexus 3"
 	@echo optionfactory-*-nexus3/deps | xargs -n 1 rsync -az install-nexus.sh
 	@echo optionfactory-*-nexus3/deps | xargs -n 1 rsync -az init-nexus.sh
 	@echo optionfactory-*-nexus3/deps | xargs -n 1 rsync -az deps/nexus-${NEXUS3_VERSION}
+sync-mariadb10: deps/mariadb10
 	@echo "syncing mariadb 10"
 	@echo optionfactory-*-mariadb10/deps | xargs -n 1 rsync -az install-mariadb.sh
 	@echo optionfactory-*-mariadb10/deps | xargs -n 1 rsync -az init-mariadb.sh
+sync-postgres9: deps/postgres9
 	@echo "syncing postgres 9"
 	@echo optionfactory-*-postgres9/deps | xargs -n 1 rsync -az install-postgres.sh
 	@echo optionfactory-*-postgres9/deps | xargs -n 1 rsync -az init-postgres.sh
+sync-kafka1: deps/kafka1
 	@echo "syncing kafka1"
-	@echo optionfactory-*-kafka1/deps optionfactory-*-kafka1-zookeeper3-standalone/deps | xargs -n 1 rsync -az install-kafka.sh
+	@echo optionfactory-*-kafka1/deps | xargs -n 1 rsync -az install-kafka.sh
 	@echo optionfactory-*-kafka1/deps | xargs -n 1 rsync -az init-kafka.sh
-	@echo optionfactory-*-kafka1/deps optionfactory-*-kafka1-zookeeper3-standalone/deps | xargs -n 1 rsync -az deps/kafka_${KAFKA1_SCALA_VERSION}-${KAFKA1_VERSION}
+	@echo optionfactory-*-kafka1/deps | xargs -n 1 rsync -az deps/kafka_${KAFKA1_SCALA_VERSION}-${KAFKA1_VERSION}
+sync-zookeeper3: deps/zookeeper3
 	@echo "syncing zookeeper3"
-	@echo optionfactory-*-zookeeper3/deps optionfactory-*-kafka1-zookeeper3-standalone/deps | xargs -n 1 rsync -az install-zookeeper.sh
+	@echo optionfactory-*-zookeeper3/deps | xargs -n 1 rsync -az install-zookeeper.sh
 	@echo optionfactory-*-zookeeper3/deps | xargs -n 1 rsync -az init-zookeeper.sh
-	@echo optionfactory-*-zookeeper3/deps optionfactory-*-kafka1-zookeeper3-standalone/deps | xargs -n 1 rsync -az deps/zookeeper-${ZOOKEEPER3_VERSION}
+	@echo optionfactory-*-zookeeper3/deps | xargs -n 1 rsync -az deps/zookeeper-${ZOOKEEPER3_VERSION}
+sync-kafka1-zookeeper3-standalone: deps/zookeeper3 deps/kafka1
 	@echo "syncing kafka1-zookeeper3-standalone"
+	@echo optionfactory-*-kafka1-zookeeper3-standalone/deps | xargs -n 1 rsync -az install-zookeeper.sh
+	@echo optionfactory-*-kafka1-zookeeper3-standalone/deps | xargs -n 1 rsync -az deps/zookeeper-${ZOOKEEPER3_VERSION}
+	@echo optionfactory-*-kafka1-zookeeper3-standalone/deps | xargs -n 1 rsync -az install-kafka.sh
+	@echo optionfactory-*-kafka1-zookeeper3-standalone/deps | xargs -n 1 rsync -az deps/kafka_${KAFKA1_SCALA_VERSION}-${KAFKA1_VERSION}
 	@echo optionfactory-*-kafka1-zookeeper3-standalone/deps | xargs -n 1 rsync -az install-kafka-zookeeper-standalone.sh
 	@echo optionfactory-*-kafka1-zookeeper3-standalone/deps | xargs -n 1 rsync -az init-kafka-zookeeper-standalone.sh
+sync-golang1: deps/golang1
 	@echo "syncing golang"
 	@echo optionfactory-*-golang1/deps | xargs -n 1 rsync -az install-golang.sh
 	@echo optionfactory-*-golang1/deps | xargs -n 1 rsync -az deps/golang-${GOLANG1_VERSION}
 
 
-deps: deps/jdk8 deps/tomcat8 deps/alfresco5 deps/wildfly8 deps/nexus3 deps/gosu1 deps/spawn-and-tail1 deps/kafka1 deps/zookeeper3 deps/golang1
+deps: deps/gosu1 deps/spawn-and-tail1 deps/jdk8 deps/tomcat8 deps/wildfly8 deps/alfresco5 deps/nexus3 deps/mariadb10 deps/postgres9 deps/kafka1 deps/zookeeper3 deps/golang1
 
+deps/gosu1: deps/gosu-${GOSU1_VERSION}
+deps/spawn-and-tail1: deps/spawn-and-tail-${SPAWN_AND_TAIL_VERSION}
 deps/jdk8: deps/jdk1.8.0_${JDK8_MINOR_VERSION}
 deps/tomcat8: deps/apache-tomcat-${TOMCAT8_VERSION}
 deps/alfresco5: deps/alfresco-${ALFRESCO5_VERSION}/alfresco-installer.bin
 deps/wildfly8: deps/wildfly-${WILDFLY8_VERSION}
 deps/nexus3: deps/nexus-${NEXUS3_VERSION}
-deps/gosu1: deps/gosu-${GOSU1_VERSION}
-deps/spawn-and-tail1: deps/spawn-and-tail-${SPAWN_AND_TAIL_VERSION}
+deps/mariadb10:
+deps/postgres9:
 deps/kafka1: deps/kafka_${KAFKA1_SCALA_VERSION}-${KAFKA1_VERSION}
 deps/zookeeper3: deps/zookeeper-${ZOOKEEPER3_VERSION}
 deps/golang1: deps/golang-${GOLANG1_VERSION}/bin/go
@@ -182,8 +214,6 @@ deps/zookeeper-${ZOOKEEPER3_VERSION}:
 deps/golang-${GOLANG1_VERSION}/bin/go:
 	mkdir -p deps/golang-${GOLANG1_VERSION}
 	curl -# -j -k -L https://golang.org/dl/go${GOLANG1_VERSION}.linux-amd64.tar.gz | tar xz -C deps/golang-${GOLANG1_VERSION} --strip-components=1
-
-
 
 clean: FORCE
 	rm -rf optionfactory-*/install-*.sh
