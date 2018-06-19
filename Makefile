@@ -24,6 +24,8 @@ KAFKA1_SCALA_VERSION=2.11
 
 ZOOKEEPER3_VERSION=3.4.12
 
+GOLANG1_VERSION=1.10.3
+
 #/software versions
 
 help:
@@ -138,8 +140,12 @@ sync: deps
 	@echo "syncing kafka1-zookeeper3-standalone"
 	@echo optionfactory-*-kafka1-zookeeper3-standalone/deps | xargs -n 1 rsync -az install-kafka-zookeeper-standalone.sh
 	@echo optionfactory-*-kafka1-zookeeper3-standalone/deps | xargs -n 1 rsync -az init-kafka-zookeeper-standalone.sh
+	@echo "syncing golang"
+	@echo optionfactory-*-golang1/deps | xargs -n 1 rsync -az install-golang.sh
+	@echo optionfactory-*-golang1/deps | xargs -n 1 rsync -az deps/golang-${GOLANG1_VERSION}
 
-deps: deps/jdk8 deps/tomcat8 deps/alfresco5 deps/wildfly8 deps/nexus3 deps/gosu1 deps/spawn-and-tail1 deps/kafka1 deps/zookeeper3
+
+deps: deps/jdk8 deps/tomcat8 deps/alfresco5 deps/wildfly8 deps/nexus3 deps/gosu1 deps/spawn-and-tail1 deps/kafka1 deps/zookeeper3 deps/golang1
 
 deps/jdk8: deps/jdk1.8.0_${JDK8_MINOR_VERSION}
 deps/tomcat8: deps/apache-tomcat-${TOMCAT8_VERSION}
@@ -150,7 +156,7 @@ deps/gosu1: deps/gosu-${GOSU1_VERSION}
 deps/spawn-and-tail1: deps/spawn-and-tail-${SPAWN_AND_TAIL_VERSION}
 deps/kafka1: deps/kafka_${KAFKA1_SCALA_VERSION}-${KAFKA1_VERSION}
 deps/zookeeper3: deps/zookeeper-${ZOOKEEPER3_VERSION}
-
+deps/golang1: deps/golang-${GOLANG1_VERSION}/bin/go
 
 deps/jdk1.8.0_${JDK8_MINOR_VERSION}:
 	curl -# -j -k -L -H "Cookie: oraclelicense=accept-securebackup-cookie" http://download.oracle.com/otn-pub/java/jdk/8u${JDK8_MINOR_VERSION}-${JDK8_BUILD}/${JDK8_UID}/jdk-8u${JDK8_MINOR_VERSION}-linux-x64.tar.gz | tar xz -C deps
@@ -173,7 +179,9 @@ deps/kafka_${KAFKA1_SCALA_VERSION}-${KAFKA1_VERSION}:
 	curl -# -j -k -L http://apache.mirrors.spacedump.net/kafka/${KAFKA1_VERSION}/kafka_${KAFKA1_SCALA_VERSION}-${KAFKA1_VERSION}.tgz | tar xz -C deps
 deps/zookeeper-${ZOOKEEPER3_VERSION}:
 	curl -# -j -k -L http://mirror.nohup.it/apache/zookeeper/zookeeper-${ZOOKEEPER3_VERSION}/zookeeper-${ZOOKEEPER3_VERSION}.tar.gz | tar xz -C deps
-
+deps/golang-${GOLANG1_VERSION}/bin/go:
+	mkdir -p deps/golang-${GOLANG1_VERSION}
+	curl -# -j -k -L https://golang.org/dl/go${GOLANG1_VERSION}.linux-amd64.tar.gz | tar xz -C deps/golang-${GOLANG1_VERSION} --strip-components=1
 
 
 
