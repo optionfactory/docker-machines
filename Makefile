@@ -8,6 +8,10 @@ JDK8_MINOR_VERSION=172
 JDK8_BUILD=b11
 JDK8_UID=a58eab1ec242421181065cdc37240b08
 
+JDK10_MINOR_VERSION=0.1
+JDK10_BUILD=10
+JDK10_UID=fb4372174a714e6b8c52526dc134031e
+
 TOMCAT8_VERSION=8.5.31
 
 ALFRESCO5_VERSION=201707
@@ -28,6 +32,7 @@ ZOOKEEPER3_VERSION=3.4.12
 
 GOLANG1_VERSION=1.10.3
 
+ETCD3_VERSION=3.3.8
 #/software versions
 
 help:
@@ -49,6 +54,11 @@ docker-optionfactory-debian9-jdk8: sync-jdk8 docker-optionfactory-debian9
 docker-optionfactory-opensuse15-jdk8: sync-jdk8 docker-optionfactory-opensuse15
 docker-optionfactory-ubuntu18-jdk8: sync-jdk8 docker-optionfactory-ubuntu18
 
+docker-optionfactory-centos7-jdk10: sync-jdk10 docker-optionfactory-centos7
+docker-optionfactory-debian9-jdk10: sync-jdk10 docker-optionfactory-debian9
+docker-optionfactory-opensuse15-jdk10: sync-jdk10 docker-optionfactory-opensuse15
+docker-optionfactory-ubuntu18-jdk10: sync-jdk10 docker-optionfactory-ubuntu18
+
 #docker-optionfactory-%-mariadb10: $(subst -mariadb10,,$@)
 docker-optionfactory-centos7-mariadb10: sync-mariadb10 docker-optionfactory-centos7
 docker-optionfactory-debian9-mariadb10: sync-mariadb10 docker-optionfactory-debian9
@@ -66,6 +76,12 @@ docker-optionfactory-centos7-golang1: sync-golang1 docker-optionfactory-centos7
 docker-optionfactory-debian9-golang1: sync-golang1 docker-optionfactory-debian9
 docker-optionfactory-opensuse15-golang1: sync-golang1 docker-optionfactory-opensuse15
 docker-optionfactory-ubuntu18-golang1: sync-golang1 docker-optionfactory-ubuntu18
+
+#docker-optionfactory-%-etcd3: $(subst -etcd3,,$@)
+docker-optionfactory-centos7-etcd3: sync-etcd3 docker-optionfactory-centos7
+docker-optionfactory-debian9-etcd3: sync-etcd3 docker-optionfactory-debian9
+docker-optionfactory-opensuse15-etcd3: sync-etcd3 docker-optionfactory-opensuse15
+docker-optionfactory-ubuntu18-etcd3: sync-etcd3 docker-optionfactory-ubuntu18
 
 #docker-optionfactory-%-kafka1: $(subst -kafka1,,$@)
 docker-optionfactory-centos7-jdk8-kafka1: sync-kafka1 docker-optionfactory-centos7-jdk8
@@ -111,7 +127,7 @@ docker-optionfactory-%:
 
 
 
-sync: sync-tools sync-jdk8 sync-tomcat8 sync-wildfly8 sync-alfresco5 sync-nexus3 sync-mariadb10 sync-postgres9 sync-kafka1 sync-zookeeper3 sync-kafka1-zookeeper3-standalone sync-golang1
+sync: sync-tools sync-jdk8 sync-jdk10 sync-tomcat8 sync-wildfly8 sync-alfresco5 sync-nexus3 sync-mariadb10 sync-postgres9 sync-kafka1 sync-zookeeper3 sync-kafka1-zookeeper3-standalone sync-golang1
 
 sync-tools: deps/gosu1 deps/spawn-and-tail1
 	@echo "syncing gosu"
@@ -125,6 +141,10 @@ sync-jdk8: deps/jdk8
 	@echo "syncing jdk 8"
 	@echo optionfactory-*-jdk8/deps | xargs -n 1 rsync -az install-jdk8.sh
 	@echo optionfactory-*-jdk8/deps | xargs -n 1 rsync -az deps/jdk1.8.0_${JDK8_MINOR_VERSION}
+sync-jdk10: deps/jdk10
+	@echo "syncing jdk 10"
+	@echo optionfactory-*-jdk10/deps | xargs -n 1 rsync -az install-jdk10.sh
+	@echo optionfactory-*-jdk10/deps | xargs -n 1 rsync -az deps/jdk-10.${JDK10_MINOR_VERSION}
 sync-tomcat8: deps/tomcat8
 	@echo "syncing tomcat 8"
 	@echo optionfactory-*-tomcat8/deps | xargs -n 1 rsync -az install-tomcat8.sh
@@ -174,14 +194,21 @@ sync-kafka1-zookeeper3-standalone: deps/zookeeper3 deps/kafka1
 sync-golang1: deps/golang1
 	@echo "syncing golang"
 	@echo optionfactory-*-golang1/deps | xargs -n 1 rsync -az install-golang1.sh
+	@echo optionfactory-*-golang1/deps | xargs -n 1 rsync -az init-golang1.sh
+	@echo optionfactory-*-golang1/deps | xargs -n 1 rsync -az golang1-project-makefile.tpl
 	@echo optionfactory-*-golang1/deps | xargs -n 1 rsync -az deps/golang-${GOLANG1_VERSION}
-
+sync-etcd3: deps/etcd3
+	@echo "syncing etcd3"
+	@echo optionfactory-*-etcd3/deps | xargs -n 1 rsync -az install-etcd3.sh
+	@echo optionfactory-*-etcd3/deps | xargs -n 1 rsync -az init-etcd3.sh
+	@echo optionfactory-*-etcd3/deps | xargs -n 1 rsync -az deps/etcd-v${ETCD3_VERSION}-linux-amd64
 
 deps: deps/gosu1 deps/spawn-and-tail1 deps/jdk8 deps/tomcat8 deps/wildfly8 deps/alfresco5 deps/nexus3 deps/mariadb10 deps/postgres9 deps/kafka1 deps/zookeeper3 deps/golang1
 
 deps/gosu1: deps/gosu-${GOSU1_VERSION}
 deps/spawn-and-tail1: deps/spawn-and-tail-${SPAWN_AND_TAIL_VERSION}
 deps/jdk8: deps/jdk1.8.0_${JDK8_MINOR_VERSION}
+deps/jdk10: deps/jdk-10.${JDK10_MINOR_VERSION}
 deps/tomcat8: deps/apache-tomcat-${TOMCAT8_VERSION}
 deps/alfresco5: deps/alfresco-${ALFRESCO5_VERSION}/alfresco-installer.bin
 deps/wildfly8: deps/wildfly-${WILDFLY8_VERSION}
@@ -191,9 +218,13 @@ deps/postgres9:
 deps/kafka1: deps/kafka_${KAFKA1_SCALA_VERSION}-${KAFKA1_VERSION}
 deps/zookeeper3: deps/zookeeper-${ZOOKEEPER3_VERSION}
 deps/golang1: deps/golang-${GOLANG1_VERSION}/bin/go
+deps/etcd3: deps/etcd-v${ETCD3_VERSION}-linux-amd64
+
 
 deps/jdk1.8.0_${JDK8_MINOR_VERSION}:
 	curl -# -j -k -L -H "Cookie: oraclelicense=accept-securebackup-cookie" http://download.oracle.com/otn-pub/java/jdk/8u${JDK8_MINOR_VERSION}-${JDK8_BUILD}/${JDK8_UID}/jdk-8u${JDK8_MINOR_VERSION}-linux-x64.tar.gz | tar xz -C deps
+deps/jdk-10.${JDK10_MINOR_VERSION}:
+	curl -# -j -k -L -H "Cookie: oraclelicense=accept-securebackup-cookie" http://download.oracle.com/otn-pub/java/jdk/10.${JDK10_MINOR_VERSION}+${JDK10_BUILD}/fb4372174a714e6b8c52526dc134031e/jdk-10.${JDK10_MINOR_VERSION}_linux-x64_bin.tar.gz | tar xz -C deps
 deps/apache-tomcat-${TOMCAT8_VERSION}:
 	curl -# -sSL -k https://archive.apache.org/dist/tomcat/tomcat-8/v${TOMCAT8_VERSION}/bin/apache-tomcat-${TOMCAT8_VERSION}.tar.gz | tar xz -C deps
 deps/alfresco-${ALFRESCO5_VERSION}/alfresco-installer.bin:
@@ -216,6 +247,9 @@ deps/zookeeper-${ZOOKEEPER3_VERSION}:
 deps/golang-${GOLANG1_VERSION}/bin/go:
 	mkdir -p deps/golang-${GOLANG1_VERSION}
 	curl -# -j -k -L https://golang.org/dl/go${GOLANG1_VERSION}.linux-amd64.tar.gz | tar xz -C deps/golang-${GOLANG1_VERSION} --strip-components=1
+deps/etcd-v${ETCD3_VERSION}-linux-amd64:
+	curl -# -j -k -L  https://github.com/coreos/etcd/releases/download/v${ETCD3_VERSION}/etcd-v${ETCD3_VERSION}-linux-amd64.tar.gz | tar xz -C deps
+
 
 clean: FORCE
 	rm -rf optionfactory-*/install-*.sh

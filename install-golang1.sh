@@ -25,7 +25,7 @@ fi
 # - docker run --rm debian:stretch grep '^hosts:' /etc/nsswitch.conf
 [ ! -e /etc/nsswitch.conf ] && echo 'hosts: files dns' > /etc/nsswitch.conf
 
-cp -r /tmp/golang-* /usr/local/go
+cp -r /tmp/golang-1* /usr/local/go
 
 export PATH="/usr/local/go/bin:$PATH";
 go version
@@ -36,3 +36,4 @@ chmod -R 777 "$GOPATH"
 #common packages we don't want do download every time
 go get -u github.com/jteeuwen/go-bindata/...
 go get -u github.com/elazarl/go-bindata-assetfs/...
+go get -u golang.org/x/tools/cmd/stringer
