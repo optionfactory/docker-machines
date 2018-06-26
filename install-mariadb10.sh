@@ -35,28 +35,15 @@ chown -R mysql:mysql /var/{lib,log,run}/mysql
 
 
 cat <<-'EOF' > /etc/my.cnf
-	[client]
-
 	[mysqld]
 	server-id=1
 	bind-address=0.0.0.0
-	port = 3306
-	#skip_name_resolve=1
-
 	log_output = TABLE
 	slow_query_log=1
 	long_query_time=3
-	datadir = /var/lib/mysql
-	socket = /var/run/mysql/mysql.sock
-	innodb_file_format=Barracuda
-	innodb_file_per_table=ON
-	sql_mode=NO_ENGINE_SUBSTITUTION,STRICT_TRANS_TABLES
-
-	[mysqld_multi]
-	mysqld     = /usr/bin/mysqld_safe
-	mysqladmin = /usr/bin/mysqladmin
-	log        = /var/log/mysqld_multi.log
+    innodb_file_per_table=ON    
 EOF
+
 
 chown -R mysql:mysql /etc/my.cnf
 
