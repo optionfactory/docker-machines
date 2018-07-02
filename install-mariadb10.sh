@@ -38,10 +38,11 @@ cat <<-'EOF' > /etc/my.cnf
 	[mysqld]
 	server-id=1
 	bind-address=0.0.0.0
-	log_output = TABLE
+	log_output=TABLE
 	slow_query_log=1
 	long_query_time=3
-    innodb_file_per_table=ON    
+    innodb_file_per_table=ON
+    transaction_isolation=READ-COMMITTED
 EOF
 
 
