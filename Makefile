@@ -4,9 +4,9 @@ DOCKER_BUILD_OPTIONS=--no-cache=false --squash
 TAG_VERSION=0.5
 
 #software versions
-JDK8_MINOR_VERSION=172
-JDK8_BUILD=b11
-JDK8_UID=a58eab1ec242421181065cdc37240b08
+JDK8_MINOR_VERSION=181
+JDK8_BUILD=b13
+JDK8_UID=96a7b8442fe848ef90c96a2fad6ed6d1
 
 JDK10_MINOR_VERSION=0.1
 JDK10_BUILD=10
@@ -33,6 +33,8 @@ ZOOKEEPER3_VERSION=3.4.12
 GOLANG1_VERSION=1.10.3
 
 ETCD3_VERSION=3.3.8
+
+RIEMANN_VERSION=0.3.1
 #/software versions
 
 help:
@@ -119,6 +121,9 @@ docker-optionfactory-debian9-jdk8-wildfly8: sync-wildfly8 docker-optionfactory-d
 docker-optionfactory-opensuse15-jdk8-wildfly8: sync-wildfly8 docker-optionfactory-opensuse15-jdk8
 docker-optionfactory-ubuntu18-jdk8-wildfly8: sync-wildfly8 docker-optionfactory-ubuntu18-jdk8
 
+#
+docker-optionfactory-ubuntu18-jdk8-riemann: sync-riemann docker-optionfactory-ubuntu18-jdk8
+
 docker-optionfactory-%:
 	@echo building $@
 	$(eval name=$(subst docker-optionfactory-,,$@))
@@ -202,8 +207,14 @@ sync-etcd3: deps/etcd3
 	@echo optionfactory-*-etcd3/deps | xargs -n 1 rsync -az install-etcd3.sh
 	@echo optionfactory-*-etcd3/deps | xargs -n 1 rsync -az init-etcd3.sh
 	@echo optionfactory-*-etcd3/deps | xargs -n 1 rsync -az deps/etcd-v${ETCD3_VERSION}-linux-amd64
+sync-riemann: deps/riemann
+	@echo "syncing riemann"
+	@echo optionfactory-*-riemann/deps | xargs -n 1 rsync -az install-riemann.sh
+	@echo optionfactory-*-riemann/deps | xargs -n 1 rsync -az init-riemann.sh
+	@echo optionfactory-*-riemann/deps | xargs -n 1 rsync -az deps/riemann-${RIEMANN_VERSION}
 
-deps: deps/gosu1 deps/spawn-and-tail1 deps/jdk8 deps/tomcat8 deps/wildfly8 deps/alfresco5 deps/nexus3 deps/mariadb10 deps/postgres9 deps/kafka1 deps/zookeeper3 deps/golang1
+
+deps: deps/gosu1 deps/spawn-and-tail1 deps/jdk8 deps/tomcat8 deps/wildfly8 deps/alfresco5 deps/nexus3 deps/mariadb10 deps/postgres9 deps/kafka1 deps/zookeeper3 deps/golang1 deps/riemann
 
 deps/gosu1: deps/gosu-${GOSU1_VERSION}
 deps/spawn-and-tail1: deps/spawn-and-tail-${SPAWN_AND_TAIL_VERSION}
@@ -219,6 +230,7 @@ deps/kafka1: deps/kafka_${KAFKA1_SCALA_VERSION}-${KAFKA1_VERSION}
 deps/zookeeper3: deps/zookeeper-${ZOOKEEPER3_VERSION}
 deps/golang1: deps/golang-${GOLANG1_VERSION}/bin/go
 deps/etcd3: deps/etcd-v${ETCD3_VERSION}-linux-amd64
+deps/riemann: deps/riemann-${RIEMANN_VERSION}
 
 
 deps/jdk1.8.0_${JDK8_MINOR_VERSION}:
@@ -249,7 +261,8 @@ deps/golang-${GOLANG1_VERSION}/bin/go:
 	curl -# -j -k -L https://golang.org/dl/go${GOLANG1_VERSION}.linux-amd64.tar.gz | tar xz -C deps/golang-${GOLANG1_VERSION} --strip-components=1
 deps/etcd-v${ETCD3_VERSION}-linux-amd64:
 	curl -# -j -k -L  https://github.com/coreos/etcd/releases/download/v${ETCD3_VERSION}/etcd-v${ETCD3_VERSION}-linux-amd64.tar.gz | tar xz -C deps
-
+deps/riemann-${RIEMANN_VERSION}:
+	curl -# -sSL -k https://github.com/riemann/riemann/releases/download/${RIEMANN_VERSION}/riemann-${RIEMANN_VERSION}.tar.bz2 | tar xj -C deps
 
 clean: FORCE
 	rm -rf optionfactory-*/install-*.sh
