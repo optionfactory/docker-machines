@@ -1,6 +1,7 @@
 SCM_SERVICE={{SCM_SERVICE}}
 SCM_TEAM={{SCM_TEAM}}
 PROJECT={{PROJECT}}
+DISTRO={{DISTRO}}
 UID=$(shell id -u)
 GID=$(shell id -g)
 VERSION=$(shell git describe --always)
@@ -51,7 +52,7 @@ local: FORCE
 		-v ${PWD}/Makefile:/go/Makefile \
 		-v ${PWD}/bin:/go/bin \
 		-w /go/src/$(SCM_SERVICE)/$(SCM_TEAM)/$(PROJECT)/ \
-		optionfactory/debian9-golang1:latest \
+		optionfactory/$(DISTRO)-golang1:latest \
 		make -f /go/Makefile $(PROJECT)-$(BUILD_OS)-$(BUILD_ARCH) UID=${UID} GID=${GID} VERSION=${VERSION} BUILD_OS=${BUILD_OS} BUILD_ARCH=${BUILD_ARCH} TESTING_OPTIONS=${TESTING_OPTIONS}
 
 
@@ -63,7 +64,7 @@ all: FORCE
 		-v ${PWD}/Makefile:/go/Makefile \
 		-v ${PWD}/bin:/go/bin \
 		-w /go/src/$(SCM_SERVICE)/$(SCM_TEAM)/$(PROJECT)/ \
-        optionfactory/debian9-golang1:latest \
+        optionfactory/$(DISTRO)-golang1:latest \
 		make -f /go/Makefile build UID=${UID} GID=${GID} VERSION=${VERSION} BUILD_OS=${BUILD_OS} BUILD_ARCH=${BUILD_ARCH} TESTING_OPTIONS=${TESTING_OPTIONS}
 
 build: $(PROJECT)-linux-amd64 $(PROJECT)-windows-amd64
@@ -111,3 +112,4 @@ clean:
 	-rm -f bin/$(PROJECT)*
 clean-deps:
 	-rm -f ../godeps/*
+FORCE:

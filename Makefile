@@ -85,6 +85,13 @@ docker-optionfactory-debian9-etcd3: sync-etcd3 docker-optionfactory-debian9
 docker-optionfactory-opensuse15-etcd3: sync-etcd3 docker-optionfactory-opensuse15
 docker-optionfactory-ubuntu18-etcd3: sync-etcd3 docker-optionfactory-ubuntu18
 
+#docker-optionfactory-%-tesseract4: $(subst -tesseract4,,$@)
+docker-optionfactory-centos7-tesseract4: sync-tesseract4 docker-optionfactory-centos7
+docker-optionfactory-debian9-tesseract4: sync-tesseract4 docker-optionfactory-debian9
+docker-optionfactory-opensuse15-tesseract4: sync-tesseract4 docker-optionfactory-opensuse15
+docker-optionfactory-ubuntu18-tesseract4: sync-tesseract4 docker-optionfactory-ubuntu18
+
+
 #docker-optionfactory-%-kafka1: $(subst -kafka1,,$@)
 docker-optionfactory-centos7-jdk8-kafka1: sync-kafka1 docker-optionfactory-centos7-jdk8
 docker-optionfactory-debian9-jdk8-kafka1: sync-kafka1 docker-optionfactory-debian9-jdk8
@@ -201,6 +208,7 @@ sync-golang1: deps/golang1
 	@echo optionfactory-*-golang1/deps | xargs -n 1 rsync -az install-golang1.sh
 	@echo optionfactory-*-golang1/deps | xargs -n 1 rsync -az init-golang1.sh
 	@echo optionfactory-*-golang1/deps | xargs -n 1 rsync -az golang1-project-makefile.tpl
+	@echo optionfactory-*-golang1 | sed -r 's/optionfactory-(\w+)-golang1/\1\n/g' | xargs -n 1 -I% sed -i "s/{{DISTRO}}/%/g" optionfactory-%-golang1/deps/golang1-project-makefile.tpl
 	@echo optionfactory-*-golang1/deps | xargs -n 1 rsync -az deps/golang-${GOLANG1_VERSION}
 sync-etcd3: deps/etcd3
 	@echo "syncing etcd3"
@@ -212,6 +220,8 @@ sync-riemann: deps/riemann
 	@echo optionfactory-*-riemann/deps | xargs -n 1 rsync -az install-riemann.sh
 	@echo optionfactory-*-riemann/deps | xargs -n 1 rsync -az init-riemann.sh
 	@echo optionfactory-*-riemann/deps | xargs -n 1 rsync -az deps/riemann-${RIEMANN_VERSION}
+sync-tesseract4: deps/tesseract4
+	@echo "syncing tesseract4 (TODO)"
 
 
 deps: deps/gosu1 deps/spawn-and-tail1 deps/jdk8 deps/tomcat8 deps/wildfly8 deps/alfresco5 deps/nexus3 deps/mariadb10 deps/postgres9 deps/kafka1 deps/zookeeper3 deps/golang1 deps/riemann
@@ -231,7 +241,6 @@ deps/zookeeper3: deps/zookeeper-${ZOOKEEPER3_VERSION}
 deps/golang1: deps/golang-${GOLANG1_VERSION}/bin/go
 deps/etcd3: deps/etcd-v${ETCD3_VERSION}-linux-amd64
 deps/riemann: deps/riemann-${RIEMANN_VERSION}
-
 
 deps/jdk1.8.0_${JDK8_MINOR_VERSION}:
 	curl -# -j -k -L -H "Cookie: oraclelicense=accept-securebackup-cookie" http://download.oracle.com/otn-pub/java/jdk/8u${JDK8_MINOR_VERSION}-${JDK8_BUILD}/${JDK8_UID}/jdk-8u${JDK8_MINOR_VERSION}-linux-x64.tar.gz | tar xz -C deps
@@ -263,6 +272,8 @@ deps/etcd-v${ETCD3_VERSION}-linux-amd64:
 	curl -# -j -k -L  https://github.com/coreos/etcd/releases/download/v${ETCD3_VERSION}/etcd-v${ETCD3_VERSION}-linux-amd64.tar.gz | tar xz -C deps
 deps/riemann-${RIEMANN_VERSION}:
 	curl -# -sSL -k https://github.com/riemann/riemann/releases/download/${RIEMANN_VERSION}/riemann-${RIEMANN_VERSION}.tar.bz2 | tar xj -C deps
+deps/tesseract4:
+	echo "TODO"
 
 clean: FORCE
 	rm -rf optionfactory-*/install-*.sh
