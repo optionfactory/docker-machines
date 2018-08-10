@@ -43,6 +43,11 @@ cat <<-'EOF' > /etc/my.cnf
 	long_query_time=3
     innodb_file_per_table=ON
     transaction_isolation=READ-COMMITTED
+    character-set-client-handshake = FALSE
+    character-set-server = utf8mb4
+    collation-server = utf8mb4_unicode_ci
+    [client]
+    default-character-set = utf8mb4
 EOF
 
 
