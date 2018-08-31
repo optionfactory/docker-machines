@@ -34,6 +34,20 @@ mkdir -p "$GOPATH/src" "$GOPATH/bin"
 chmod -R 777 "$GOPATH"
 
 #common packages we don't want do download every time
+go get -u github.com/derekparker/delve/cmd/dlv
+go get -u github.com/Masterminds/glide
 go get -u github.com/jteeuwen/go-bindata/...
 go get -u github.com/elazarl/go-bindata-assetfs/...
 go get -u golang.org/x/tools/cmd/stringer
+go get -u golang.org/x/tools/cmd/goimports
+go get -u golang.org/x/tools/cmd/gorename
+go get -u github.com/sqs/goreturns
+go get -u github.com/nsf/gocode
+go get -u github.com/alecthomas/gometalinter
+go get -u github.com/zmb3/gogetdoc
+go get -u github.com/zmb3/goaddimport
+go get -u github.com/rogpeppe/godef
+go get -u golang.org/x/tools/cmd/guru
+go get -u github.com/fatih/gomodifytags
+go get -u github.com/tpng/gopkgs
+go get -u golang.org/x/vgo

@@ -6,7 +6,10 @@ UID=$(shell id -u)
 GID=$(shell id -g)
 VERSION=$(shell git describe --always)
 SHELL = /bin/bash
-TOOLS_TO_INSTALL=github.com/jteeuwen/go-bindata golang.org/x/tools/cmd/stringer
+GOBIN=vgo
+ROOTS=
+#e.g: TOOLS_TO_INSTALL=github.com/jteeuwen/go-bindata golang.org/x/tools/cmd/stringer
+TOOLS_TO_INSTALL=
 GODEPS_CACHE_FOLDER=${PWD}/../godeps/
 
 ifeq ($(OS),Windows_NT)
@@ -43,29 +46,42 @@ else
     endif
 endif
 
+devel: FORCE
+	@echo spawning docker container
+	-xhost local:
+	@docker run --rm=true \
+		-v $(GODEPS_CACHE_FOLDER)/src:/go/src/ \
+		-v $(GODEPS_CACHE_FOLDER)/pkg:/go/pkg/ \
+		-v ${PWD}/:/go/src/$(SCM_SERVICE)/$(SCM_TEAM)/$(PROJECT)/ \
+		-v ${PWD}/bin:/output/ \
+		-v /tmp/.X11-unix/:/tmp/.X11-unix/ \
+		-v /dev/shm:/dev/shm \
+		-e DISPLAY \
+		-w /go/src/$(SCM_SERVICE)/$(SCM_TEAM)/$(PROJECT)/ \
+		optionfactory/$(DISTRO)-golang1-atom1 /usr/bin/atom -f
 
 local: FORCE
 	@echo spawning docker container
 	@docker run --rm=true \
-		-v $(GODEPS_CACHE_FOLDER):/go/src/ \
+		-v $(GODEPS_CACHE_FOLDER)/src:/go/src/ \
+		-v $(GODEPS_CACHE_FOLDER)/pkg:/go/pkg/ \
 		-v ${PWD}/:/go/src/$(SCM_SERVICE)/$(SCM_TEAM)/$(PROJECT)/ \
-		-v ${PWD}/Makefile:/go/Makefile \
-		-v ${PWD}/bin:/go/bin \
+		-v ${PWD}/bin:/output/ \
 		-w /go/src/$(SCM_SERVICE)/$(SCM_TEAM)/$(PROJECT)/ \
 		optionfactory/$(DISTRO)-golang1:latest \
-		make -f /go/Makefile $(PROJECT)-$(BUILD_OS)-$(BUILD_ARCH) UID=${UID} GID=${GID} VERSION=${VERSION} BUILD_OS=${BUILD_OS} BUILD_ARCH=${BUILD_ARCH} TESTING_OPTIONS=${TESTING_OPTIONS}
+		make $(PROJECT)-$(BUILD_OS)-$(BUILD_ARCH) UID=${UID} GID=${GID} VERSION=${VERSION} BUILD_OS=${BUILD_OS} BUILD_ARCH=${BUILD_ARCH} TESTING_OPTIONS=${TESTING_OPTIONS}
 
 
 all: FORCE
 	@echo spawning docker container
 	@docker run --rm=true \
-		-v $(GODEPS_CACHE_FOLDER):/go/src/ \
+		-v $(GODEPS_CACHE_FOLDER)/src:/go/src/ \
+		-v $(GODEPS_CACHE_FOLDER)/pkg:/go/pkg/ \
 		-v ${PWD}/:/go/src/$(SCM_SERVICE)/$(SCM_TEAM)/$(PROJECT)/ \
-		-v ${PWD}/Makefile:/go/Makefile \
-		-v ${PWD}/bin:/go/bin \
+		-v ${PWD}/bin:/output/ \
 		-w /go/src/$(SCM_SERVICE)/$(SCM_TEAM)/$(PROJECT)/ \
-        optionfactory/$(DISTRO)-golang1:latest \
-		make -f /go/Makefile build UID=${UID} GID=${GID} VERSION=${VERSION} BUILD_OS=${BUILD_OS} BUILD_ARCH=${BUILD_ARCH} TESTING_OPTIONS=${TESTING_OPTIONS}
+		optionfactory/$(DISTRO)-golang1:latest \
+		make build UID=${UID} GID=${GID} VERSION=${VERSION} BUILD_OS=${BUILD_OS} BUILD_ARCH=${BUILD_ARCH} TESTING_OPTIONS=${TESTING_OPTIONS}
 
 build: $(PROJECT)-linux-amd64 $(PROJECT)-windows-amd64
 
@@ -75,38 +91,31 @@ $(PROJECT)-windows-%: EXT = .exe
 
 $(PROJECT)-%-amd64: GOARCH = amd64
 
-$(PROJECT)-%: reformat gogetandgenerate-% tests-% *.go
-	@echo building for $(GOOS):$(GOARCH) in ${BUILD_OS}:${BUILD_ARCH}
-	@GOOS=$(GOOS) GOARCH=$(GOARCH) CGO_ENABLED=0 go install -a -ldflags "-X main.version=$(VERSION)"
-	@if [ "${GOOS}" == "${BUILD_OS}" -a "${GOARCH}" == "${BUILD_ARCH}" ] ; then \
-		mv "/go/bin/${PROJECT}${EXT}" "/go/bin/${PROJECT}-${GOOS}-${GOARCH}${EXT}"; \
-	else \
-		mv "/go/bin/$(GOOS)_$(GOARCH)/$(PROJECT)$(EXT)" "/go/bin/$(PROJECT)-$(GOOS)-$(GOARCH)$(EXT)"; \
-		rm -rf "/go/bin/${GOOS}_${GOARCH}/"; \
-	fi
-	@chown ${UID}:${GID} "/go/bin/${PROJECT}-${GOOS}-${GOARCH}${EXT}"
-	@echo ""
-
-reformat:
+$(PROJECT)-%: FORCE
+	@touch /go/.buildtimestamp
 	@echo gofmt: reformatting
 	@gofmt -w=true -s=true .
-
-gogetandgenerate-%:
 	@for TOOL in ${TOOLS_TO_INSTALL}; do \
-		echo "go get tool $${TOOL} for $(GOOS):$(GOARCH)"; \
-		GOOS=$(GOOS) GOARCH=$(GOARCH) CGO_ENABLED=0 go get -u $${TOOL}/...; \
+		echo "$(GOBIN) get tool $${TOOL} for $(GOOS):$(GOARCH)"; \
+		GOOS=$(GOOS) GOARCH=$(GOARCH) CGO_ENABLED=0 $(GOBIN) get -u $${TOOL}/...; \
 	done
-	@echo "go generate for $(GOOS):$(GOARCH)"
-	@GOOS=$(GOOS) GOARCH=$(GOARCH) CGO_ENABLED=0 go generate ./...
-	@echo "go get for $(GOOS):$(GOARCH)"
-	@GOOS=$(GOOS) GOARCH=$(GOARCH) CGO_ENABLED=0 go get ./...
-
-tests-%: FORCE
-	@echo "go test for $(GOOS):$(GOARCH)"
+	@echo "$(GOBIN) generate for $(GOOS):$(GOARCH)"
+	@GOOS=$(GOOS) GOARCH=$(GOARCH) CGO_ENABLED=0 $(GOBIN) generate ./...
+	@echo "$(GOBIN) get for $(GOOS):$(GOARCH)"
+	@if [ "vgo" != "$(GOBIN)" ] ; then \
+	   @GOOS=$(GOOS) GOARCH=$(GOARCH) CGO_ENABLED=0 $(GOBIN) get ./...; \
+    fi
 	@if [ "${GOOS}" == "${BUILD_OS}" -a "${GOARCH}" == "${BUILD_ARCH}" ] ; then \
-		GOOS=$(GOOS) GOARCH=$(GOARCH) CGO_ENABLED=0 go vet ./...; \
-		GOOS=$(GOOS) GOARCH=$(GOARCH) CGO_ENABLED=0 go test -a $(TESTING_OPTIONS) -ldflags "-X main.version=$(VERSION)" ./...; \
+		echo "$(GOBIN) vet for $(GOOS):$(GOARCH)"; \
+		GOOS=$(GOOS) GOARCH=$(GOARCH) CGO_ENABLED=0 $(GOBIN) vet ./...; \
+		echo "$(GOBIN) test for $(GOOS):$(GOARCH)"; \
+		GOOS=$(GOOS) GOARCH=$(GOARCH) CGO_ENABLED=0 $(GOBIN) test -a $(TESTING_OPTIONS) -ldflags "-X main.version=$(VERSION)" ./...; \
 	fi
+	@echo building for $(GOOS):$(GOARCH) in ${BUILD_OS}:${BUILD_ARCH}
+	@GOOS=$(GOOS) GOARCH=$(GOARCH) CGO_ENABLED=0 $(GOBIN) install -a -ldflags "-X main.version=$(VERSION)" $(ROOTS)
+    @chown ${UID}:${GID} go.mod go.sum
+	@find /go/bin -type f -newer /go/.buildtimestamp -exec chown ${UID}:${GID} {} \; -exec cp {} /output/ \;
+
 
 clean:
 	-rm -f bin/$(PROJECT)*
