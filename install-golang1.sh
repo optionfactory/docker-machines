@@ -2,15 +2,12 @@
 
 if [ -f /usr/bin/apt-get ]; then
     DEBIAN_FRONTEND=noninteractive apt-get -y -q update
-    DEBIAN_FRONTEND=noninteractive apt-get -y -q --no-install-recommends install ca-certificates gcc g++ libc6-dev make pkg-config inotify-tools git
+    DEBIAN_FRONTEND=noninteractive apt-get -y -q --no-install-recommends install ca-certificates gcc g++ libc6-dev make pkg-config git
     DEBIAN_FRONTEND=noninteractive apt-get -y -q autoclean
     DEBIAN_FRONTEND=noninteractive apt-get -y -q autoremove
     rm -rf /var/lib/apt/lists/*
-elif [ -f /usr/bin/zypper ] ; then
-    zypper -n -q install ca-certificates gcc gcc-c++ glibc-devel make pkg-config inotify-tools git
-    zypper -n -q clean --all
 elif [ -f /usr/bin/yum ] ; then
-    yum install -q -y ca-certificates gcc g++ libc6-dev make pkg-config inotify-tools git
+    yum install -q -y ca-certificates gcc g++ libc6-dev make pkg-config git
     yum clean all
     rm -rf /var/cache/yum
 else
@@ -32,22 +29,3 @@ go version
 
 mkdir -p "$GOPATH/src" "$GOPATH/bin"
 chmod -R 777 "$GOPATH"
-
-#common packages we don't want do download every time
-go get -u github.com/derekparker/delve/cmd/dlv
-go get -u github.com/Masterminds/glide
-go get -u github.com/jteeuwen/go-bindata/...
-go get -u github.com/elazarl/go-bindata-assetfs/...
-go get -u golang.org/x/tools/cmd/stringer
-go get -u golang.org/x/tools/cmd/goimports
-go get -u golang.org/x/tools/cmd/gorename
-go get -u github.com/sqs/goreturns
-go get -u github.com/nsf/gocode
-go get -u github.com/alecthomas/gometalinter
-go get -u github.com/zmb3/gogetdoc
-go get -u github.com/zmb3/goaddimport
-go get -u github.com/rogpeppe/godef
-go get -u golang.org/x/tools/cmd/guru
-go get -u github.com/fatih/gomodifytags
-go get -u github.com/tpng/gopkgs
-go get -u golang.org/x/vgo
