@@ -4,19 +4,13 @@ DOCKER_BUILD_OPTIONS=--no-cache=false --squash
 TAG_VERSION=2
 
 #software versions
-
 JDK11_VERSION=11.0.4
 JDK11_BUILD=11
-
-
 TOMCAT9_VERSION=9.0.22
-
 GOSU1_VERSION=1.11
-
 SPAWN_AND_TAIL_VERSION=0.2
-
 GOLANG1_VERSION=1.12.7
-
+ETCD3_VERSION=3.3.13
 #/software versions
 
 help:
@@ -51,6 +45,12 @@ docker-optionfactory-ubuntu18-postgres11: sync-postgres11 docker-optionfactory-u
 docker-optionfactory-centos7-golang1: sync-golang1 docker-optionfactory-centos7
 docker-optionfactory-debian10-golang1: sync-golang1 docker-optionfactory-debian10
 docker-optionfactory-ubuntu18-golang1: sync-golang1 docker-optionfactory-ubuntu18
+
+#docker-optionfactory-%-etcd3: $(subst -etcd3,,$@)
+docker-optionfactory-centos7-etcd3: sync-etcd3 docker-optionfactory-centos7
+docker-optionfactory-debian9-etcd3: sync-etcd3 docker-optionfactory-debian9
+docker-optionfactory-ubuntu18-etcd3: sync-etcd3 docker-optionfactory-ubuntu18
+
 
 #docker-optionfactory-%-jdk11-tomcat9: $(subst -tomcat9,,$@)
 docker-optionfactory-centos7-jdk11-tomcat9: sync-tomcat9 docker-optionfactory-centos7-jdk11
@@ -93,6 +93,11 @@ sync-postgres11: deps/postgres11
 	@echo "syncing postgres 11"
 	@echo optionfactory-*-postgres11/deps | xargs -n 1 rsync -az install-postgres11.sh
 	@echo optionfactory-*-postgres11/deps | xargs -n 1 rsync -az init-postgres11.sh
+sync-etcd3: deps/etcd3
+	@echo "syncing etcd3"
+	@echo optionfactory-*-etcd3/deps | xargs -n 1 rsync -az install-etcd3.sh
+	@echo optionfactory-*-etcd3/deps | xargs -n 1 rsync -az init-etcd3.sh
+	@echo optionfactory-*-etcd3/deps | xargs -n 1 rsync -az deps/etcd-v${ETCD3_VERSION}-linux-amd64
 sync-golang1: deps/golang1
 	@echo "syncing golang"
 	@echo optionfactory-*-golang1/deps | xargs -n 1 rsync -az install-golang1.sh
@@ -111,6 +116,7 @@ deps/tomcat9: deps/apache-tomcat-${TOMCAT9_VERSION}
 deps/mariadb10:
 deps/postgres11:
 deps/golang1: deps/golang-${GOLANG1_VERSION}/bin/go
+deps/etcd3: deps/etcd-v${ETCD3_VERSION}-linux-amd64
 
 deps/jdk-${JDK11_VERSION}+${JDK11_BUILD}:
 	curl -# -j -k -L https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-${JDK11_VERSION}%2B${JDK11_BUILD}/OpenJDK11U-jdk_x64_linux_hotspot_${JDK11_VERSION}_${JDK11_BUILD}.tar.gz | tar xz -C deps
@@ -125,6 +131,8 @@ deps/spawn-and-tail-${SPAWN_AND_TAIL_VERSION}:
 deps/golang-${GOLANG1_VERSION}/bin/go:
 	mkdir -p deps/golang-${GOLANG1_VERSION}
 	curl -# -j -k -L https://golang.org/dl/go${GOLANG1_VERSION}.linux-amd64.tar.gz | tar xz -C deps/golang-${GOLANG1_VERSION} --strip-components=1
+deps/etcd-v${ETCD3_VERSION}-linux-amd64:
+	curl -# -j -k -L  https://github.com/coreos/etcd/releases/download/v${ETCD3_VERSION}/etcd-v${ETCD3_VERSION}-linux-amd64.tar.gz | tar xz -C deps
 
 clean: FORCE
 	rm -rf optionfactory-*/install-*.sh
