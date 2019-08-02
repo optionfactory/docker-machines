@@ -25,13 +25,22 @@ mkdir -p /opt/etcd/data/
 mkdir -p /opt/etcd/conf/
 
 
-cat <<-'EOF' > /opt/etcd/conf/etcd.conf
-    ETCD_NAME=standalone
-    ETCD_LISTENT_CLIENT_URLS=https://0.0.0.0:2379
-    ETCD_LISTEN_PEER_URLS=https://0.0.0.0:2380
-    ETCD_INITIAL_CLUSTER=standalone=https://172.17.0.1:2380
-    ETCD_INITIAL_ADVERTISE_PEER_URLS=https://172.17.0.1:2380
-    ETCD_ADVERTISE_CLIENT_URLS=https://172.17.0.1:2380
-    ETCD_KEY_FILE=/opt/etcd/conf/key.pem
-    ETCD_CERT_FILE=/opt/etcd/conf/cert.pem
+cat <<-'EOF' > /opt/etcd/conf/etcd.conf.yaml
+    name: standalone
+    data-dir: /opt/etcd/data/
+    listen-client-urls: https://0.0.0.0:2379
+    listen-peer-urls: https://0.0.0.0:2380
+    initial-cluster: standalone=https://172.17.0.1:2380
+    initial-advertise-peer-urls: https://172.17.0.1:2380
+    advertise-client-urls: https://172.17.0.1:2380
+    client-transport-security:
+        key-file: /opt/etcd/conf/certs/clients-key.pem
+        cert-file: /opt/etcd/conf/certs/clients-cert.pem
+        trusted-ca-file: /opt/etcd/conf/certs/trusted-ca-cert.pem
+        client-cert-auth: true
+    peer-transport-security:
+        key-file: /opt/etcd/conf/certs/peers-key.pem
+        cert-file: /opt/etcd/conf/certs/peers-cert.pem
+        trusted-ca-file: /opt/etcd/conf/certs/trusted-ca-cert.pem
+        client-cert-auth: true
 EOF
