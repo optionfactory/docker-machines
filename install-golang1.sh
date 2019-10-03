@@ -7,7 +7,11 @@ if [ -f /usr/bin/apt-get ]; then
     DEBIAN_FRONTEND=noninteractive apt-get -y -q autoremove
     rm -rf /var/lib/apt/lists/*
 elif [ -f /usr/bin/yum ] ; then
-    yum install -q -y ca-certificates gcc g++ libc6-dev make pkg-config git
+    if rpm -q centos-release | grep -q release-7; then
+        yum install -q -y ca-certificates gcc g++ libc6-dev make pkg-config git
+    else
+        yum install -q -y ca-certificates gcc gcc-c++ glibc-devel glibc-headers make pkg-config git
+    fi
     yum clean all
     rm -rf /var/cache/yum
 else

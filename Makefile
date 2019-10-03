@@ -1,59 +1,66 @@
 #we user squash here to remove unwanted layers, which is an experimental feature
 #{"experimental": true} > /etc/docker/daemon.json
 DOCKER_BUILD_OPTIONS=--no-cache=false --squash
-TAG_VERSION=2
+TAG_VERSION=3
 
 #software versions
 JDK11_VERSION=11.0.4
 JDK11_BUILD=11
-TOMCAT9_VERSION=9.0.22
+TOMCAT9_VERSION=9.0.26
 GOSU1_VERSION=1.11
 SPAWN_AND_TAIL_VERSION=0.2
-GOLANG1_VERSION=1.12.7
-ETCD3_VERSION=3.3.13
+GOLANG1_VERSION=1.13.1
+ETCD3_VERSION=3.4.1
 #/software versions
 
 help:
 	@echo usage: make [clean-deps] [clean] sync docker-images
-	@echo usage: make [clean-deps] [clean] docker-optionfactory-centos7-mariadb10
+	@echo usage: make [clean-deps] [clean] docker-optionfactory-centos8-mariadb10
 	exit 1
 
 docker-images: $(addprefix docker-,$(wildcard optionfactory-*))
 
 
 docker-optionfactory-centos7: sync-tools
+docker-optionfactory-centos8: sync-tools
 docker-optionfactory-debian10: sync-tools
 docker-optionfactory-ubuntu18: sync-tools
 
 #docker-optionfactory-%-jdk11: $(subst -jdk11,,$@)
 docker-optionfactory-centos7-jdk11: sync-jdk11 docker-optionfactory-centos7
+docker-optionfactory-centos8-jdk11: sync-jdk11 docker-optionfactory-centos8
 docker-optionfactory-debian10-jdk11: sync-jdk11 docker-optionfactory-debian10
 docker-optionfactory-ubuntu18-jdk11: sync-jdk11 docker-optionfactory-ubuntu18
 
 
 #docker-optionfactory-%-mariadb10: $(subst -mariadb10,,$@)
 docker-optionfactory-centos7-mariadb10: sync-mariadb10 docker-optionfactory-centos7
+docker-optionfactory-centos8-mariadb10: sync-mariadb10 docker-optionfactory-centos8
 docker-optionfactory-debian10-mariadb10: sync-mariadb10 docker-optionfactory-debian10
 docker-optionfactory-ubuntu18-mariadb10: sync-mariadb10 docker-optionfactory-ubuntu18
 
 #docker-optionfactory-%-postgres11: $(subst -postgres11,,$@)
 docker-optionfactory-centos7-postgres11: sync-postgres11 docker-optionfactory-centos7
+docker-optionfactory-centos8-postgres11: sync-postgres11 docker-optionfactory-centos8
 docker-optionfactory-debian10-postgres11: sync-postgres11 docker-optionfactory-debian10
 docker-optionfactory-ubuntu18-postgres11: sync-postgres11 docker-optionfactory-ubuntu18
 
 #docker-optionfactory-%-golang1: $(subst -golang1,,$@)
 docker-optionfactory-centos7-golang1: sync-golang1 docker-optionfactory-centos7
+docker-optionfactory-centos8-golang1: sync-golang1 docker-optionfactory-centos8
 docker-optionfactory-debian10-golang1: sync-golang1 docker-optionfactory-debian10
 docker-optionfactory-ubuntu18-golang1: sync-golang1 docker-optionfactory-ubuntu18
 
 #docker-optionfactory-%-etcd3: $(subst -etcd3,,$@)
 docker-optionfactory-centos7-etcd3: sync-etcd3 docker-optionfactory-centos7
+docker-optionfactory-centos8-etcd3: sync-etcd3 docker-optionfactory-centos8
 docker-optionfactory-debian9-etcd3: sync-etcd3 docker-optionfactory-debian9
 docker-optionfactory-ubuntu18-etcd3: sync-etcd3 docker-optionfactory-ubuntu18
 
 
 #docker-optionfactory-%-jdk11-tomcat9: $(subst -tomcat9,,$@)
 docker-optionfactory-centos7-jdk11-tomcat9: sync-tomcat9 docker-optionfactory-centos7-jdk11
+docker-optionfactory-centos8-jdk11-tomcat9: sync-tomcat9 docker-optionfactory-centos8-jdk11
 docker-optionfactory-debian10-jdk11-tomcat9: sync-tomcat9 docker-optionfactory-debian10-jdk11
 docker-optionfactory-ubuntu18-jdk11-tomcat9: sync-tomcat9 docker-optionfactory-ubuntu18-jdk11
 
@@ -69,12 +76,12 @@ sync: sync-tools sync-jdk11 sync-tomcat9 sync-mariadb10 sync-postgres11 sync-gol
 
 sync-tools: deps/gosu1 deps/spawn-and-tail1
 	@echo "syncing gosu"
-	@echo optionfactory-centos7/deps optionfactory-debian10/deps optionfactory-ubuntu18/deps | xargs -n 1 rsync -az deps/gosu-${GOSU1_VERSION}
+	@echo optionfactory-centos7/deps optionfactory-centos8/deps optionfactory-debian10/deps optionfactory-ubuntu18/deps | xargs -n 1 rsync -az deps/gosu-${GOSU1_VERSION}
 	@echo "syncing ps1"
-	@echo optionfactory-centos7/deps optionfactory-debian10/deps optionfactory-ubuntu18/deps | xargs -n 1 rsync -az install-ps1.sh
+	@echo optionfactory-centos7/deps optionfactory-centos8/deps optionfactory-debian10/deps optionfactory-ubuntu18/deps | xargs -n 1 rsync -az install-ps1.sh
 	@echo "syncing spawn-and-tail"
-	@echo optionfactory-centos7/deps optionfactory-debian10/deps optionfactory-ubuntu18/deps | xargs -n 1 rsync -az install-spawn-and-tail.sh
-	@echo optionfactory-centos7/deps optionfactory-debian10/deps optionfactory-ubuntu18/deps | xargs -n 1 rsync -az deps/spawn-and-tail-${SPAWN_AND_TAIL_VERSION}
+	@echo optionfactory-centos7/deps optionfactory-centos8/deps optionfactory-debian10/deps optionfactory-ubuntu18/deps | xargs -n 1 rsync -az install-spawn-and-tail.sh
+	@echo optionfactory-centos7/deps optionfactory-centos8/deps optionfactory-debian10/deps optionfactory-ubuntu18/deps | xargs -n 1 rsync -az deps/spawn-and-tail-${SPAWN_AND_TAIL_VERSION}
 sync-jdk11: deps/jdk11
 	@echo "syncing jdk 11"
 	@echo optionfactory-*-jdk11/deps | xargs -n 1 rsync -az install-jdk11.sh

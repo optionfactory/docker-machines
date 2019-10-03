@@ -25,14 +25,18 @@ elif [ -f /usr/bin/apt-get ]; then
     rm -rf /var/lib/apt/lists/*
 elif [ -f /usr/bin/yum ] ; then
 
-	cat <<-'EOF' > /etc/yum.repos.d/mariadb.repo
-		[mariadb]
-		name = MariaDB
-		baseurl = http://yum.mariadb.org/10.4.6/centos7-amd64/
-		gpgkey=https://yum.mariadb.org/RPM-GPG-KEY-MariaDB
-		gpgcheck=1
-	EOF
-    yum install -q -y MariaDB-server
+    if rpm -q centos-release | grep -q release-7; then
+        cat <<-'EOF' > /etc/yum.repos.d/mariadb.repo
+[mariadb]
+name = MariaDB
+baseurl = http://yum.mariadb.org/10.4/centos7-amd64/
+gpgkey=https://yum.mariadb.org/RPM-GPG-KEY-MariaDB
+gpgcheck=1
+priority=1
+EOF
+    fi
+    yum install -q -y mariadb-server
+    echo cleaning up
     yum clean all
     rm -rf /var/cache/yum
 else
