@@ -32,10 +32,20 @@ name = MariaDB
 baseurl = http://yum.mariadb.org/10.4/centos7-amd64/
 gpgkey=https://yum.mariadb.org/RPM-GPG-KEY-MariaDB
 gpgcheck=1
-priority=1
 EOF
+        yum install -q -y mariadb-server
     fi
-    yum install -q -y mariadb-server
+    if rpm -q centos-release | grep -q release-8; then
+    cat << EOF > /etc/yum.repos.d/mariadb.repo
+[mariadb]
+name = MariaDB
+baseurl=http://yum.mariadb.org/10.4/centos8-amd64
+gpgkey=https://yum.mariadb.org/RPM-GPG-KEY-MariaDB
+gpgcheck=1
+EOF
+        yum install -q -y boost-program-options
+        yum --disablerepo=AppStream install -q -y MariaDB-server MariaDB-client
+    fi
     echo cleaning up
     yum clean all
     rm -rf /var/cache/yum
