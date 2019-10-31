@@ -15,33 +15,26 @@ cat <<-'EOF' > /opt/apache-tomcat/conf/logging.properties
 
 	java.util.logging.ConsoleHandler.level = INFO
 	java.util.logging.ConsoleHandler.formatter=java.util.logging.SimpleFormatter
-	java.util.logging.SimpleFormatter.format=[tomcat8][%4$s][%3$s] %5$s%6$s%n
+	java.util.logging.SimpleFormatter.format=[tomcat9][%4$s][%3$s] %5$s%6$s%n
 EOF
 
 cat <<'EOF' > /opt/apache-tomcat/conf/server.xml
 <?xml version='1.0' encoding='utf-8'?>
 <Server port="8005" shutdown="SHUTDOWN">
   <Listener className="org.apache.catalina.startup.VersionLoggerListener" />
-  <!--
-  <Listener className="org.apache.catalina.core.AprLifecycleListener" SSLEngine="on" />
-  -->
   <Listener className="org.apache.catalina.core.JreMemoryLeakPreventionListener" />
   <Listener className="org.apache.catalina.mbeans.GlobalResourcesLifecycleListener" />
   <Listener className="org.apache.catalina.core.ThreadLocalLeakPreventionListener" />
-
   <Service name="Catalina">
-
-    <Connector port="8084"
-        URIEncoding="utf-8"
-        connectionTimeout="20000"
-        protocol="HTTP/1.1"
-    />
-
+    <Connector Server=" " URIEncoding="utf-8" port="8084" connectionTimeout="20000" protocol="HTTP/1.1"/>
+    <Engine name="Catalina" defaultHost="localhost">
+      <Host name="localhost" appBase="webapps" unpackWARs="true" autoDeploy="true">
+	    <Valve className="org.apache.catalina.valves.ErrorReportValve" showReport="false" showServerInfo="false" />
+      </Host>
+    </Engine>
   </Service>
 </Server>
 EOF
-
-
 groupadd -r tomcat
 useradd -r -m -g tomcat tomcat
 chown -R tomcat:tomcat /opt/apache-tomcat
