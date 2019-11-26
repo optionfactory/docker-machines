@@ -29,12 +29,23 @@ cat <<'EOF' > /opt/apache-tomcat/conf/server.xml
     <Connector Server=" " URIEncoding="utf-8" port="8084" connectionTimeout="20000" protocol="HTTP/1.1"/>
     <Engine name="Catalina" defaultHost="localhost">
       <Host name="localhost" appBase="webapps" unpackWARs="true" autoDeploy="true">
-	    <Valve className="org.apache.catalina.valves.ErrorReportValve" showReport="false" showServerInfo="false" />
+        <Valve className="org.apache.catalina.valves.ErrorReportValve" showReport="false" showServerInfo="false" />
+        <Valve className="org.apache.catalina.valves.RemoteIpValve" protocolHeader="X-Forwarded-Proto" />
       </Host>
     </Engine>
   </Service>
 </Server>
 EOF
+cat <<'EOF' > /opt/apache-tomcat/conf/context.xml
+<?xml version="1.0" encoding="UTF-8"?>
+<Context>
+    <WatchedResource>WEB-INF/web.xml</WatchedResource>
+    <WatchedResource>WEB-INF/tomcat-web.xml</WatchedResource>
+    <WatchedResource>${catalina.base}/conf/web.xml</WatchedResource>
+    <CookieProcessor sameSiteCookies="strict" />
+</Context>
+EOF
+
 groupadd -r tomcat
 useradd -r -m -g tomcat tomcat
 chown -R tomcat:tomcat /opt/apache-tomcat
