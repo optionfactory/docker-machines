@@ -11,6 +11,7 @@ GOSU1_VERSION=1.11
 SPAWN_AND_TAIL_VERSION=0.2
 GOLANG1_VERSION=1.13.1
 ETCD3_VERSION=3.4.1
+KEYCLOAK8_VERSION=8.0.0
 #/software versions
 
 help:
@@ -64,6 +65,13 @@ docker-optionfactory-centos8-jdk11-tomcat9: sync-tomcat9 docker-optionfactory-ce
 docker-optionfactory-debian10-jdk11-tomcat9: sync-tomcat9 docker-optionfactory-debian10-jdk11
 docker-optionfactory-ubuntu18-jdk11-tomcat9: sync-tomcat9 docker-optionfactory-ubuntu18-jdk11
 
+#docker-optionfactory-%-jdk11-keycloak8: $(subst -tomcat8,,$@)
+docker-optionfactory-centos7-jdk11-keycloak8: sync-keycloak8 docker-optionfactory-centos7-jdk11
+docker-optionfactory-centos8-jdk11-keycloak8: sync-keycloak8 docker-optionfactory-centos8-jdk11
+docker-optionfactory-debian10-jdk11-keycloak8: sync-keycloak8 docker-optionfactory-debian10-jdk11
+docker-optionfactory-ubuntu18-jdk11-keycloak8: sync-keycloak8 docker-optionfactory-ubuntu18-jdk11
+
+
 docker-optionfactory-%:
 	@echo building $@
 	$(eval name=$(subst docker-optionfactory-,,$@))
@@ -86,12 +94,16 @@ sync-jdk11: deps/jdk11
 	@echo "syncing jdk 11"
 	@echo optionfactory-*-jdk11/deps | xargs -n 1 rsync -az install-jdk11.sh
 	@echo optionfactory-*-jdk11/deps | xargs -n 1 rsync -az deps/jdk-${JDK11_VERSION}+${JDK11_BUILD}
-
 sync-tomcat9: deps/tomcat9
 	@echo "syncing tomcat 8"
 	@echo optionfactory-*-tomcat9/deps | xargs -n 1 rsync -az install-tomcat9.sh
 	@echo optionfactory-*-tomcat9/deps | xargs -n 1 rsync -az init-tomcat9.sh
 	@echo optionfactory-*-tomcat9/deps | xargs -n 1 rsync -az deps/apache-tomcat-${TOMCAT9_VERSION}
+sync-keycloak8: deps/keycloak8
+	@echo "syncing keycloak 8"
+	@echo optionfactory-*-keycloak8/deps | xargs -n 1 rsync -az install-keycloak8.sh
+	@echo optionfactory-*-keycloak8/deps | xargs -n 1 rsync -az init-keycloak8.sh
+	@echo optionfactory-*-keycloak8/deps | xargs -n 1 rsync -az deps/keycloak-${KEYCLOAK8_VERSION}
 sync-mariadb10: deps/mariadb10
 	@echo "syncing mariadb 10"
 	@echo optionfactory-*-mariadb10/deps | xargs -n 1 rsync -az install-mariadb10.sh
@@ -120,6 +132,8 @@ deps/gosu1: deps/gosu-${GOSU1_VERSION}
 deps/spawn-and-tail1: deps/spawn-and-tail-${SPAWN_AND_TAIL_VERSION}
 deps/jdk11: deps/jdk-${JDK11_VERSION}+${JDK11_BUILD}
 deps/tomcat9: deps/apache-tomcat-${TOMCAT9_VERSION}
+deps/keycloak8: deps/keycloak-${KEYCLOAK8_VERSION}
+
 deps/mariadb10:
 deps/postgres11:
 deps/golang1: deps/golang-${GOLANG1_VERSION}/bin/go
@@ -140,6 +154,10 @@ deps/golang-${GOLANG1_VERSION}/bin/go:
 	curl -# -j -k -L https://golang.org/dl/go${GOLANG1_VERSION}.linux-amd64.tar.gz | tar xz -C deps/golang-${GOLANG1_VERSION} --strip-components=1
 deps/etcd-v${ETCD3_VERSION}-linux-amd64:
 	curl -# -j -k -L  https://github.com/coreos/etcd/releases/download/v${ETCD3_VERSION}/etcd-v${ETCD3_VERSION}-linux-amd64.tar.gz | tar xz -C deps
+deps/keycloak-${KEYCLOAK8_VERSION}:
+	curl -# -j -k -L  https://downloads.jboss.org/keycloak/${KEYCLOAK8_VERSION}/keycloak-${KEYCLOAK8_VERSION}.tar.gz | tar xz -C deps
+
+
 
 clean: FORCE
 	rm -rf optionfactory-*/install-*.sh
