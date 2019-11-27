@@ -12,6 +12,7 @@ SPAWN_AND_TAIL_VERSION=0.2
 GOLANG1_VERSION=1.13.1
 ETCD3_VERSION=3.4.1
 KEYCLOAK8_VERSION=8.0.0
+PSQL_JDBC_VERSION=42.2.8
 #/software versions
 
 help:
@@ -66,10 +67,10 @@ docker-optionfactory-debian10-jdk11-tomcat9: sync-tomcat9 docker-optionfactory-d
 docker-optionfactory-ubuntu18-jdk11-tomcat9: sync-tomcat9 docker-optionfactory-ubuntu18-jdk11
 
 #docker-optionfactory-%-jdk11-keycloak8: $(subst -tomcat8,,$@)
-docker-optionfactory-centos7-jdk11-keycloak8: sync-keycloak8 docker-optionfactory-centos7-jdk11
-docker-optionfactory-centos8-jdk11-keycloak8: sync-keycloak8 docker-optionfactory-centos8-jdk11
-docker-optionfactory-debian10-jdk11-keycloak8: sync-keycloak8 docker-optionfactory-debian10-jdk11
-docker-optionfactory-ubuntu18-jdk11-keycloak8: sync-keycloak8 docker-optionfactory-ubuntu18-jdk11
+docker-optionfactory-centos7-jdk11-keycloak8: sync-psql-jdbc sync-keycloak8 docker-optionfactory-centos7-jdk11
+docker-optionfactory-centos8-jdk11-keycloak8: sync-psql-jdbc sync-keycloak8 docker-optionfactory-centos8-jdk11
+docker-optionfactory-debian10-jdk11-keycloak8: sync-psql-jdbc sync-keycloak8 docker-optionfactory-debian10-jdk11
+docker-optionfactory-ubuntu18-jdk11-keycloak8: sync-psql-jdbc sync-keycloak8 docker-optionfactory-ubuntu18-jdk11
 
 
 docker-optionfactory-%:
@@ -124,6 +125,9 @@ sync-golang1: deps/golang1
 	@echo optionfactory-*-golang1/deps | xargs -n 1 rsync -az golang1-project-makefile.tpl
 	@echo optionfactory-*-golang1 | sed -r 's/optionfactory-(\w+)-golang1/\1\n/g' | xargs -n 1 -I% sed -i "s/{{DISTRO}}/%/g" optionfactory-%-golang1/deps/golang1-project-makefile.tpl
 	@echo optionfactory-*-golang1/deps | xargs -n 1 rsync -az deps/golang-${GOLANG1_VERSION}
+sync-psql-jdbc: deps/psql-jdbc
+	@echo "syncing psql-jdbc driver"
+	@echo optionfactory-*-keycloak8/deps | xargs -n 1 rsync -az deps/postgresql-${PSQL_JDBC_VERSION}.jar
 
 
 deps: deps/gosu1 deps/spawn-and-tail1 deps/jdk11 deps/tomcat9 deps/mariadb10 deps/postgres11 deps/golang1
@@ -133,7 +137,7 @@ deps/spawn-and-tail1: deps/spawn-and-tail-${SPAWN_AND_TAIL_VERSION}
 deps/jdk11: deps/jdk-${JDK11_VERSION}+${JDK11_BUILD}
 deps/tomcat9: deps/apache-tomcat-${TOMCAT9_VERSION}
 deps/keycloak8: deps/keycloak-${KEYCLOAK8_VERSION}
-
+deps/psql-jdbc: deps/postgresql-${PSQL_JDBC_VERSION}.jar
 deps/mariadb10:
 deps/postgres11:
 deps/golang1: deps/golang-${GOLANG1_VERSION}/bin/go
@@ -156,7 +160,8 @@ deps/etcd-v${ETCD3_VERSION}-linux-amd64:
 	curl -# -j -k -L  https://github.com/coreos/etcd/releases/download/v${ETCD3_VERSION}/etcd-v${ETCD3_VERSION}-linux-amd64.tar.gz | tar xz -C deps
 deps/keycloak-${KEYCLOAK8_VERSION}:
 	curl -# -j -k -L  https://downloads.jboss.org/keycloak/${KEYCLOAK8_VERSION}/keycloak-${KEYCLOAK8_VERSION}.tar.gz | tar xz -C deps
-
+deps/postgresql-${PSQL_JDBC_VERSION}.jar:
+	curl -# -j -k -L  https://repo1.maven.org/maven2/org/postgresql/postgresql/${PSQL_JDBC_VERSION}/postgresql-${PSQL_JDBC_VERSION}.jar -o deps/postgresql-${PSQL_JDBC_VERSION}.jar
 
 
 clean: FORCE
@@ -167,8 +172,8 @@ clean-deps: FORCE
 	rm -rf deps/*
 
 cleanup-docker-images:
-	docker images --quiet --filter=dangling=true | xargs --no-run-if-empty docker rmi
-	docker volume prune
+	-docker images --quiet --filter=dangling=true | xargs --no-run-if-empty docker rmi
+	-docker volume prune -f
 
 #If a rule has no prerequisites or recipe, and the target of the rule is a nonexistent file,
 #then make imagines this target to have been updated whenever its rule is run.

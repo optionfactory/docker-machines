@@ -35,7 +35,6 @@ fi
 if [ -f /etc/postgresql-common/createcluster.conf ]; then
     sed -ri 's/#(create_main_cluster) .*$/\1 = false/' /etc/postgresql-common/createcluster.conf
 fi
-
 mkdir -p /var/run/postgresql
 chown -R postgres /var/run/postgresql
 localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8

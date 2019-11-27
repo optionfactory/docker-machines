@@ -3,8 +3,23 @@
 echo "Installing Keycloak 8"
 mkdir -p /opt/keycloak
 cp -R /tmp/keycloak*/* /opt/keycloak
-#todo: remove manager/webapps?
 
+
+mkdir -p /opt/keycloak/modules/org/postgresql/main/
+cp /tmp/postgresql-42.2.8.jar /opt/keycloak/modules/org/postgresql/main/
+#cp driver
+cat <<-'EOF' > /opt/keycloak/modules/org/postgresql/main/module.xml
+<?xml version="1.0" ?>
+<module xmlns="urn:jboss:module:1.3" name="org.postgresql">
+    <resources>
+        <resource-root path="postgresql-42.2.8.jar"/>
+    </resources>
+    <dependencies>
+        <module name="javax.api"/>
+        <module name="javax.transaction.api"/>
+    </dependencies>
+</module>
+EOF
 
 cat <<-'EOF' > /opt/keycloak/standalone/configuration/standalone.xml
 <?xml version='1.0' encoding='UTF-8'?>
@@ -116,25 +131,17 @@ cat <<-'EOF' > /opt/keycloak/standalone/configuration/standalone.xml
         <subsystem xmlns="urn:jboss:domain:core-management:1.0"/>
         <subsystem xmlns="urn:jboss:domain:datasources:5.0">
             <datasources>
-                <datasource jndi-name="java:jboss/datasources/ExampleDS" pool-name="ExampleDS" enabled="true" use-java-context="true" statistics-enabled="${wildfly.datasources.statistics-enabled:${wildfly.statistics-enabled:false}}">
-                    <connection-url>jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE</connection-url>
-                    <driver>h2</driver>
-                    <security>
-                        <user-name>sa</user-name>
-                        <password>sa</password>
-                    </security>
-                </datasource>
                 <datasource jndi-name="java:jboss/datasources/KeycloakDS" pool-name="KeycloakDS" enabled="true" use-java-context="true" statistics-enabled="${wildfly.datasources.statistics-enabled:${wildfly.statistics-enabled:false}}">
-                    <connection-url>jdbc:h2:${jboss.server.data.dir}/keycloak;AUTO_SERVER=TRUE</connection-url>
-                    <driver>h2</driver>
+                    <connection-url>jdbc:postgresql://${postgres.host:172.17.0.1}/keycloak</connection-url>
+                    <driver>postgresql</driver>
                     <security>
-                        <user-name>sa</user-name>
-                        <password>sa</password>
+                        <user-name>${postgres.username:postgres}</user-name>
+                        <password>${postgres.password:""}</password>
                     </security>
                 </datasource>
                 <drivers>
-                    <driver name="h2" module="com.h2database.h2">
-                        <xa-datasource-class>org.h2.jdbcx.JdbcDataSource</xa-datasource-class>
+                    <driver name="postgresql" module="org.postgresql">
+                        <xa-datasource-class>org.postgresql.xa.PGXADataSource</xa-datasource-class>
                     </driver>
                 </drivers>
             </datasources>
@@ -158,7 +165,12 @@ cat <<-'EOF' > /opt/keycloak/standalone/configuration/standalone.xml
                     <managed-scheduled-executor-service name="default" jndi-name="java:jboss/ee/concurrency/scheduler/default" context-service="default" hung-task-threshold="60000" keepalive-time="3000"/>
                 </managed-scheduled-executor-services>
             </concurrent>
-            <default-bindings context-service="java:jboss/ee/concurrency/context/default" datasource="java:jboss/datasources/ExampleDS" managed-executor-service="java:jboss/ee/concurrency/executor/default" managed-scheduled-executor-service="java:jboss/ee/concurrency/scheduler/default" managed-thread-factory="java:jboss/ee/concurrency/factory/default"/>
+            <default-bindings
+                context-service="java:jboss/ee/concurrency/context/default"
+                datasource="java:jboss/datasources/KeycloakDS"
+                managed-executor-service="java:jboss/ee/concurrency/executor/default"
+                managed-scheduled-executor-service="java:jboss/ee/concurrency/scheduler/default"
+                managed-thread-factory="java:jboss/ee/concurrency/factory/default"/>
         </subsystem>
         <subsystem xmlns="urn:jboss:domain:io:3.0">
             <worker name="default"/>
@@ -410,11 +422,11 @@ cat <<-'EOF' > /opt/keycloak/standalone/configuration/standalone.xml
     </profile>
     <interfaces>
         <interface name="public">
-            <inet-address value="${jboss.bind.address:0.0.0.0}"/>
+            <inet-address value="0.0.0.0"/>
         </interface>
     </interfaces>
     <socket-binding-group name="standard-sockets" default-interface="public" port-offset="${jboss.socket.binding.port-offset:0}">
-		<socket-binding name="http" port="${jboss.http.port:8080}"/>
+		<socket-binding name="http" port="8080"/>
         <socket-binding name="txn-recovery-environment" port="4712"/>
         <socket-binding name="txn-status-manager" port="4713"/>
         <outbound-socket-binding name="mail-smtp">
@@ -424,6 +436,24 @@ cat <<-'EOF' > /opt/keycloak/standalone/configuration/standalone.xml
 </server>
 EOF
 
+
+cat <<-'EOF' > /opt/keycloak/standalone/configuration/logging.properties
+logger.level=${jboss.boot.server.log.level:INFO}
+logger.handlers=CONSOLE
+handler.CONSOLE=org.jboss.logmanager.handlers.ConsoleHandler
+handler.CONSOLE.properties=autoFlush,target
+handler.CONSOLE.level=${jboss.boot.server.log.console.level:INFO}
+handler.CONSOLE.autoFlush=true
+handler.CONSOLE.formatter=PATTERN
+handler.CONSOLE.target=SYSTEM_OUT
+formatter.PATTERN=org.jboss.logmanager.formatters.PatternFormatter
+formatter.PATTERN.properties=pattern
+formatter.PATTERN.pattern=%d{yyyy-MM-dd HH\:mm\:ss,SSS} %-5p [%c] (%t) %s%e%n
+EOF
+
+
+rm -rf /opt/keycloak/domain/
+rm -rf /opt/keycloak/docs/
 
 groupadd -r keycloak
 useradd -r -m -g keycloak keycloak
