@@ -327,7 +327,7 @@ cat <<-'EOF' > /opt/keycloak/standalone/configuration/standalone.xml
         <subsystem xmlns="urn:jboss:domain:undertow:10.0" default-server="default-server" default-virtual-host="default-host" default-servlet-container="default" default-security-domain="other" statistics-enabled="${wildfly.undertow.statistics-enabled:${wildfly.statistics-enabled:false}}">
             <buffer-cache name="default"/>
             <server name="default-server">
-				<http-listener name="default" socket-binding="http" />
+                <http-listener name="default" socket-binding="http" proxy-address-forwarding="true" />
                 <host name="default-host" alias="localhost">
                     <location name="/" handler="welcome-content"/>
                     <http-invoker security-realm="ApplicationRealm"/>
@@ -426,7 +426,7 @@ cat <<-'EOF' > /opt/keycloak/standalone/configuration/standalone.xml
         </interface>
     </interfaces>
     <socket-binding-group name="standard-sockets" default-interface="public" port-offset="${jboss.socket.binding.port-offset:0}">
-		<socket-binding name="http" port="8080"/>
+        <socket-binding name="http" port="8080"/>
         <socket-binding name="txn-recovery-environment" port="4712"/>
         <socket-binding name="txn-status-manager" port="4713"/>
         <outbound-socket-binding name="mail-smtp">
