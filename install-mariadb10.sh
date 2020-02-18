@@ -1,7 +1,8 @@
 #!/bin/bash -e
 
-groupadd -r mysql
-useradd -r -m -g mysql mysql
+groupadd --system --gid 20000 docker-machines
+useradd --system --create-home --gid docker-machines --uid 20003 mysql
+
 
 if [ -f /usr/bin/apt-get -a -f /etc/lsb-release ]; then
     DEBIAN_FRONTEND=noninteractive apt-get -y -q update

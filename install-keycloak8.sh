@@ -455,6 +455,6 @@ EOF
 rm -rf /opt/keycloak/domain/
 rm -rf /opt/keycloak/docs/
 
-groupadd -r keycloak
-useradd -r -m -g keycloak keycloak
-chown -R keycloak:keycloak /opt/keycloak
+groupadd --system --gid 20000 docker-machines
+useradd --system --create-home --gid docker-machines --uid 20001 keycloak
+chown -R keycloak:docker-machines /opt/keycloak

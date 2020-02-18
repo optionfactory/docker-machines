@@ -1,7 +1,7 @@
 #!/bin/bash -e
 
-groupadd -r postgres --gid=900
-useradd -r -m -g postgres --uid=900 postgres
+groupadd --system --gid 20000 docker-machines
+useradd --system --create-home --gid docker-machines --uid 20002 postgres
 
 if [  -f /usr/bin/apt-get ] ; then
     DEBIAN_FRONTEND=noninteractive apt-get -y -q update
@@ -35,6 +35,7 @@ fi
 if [ -f /etc/postgresql-common/createcluster.conf ]; then
     sed -ri 's/#(create_main_cluster) .*$/\1 = false/' /etc/postgresql-common/createcluster.conf
 fi
+
 mkdir -p /var/run/postgresql
-chown -R postgres /var/run/postgresql
+chown -R postgres:docker-machines /var/run/postgresql
 localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8

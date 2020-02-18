@@ -1,15 +1,15 @@
 #!/bin/bash -e
 
 if [ $# -eq 0 ]; then
-    chown -R mysql:mysql "/var/lib/mysql"
+    chown -R mysql:docker-machines "/var/lib/mysql"
     if [ ! -d "/var/lib/mysql/mysql" ]; then
         echo "initializing database"
-        gosu mysql mysql_install_db --datadir="/var/lib/mysql"
+        gosu mysql:docker-machines mysql_install_db --datadir="/var/lib/mysql"
         echo "database initialized"
 
         mysql_client=( mysql --protocol=socket -uroot )
         echo "database initialized"
-        gosu mysql mysqld --defaults-file=/etc/my.cnf --skip-networking &
+        gosu mysql:docker-machines mysqld --defaults-file=/etc/my.cnf --skip-networking &
         pid="$!"
         for i in {30..0}; do
 			if echo 'select 1' | "${mysql_client[@]}" &> /dev/null; then
@@ -36,7 +36,7 @@ if [ $# -eq 0 ]; then
 		fi
 
     fi
-    exec gosu mysql mysqld --defaults-file=/etc/my.cnf
+    exec gosu mysql:docker-machines mysqld --defaults-file=/etc/my.cnf
 fi
 
 exec "$@"

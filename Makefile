@@ -1,17 +1,17 @@
 #we user squash here to remove unwanted layers, which is an experimental feature
 #{"experimental": true} > /etc/docker/daemon.json
 DOCKER_BUILD_OPTIONS=--no-cache=false --squash
-TAG_VERSION=3
+TAG_VERSION=4
 
 #software versions
-JDK11_VERSION=11.0.4
-JDK11_BUILD=11
-TOMCAT9_VERSION=9.0.27
+JDK11_VERSION=11.0.6
+JDK11_BUILD=10
+TOMCAT9_VERSION=9.0.31
 GOSU1_VERSION=1.11
 SPAWN_AND_TAIL_VERSION=0.2
 GOLANG1_VERSION=1.13.1
 ETCD3_VERSION=3.4.1
-KEYCLOAK8_VERSION=8.0.0
+KEYCLOAK8_VERSION=8.0.2
 PSQL_JDBC_VERSION=42.2.8
 #/software versions
 
@@ -81,7 +81,7 @@ docker-optionfactory-%:
 
 
 
-sync: sync-tools sync-jdk11 sync-tomcat9 sync-mariadb10 sync-postgres11 sync-golang1
+sync: sync-tools sync-jdk11 sync-tomcat9 sync-keycloak8 sync-mariadb10 sync-postgres11 sync-etcd3 sync-golang1 sync-psql-jdbc
 
 sync-tools: deps/gosu1 deps/spawn-and-tail1
 	@echo "syncing gosu"
@@ -96,7 +96,7 @@ sync-jdk11: deps/jdk11
 	@echo optionfactory-*-jdk11/deps | xargs -n 1 rsync -az install-jdk11.sh
 	@echo optionfactory-*-jdk11/deps | xargs -n 1 rsync -az deps/jdk-${JDK11_VERSION}+${JDK11_BUILD}
 sync-tomcat9: deps/tomcat9
-	@echo "syncing tomcat 8"
+	@echo "syncing tomcat 9"
 	@echo optionfactory-*-tomcat9/deps | xargs -n 1 rsync -az install-tomcat9.sh
 	@echo optionfactory-*-tomcat9/deps | xargs -n 1 rsync -az init-tomcat9.sh
 	@echo optionfactory-*-tomcat9/deps | xargs -n 1 rsync -az deps/apache-tomcat-${TOMCAT9_VERSION}
