@@ -46,6 +46,6 @@ cat <<'EOF' > /opt/apache-tomcat/conf/context.xml
 </Context>
 EOF
 
-groupadd -r tomcat
-useradd -r -m -g tomcat tomcat
-chown -R tomcat:tomcat /opt/apache-tomcat
+groupadd --system --gid 20000 docker-machine
+useradd --system --create-home --gid tomcat --uid 20000 tomcat
+chown -R tomcat:docker-machine /opt/apache-tomcat
