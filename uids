@@ -5,3 +5,4 @@ tomcat=20000
 keycloak=20001
 postgres=20002
 mariadb=20003
+nginx=20004

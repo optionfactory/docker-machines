@@ -35,6 +35,13 @@ docker-optionfactory-debian10-jdk11: sync-jdk11 docker-optionfactory-debian10
 docker-optionfactory-ubuntu18-jdk11: sync-jdk11 docker-optionfactory-ubuntu18
 
 
+#docker-optionfactory-%-nginx117: $(subst -nginx117,,$@)
+#docker-optionfactory-centos7-nginx117: sync-nginx117 docker-optionfactory-centos7
+#docker-optionfactory-centos8-nginx117: sync-nginx117 docker-optionfactory-centos8
+#docker-optionfactory-debian10-nginx117: sync-nginx117 docker-optionfactory-debian10
+docker-optionfactory-ubuntu18-nginx117: sync-nginx117 docker-optionfactory-ubuntu18
+
+
 #docker-optionfactory-%-mariadb10: $(subst -mariadb10,,$@)
 docker-optionfactory-centos7-mariadb10: sync-mariadb10 docker-optionfactory-centos7
 docker-optionfactory-centos8-mariadb10: sync-mariadb10 docker-optionfactory-centos8
@@ -81,7 +88,7 @@ docker-optionfactory-%:
 
 
 
-sync: sync-tools sync-jdk11 sync-tomcat9 sync-keycloak8 sync-mariadb10 sync-postgres11 sync-etcd3 sync-golang1 sync-psql-jdbc
+sync: sync-tools sync-jdk11 sync-tomcat9 sync-keycloak8 sync-nginx117 sync-mariadb10 sync-postgres11 sync-etcd3 sync-golang1 sync-psql-jdbc
 
 sync-tools: deps/gosu1 deps/spawn-and-tail1
 	@echo "syncing gosu"
@@ -105,6 +112,9 @@ sync-keycloak8: deps/keycloak8
 	@echo optionfactory-*-keycloak8/deps | xargs -n 1 rsync -az install-keycloak8.sh
 	@echo optionfactory-*-keycloak8/deps | xargs -n 1 rsync -az init-keycloak8.sh
 	@echo optionfactory-*-keycloak8/deps | xargs -n 1 rsync -az deps/keycloak-${KEYCLOAK8_VERSION}
+sync-nginx117:
+	@echo optionfactory-*-nginx117/deps | xargs -n 1 rsync -az install-nginx117.sh
+	@echo optionfactory-*-nginx117/deps | xargs -n 1 rsync -az init-nginx117.sh
 sync-mariadb10: deps/mariadb10
 	@echo "syncing mariadb 10"
 	@echo optionfactory-*-mariadb10/deps | xargs -n 1 rsync -az install-mariadb10.sh
