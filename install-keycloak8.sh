@@ -132,11 +132,11 @@ cat <<-'EOF' > /opt/keycloak/standalone/configuration/standalone.xml
         <subsystem xmlns="urn:jboss:domain:datasources:5.0">
             <datasources>
                 <datasource jndi-name="java:jboss/datasources/KeycloakDS" pool-name="KeycloakDS" enabled="true" use-java-context="true" statistics-enabled="${wildfly.datasources.statistics-enabled:${wildfly.statistics-enabled:false}}">
-                    <connection-url>jdbc:postgresql://${postgres.host:172.17.0.1}/keycloak</connection-url>
+                    <connection-url>jdbc:postgresql://${env.POSTGRES_HOST:172.17.0.1}/keycloak</connection-url>
                     <driver>postgresql</driver>
                     <security>
-                        <user-name>${postgres.username:postgres}</user-name>
-                        <password>${postgres.password:""}</password>
+                        <user-name>${env.POSTGRES_USERNAME:postgres}</user-name>
+                        <password>${env.POSTGRES_PASSWORD:""}</password>
                     </security>
                 </datasource>
                 <drivers>
@@ -350,8 +350,8 @@ cat <<-'EOF' > /opt/keycloak/standalone/configuration/standalone.xml
             <scheduled-task-interval>900</scheduled-task-interval>
             <theme>
                 <staticMaxAge>2592000</staticMaxAge>
-                <cacheThemes>true</cacheThemes>
-                <cacheTemplates>true</cacheTemplates>
+                <cacheThemes>${env.KEYCLOAK_CACHE_THEMES:true}</cacheThemes>
+                <cacheTemplates>${env.KEYCLOAK_CACHE_TEMPLATES:true}</cacheTemplates>
                 <dir>${jboss.home.dir}/themes</dir>
             </theme>
             <spi name="eventsStore">
@@ -413,7 +413,7 @@ cat <<-'EOF' > /opt/keycloak/standalone/configuration/standalone.xml
                 <default-provider>default</default-provider>
                 <provider name="default" enabled="true">
                     <properties>
-                        <property name="frontendUrl" value="${keycloak.frontendUrl:}"/>
+                        <property name="frontendUrl" value="${env.KEYCLOAK_FRONTEND_URL:}"/>
                         <property name="forceBackendUrlToFrontendUrl" value="false"/>
                     </properties>
                 </provider>
@@ -426,7 +426,7 @@ cat <<-'EOF' > /opt/keycloak/standalone/configuration/standalone.xml
         </interface>
     </interfaces>
     <socket-binding-group name="standard-sockets" default-interface="public" port-offset="${jboss.socket.binding.port-offset:0}">
-        <socket-binding name="http" port="8080"/>
+        <socket-binding name="http" port="${env.HTTP_PORT:8080}"/>
         <socket-binding name="txn-recovery-environment" port="4712"/>
         <socket-binding name="txn-status-manager" port="4713"/>
         <outbound-socket-binding name="mail-smtp">
