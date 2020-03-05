@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-echo "Installing Keycloak 8"
+echo "Installing Keycloak 9"
 mkdir -p /opt/keycloak
 cp -R /tmp/keycloak*/* /opt/keycloak
 

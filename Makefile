@@ -11,7 +11,7 @@ GOSU1_VERSION=1.11
 SPAWN_AND_TAIL_VERSION=0.2
 GOLANG1_VERSION=1.13.1
 ETCD3_VERSION=3.4.1
-KEYCLOAK8_VERSION=8.0.2
+KEYCLOAK9_VERSION=9.0.0
 PSQL_JDBC_VERSION=42.2.8
 #/software versions
 
@@ -73,11 +73,11 @@ docker-optionfactory-centos8-jdk11-tomcat9: sync-tomcat9 docker-optionfactory-ce
 docker-optionfactory-debian10-jdk11-tomcat9: sync-tomcat9 docker-optionfactory-debian10-jdk11
 docker-optionfactory-ubuntu18-jdk11-tomcat9: sync-tomcat9 docker-optionfactory-ubuntu18-jdk11
 
-#docker-optionfactory-%-jdk11-keycloak8: $(subst -tomcat8,,$@)
-docker-optionfactory-centos7-jdk11-keycloak8: sync-psql-jdbc sync-keycloak8 docker-optionfactory-centos7-jdk11
-docker-optionfactory-centos8-jdk11-keycloak8: sync-psql-jdbc sync-keycloak8 docker-optionfactory-centos8-jdk11
-docker-optionfactory-debian10-jdk11-keycloak8: sync-psql-jdbc sync-keycloak8 docker-optionfactory-debian10-jdk11
-docker-optionfactory-ubuntu18-jdk11-keycloak8: sync-psql-jdbc sync-keycloak8 docker-optionfactory-ubuntu18-jdk11
+#docker-optionfactory-%-jdk11-keycloak9: $(subst -tomcat8,,$@)
+docker-optionfactory-centos7-jdk11-keycloak9: sync-psql-jdbc sync-keycloak9 docker-optionfactory-centos7-jdk11
+docker-optionfactory-centos8-jdk11-keycloak9: sync-psql-jdbc sync-keycloak9 docker-optionfactory-centos8-jdk11
+docker-optionfactory-debian10-jdk11-keycloak9: sync-psql-jdbc sync-keycloak9 docker-optionfactory-debian10-jdk11
+docker-optionfactory-ubuntu18-jdk11-keycloak9: sync-psql-jdbc sync-keycloak9 docker-optionfactory-ubuntu18-jdk11
 
 
 docker-optionfactory-%:
@@ -88,7 +88,7 @@ docker-optionfactory-%:
 
 
 
-sync: sync-tools sync-jdk11 sync-tomcat9 sync-keycloak8 sync-nginx117 sync-mariadb10 sync-postgres11 sync-etcd3 sync-golang1 sync-psql-jdbc
+sync: sync-tools sync-jdk11 sync-tomcat9 sync-keycloak9 sync-nginx117 sync-mariadb10 sync-postgres11 sync-etcd3 sync-golang1 sync-psql-jdbc
 
 sync-tools: deps/gosu1 deps/spawn-and-tail1
 	@echo "syncing gosu"
@@ -107,11 +107,11 @@ sync-tomcat9: deps/tomcat9
 	@echo optionfactory-*-tomcat9/deps | xargs -n 1 rsync -az install-tomcat9.sh
 	@echo optionfactory-*-tomcat9/deps | xargs -n 1 rsync -az init-tomcat9.sh
 	@echo optionfactory-*-tomcat9/deps | xargs -n 1 rsync -az deps/apache-tomcat-${TOMCAT9_VERSION}
-sync-keycloak8: deps/keycloak8
-	@echo "syncing keycloak 8"
-	@echo optionfactory-*-keycloak8/deps | xargs -n 1 rsync -az install-keycloak8.sh
-	@echo optionfactory-*-keycloak8/deps | xargs -n 1 rsync -az init-keycloak8.sh
-	@echo optionfactory-*-keycloak8/deps | xargs -n 1 rsync -az deps/keycloak-${KEYCLOAK8_VERSION}
+sync-keycloak9: deps/keycloak9
+	@echo "syncing keycloak 9"
+	@echo optionfactory-*-keycloak9/deps | xargs -n 1 rsync -az install-keycloak9.sh
+	@echo optionfactory-*-keycloak9/deps | xargs -n 1 rsync -az init-keycloak9.sh
+	@echo optionfactory-*-keycloak9/deps | xargs -n 1 rsync -az deps/keycloak-${KEYCLOAK9_VERSION}
 sync-nginx117:
 	@echo optionfactory-*-nginx117/deps | xargs -n 1 rsync -az install-nginx117.sh
 	@echo optionfactory-*-nginx117/deps | xargs -n 1 rsync -az init-nginx117.sh
@@ -137,7 +137,7 @@ sync-golang1: deps/golang1
 	@echo optionfactory-*-golang1/deps | xargs -n 1 rsync -az deps/golang-${GOLANG1_VERSION}
 sync-psql-jdbc: deps/psql-jdbc
 	@echo "syncing psql-jdbc driver"
-	@echo optionfactory-*-keycloak8/deps | xargs -n 1 rsync -az deps/postgresql-${PSQL_JDBC_VERSION}.jar
+	@echo optionfactory-*-keycloak9/deps | xargs -n 1 rsync -az deps/postgresql-${PSQL_JDBC_VERSION}.jar
 
 
 deps: deps/gosu1 deps/spawn-and-tail1 deps/jdk11 deps/tomcat9 deps/mariadb10 deps/postgres11 deps/golang1
@@ -146,7 +146,7 @@ deps/gosu1: deps/gosu-${GOSU1_VERSION}
 deps/spawn-and-tail1: deps/spawn-and-tail-${SPAWN_AND_TAIL_VERSION}
 deps/jdk11: deps/jdk-${JDK11_VERSION}+${JDK11_BUILD}
 deps/tomcat9: deps/apache-tomcat-${TOMCAT9_VERSION}
-deps/keycloak8: deps/keycloak-${KEYCLOAK8_VERSION}
+deps/keycloak9: deps/keycloak-${KEYCLOAK9_VERSION}
 deps/psql-jdbc: deps/postgresql-${PSQL_JDBC_VERSION}.jar
 deps/mariadb10:
 deps/postgres11:
@@ -168,8 +168,8 @@ deps/golang-${GOLANG1_VERSION}/bin/go:
 	curl -# -j -k -L https://golang.org/dl/go${GOLANG1_VERSION}.linux-amd64.tar.gz | tar xz -C deps/golang-${GOLANG1_VERSION} --strip-components=1
 deps/etcd-v${ETCD3_VERSION}-linux-amd64:
 	curl -# -j -k -L  https://github.com/coreos/etcd/releases/download/v${ETCD3_VERSION}/etcd-v${ETCD3_VERSION}-linux-amd64.tar.gz | tar xz -C deps
-deps/keycloak-${KEYCLOAK8_VERSION}:
-	curl -# -j -k -L  https://downloads.jboss.org/keycloak/${KEYCLOAK8_VERSION}/keycloak-${KEYCLOAK8_VERSION}.tar.gz | tar xz -C deps
+deps/keycloak-${KEYCLOAK9_VERSION}:
+	curl -# -j -k -L  https://downloads.jboss.org/keycloak/${KEYCLOAK9_VERSION}/keycloak-${KEYCLOAK9_VERSION}.tar.gz | tar xz -C deps
 deps/postgresql-${PSQL_JDBC_VERSION}.jar:
 	curl -# -j -k -L  https://repo1.maven.org/maven2/org/postgresql/postgresql/${PSQL_JDBC_VERSION}/postgresql-${PSQL_JDBC_VERSION}.jar -o deps/postgresql-${PSQL_JDBC_VERSION}.jar
 

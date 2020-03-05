@@ -3,8 +3,8 @@ MAINTAINER Roberto Ferranti <roberto@optionfactory.net>
 
 COPY deps /tmp/
 
-RUN /tmp/install-keycloak8.sh
-RUN cp /tmp/init-keycloak8.sh /keycloak
+RUN /tmp/install-keycloak9.sh
+RUN cp /tmp/init-keycloak9.sh /keycloak
 RUN rm -rf /tmp/*
 
 EXPOSE 8080
