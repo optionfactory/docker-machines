@@ -16,14 +16,10 @@ if [  -f /usr/bin/apt-get ] ; then
     DEBIAN_FRONTEND=noninteractive apt-get install -y -q postgresql-common postgresql-11 postgresql-contrib-11
     rm -rf /var/lib/apt/lists/*
 elif [ -f /usr/bin/yum ] ; then
-    if rpm -q centos-release | grep release-8; then
-        yum module disable -q -y postgresql
-        #we need locales
-        yum install -q -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-8-x86_64/pgdg-redhat-repo-latest.noarch.rpm
-        yum install -q -y glibc-locale-source
-    else
-        yum install -q -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm
-    fi
+    yum module disable -q -y postgresql
+    #we need locales
+    yum install -q -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-8-x86_64/pgdg-redhat-repo-latest.noarch.rpm
+    yum install -q -y glibc-locale-source
     yum install -q -y postgresql11 postgresql11-server postgresql11-contrib
     yum clean all
     rm -rf /var/cache/yum
