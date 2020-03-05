@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-NGINX_VERSION=1.17.8
+NGINX_VERSION=1.17.9
 PKG_RELEASE=1~bionic
 
 echo "Installing nginx ${NGINX_VERSION}"
