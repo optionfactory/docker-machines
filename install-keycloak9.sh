@@ -335,6 +335,7 @@ cat <<-'EOF' > /opt/keycloak/standalone/configuration/standalone.xml
             </server>
             <servlet-container name="default">
                 <jsp-config/>
+                <session-cookie http-only="true" secure="true"/>
                 <websockets/>
             </servlet-container>
             <handlers>
