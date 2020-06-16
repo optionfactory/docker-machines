@@ -3,44 +3,46 @@
 groupadd --system --gid 20000 docker-machines
 useradd --system --create-home --gid docker-machines --uid 20003 mysql
 
-
-if [ -f /usr/bin/apt-get -a -f /etc/lsb-release ]; then
-    DEBIAN_FRONTEND=noninteractive apt-get -y -q update
-    DEBIAN_FRONTEND=noninteractive apt-get -y -q install software-properties-common
-    DEBIAN_FRONTEND=noninteractive apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 0xF1656F24C74CD1D8
-    DEBIAN_FRONTEND=noninteractive add-apt-repository 'deb [arch=amd64,arm64,ppc64el] http://mirror.ehv.weppel.nl/mariadb/repo/10.4/ubuntu bionic main'
-    DEBIAN_FRONTEND=noninteractive apt-get -y -q update
-    DEBIAN_FRONTEND=noninteractive apt-get -y -q install mariadb-server
-    DEBIAN_FRONTEND=noninteractive apt-get -y -q autoclean
-    DEBIAN_FRONTEND=noninteractive apt-get -y -q autoremove
-    rm -rf /var/lib/apt/lists/*
-elif [ -f /usr/bin/apt-get ]; then
-    DEBIAN_FRONTEND=noninteractive apt-get -y -q update
-    DEBIAN_FRONTEND=noninteractive apt-get -y -q install software-properties-common dirmngr
-    DEBIAN_FRONTEND=noninteractive apt-key adv --recv-keys --keyserver keyserver.ubuntu.com 0xF1656F24C74CD1D8
-    DEBIAN_FRONTEND=noninteractive add-apt-repository 'deb [arch=amd64] http://mirror.ehv.weppel.nl/mariadb/repo/10.4/debian buster main'
-    DEBIAN_FRONTEND=noninteractive apt-get -y -q update
-    DEBIAN_FRONTEND=noninteractive apt-get -y -q install mariadb-server
-    DEBIAN_FRONTEND=noninteractive apt-get -y -q autoclean
-    DEBIAN_FRONTEND=noninteractive apt-get -y -q autoremove
-    rm -rf /var/lib/apt/lists/*
-elif [ -f /usr/bin/yum ] ; then
-    cat << EOF > /etc/yum.repos.d/mariadb.repo
+case "${DISTRIB_LABEL}" in
+    debian10)
+        DEBIAN_FRONTEND=noninteractive apt-get -y -q update
+        DEBIAN_FRONTEND=noninteractive apt-get -y -q install software-properties-common dirmngr
+        DEBIAN_FRONTEND=noninteractive apt-key adv --recv-keys --keyserver keyserver.ubuntu.com 0xF1656F24C74CD1D8
+        DEBIAN_FRONTEND=noninteractive add-apt-repository "deb [arch=amd64] http://mirror.ehv.weppel.nl/mariadb/repo/10.4/${DISTRIB_ID} ${DISTRIB_CODENAME} main"
+        DEBIAN_FRONTEND=noninteractive apt-get -y -q update
+        DEBIAN_FRONTEND=noninteractive apt-get -y -q install mariadb-server
+        DEBIAN_FRONTEND=noninteractive apt-get -y -q autoclean
+        DEBIAN_FRONTEND=noninteractive apt-get -y -q autoremove
+    ;;
+    ubuntu*)
+        DEBIAN_FRONTEND=noninteractive apt-get -y -q update
+        DEBIAN_FRONTEND=noninteractive apt-get -y -q install software-properties-common
+        DEBIAN_FRONTEND=noninteractive apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 0xF1656F24C74CD1D8
+        DEBIAN_FRONTEND=noninteractive add-apt-repository "deb [arch=amd64,arm64,ppc64el] http://mirror.ehv.weppel.nl/mariadb/repo/10.4/${DISTRIB_ID} ${DISTRIB_CODENAME} main"
+        DEBIAN_FRONTEND=noninteractive apt-get -y -q update
+        DEBIAN_FRONTEND=noninteractive apt-get -y -q install mariadb-server
+        DEBIAN_FRONTEND=noninteractive apt-get -y -q autoclean
+        DEBIAN_FRONTEND=noninteractive apt-get -y -q autoremove
+    ;;
+    centos8)
+        cat << EOF > /etc/yum.repos.d/mariadb.repo
 [mariadb]
 name = MariaDB
 baseurl=http://yum.mariadb.org/10.4/centos8-amd64
 gpgkey=https://yum.mariadb.org/RPM-GPG-KEY-MariaDB
 gpgcheck=1
 EOF
-    yum install -q -y boost-program-options
-    yum --disablerepo=AppStream install -q -y MariaDB-server MariaDB-client
-    echo cleaning up
-    yum clean all
-    rm -rf /var/cache/yum
-else
-    echo "unknown or missing package manager"
+        yum install -q -y boost-program-options
+        yum --disablerepo=AppStream install -q -y MariaDB-server MariaDB-client
+        echo cleaning up
+        yum clean all
+        rm -rf /var/cache/yum
+    ;;
+    *)
+    echo "distribution ${DISTRIB_LABEL} not supported"
     exit 1
-fi
+    ;;
+esac
 
 rm -rf /var/lib/mysql
 mkdir -p /var/{lib,run,log}/mysql

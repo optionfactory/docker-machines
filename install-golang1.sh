@@ -1,21 +1,24 @@
 #!/bin/bash -e
 
-if [ -f /usr/bin/apt-get ]; then
-    DEBIAN_FRONTEND=noninteractive apt-get -y -q update
-    DEBIAN_FRONTEND=noninteractive apt-get -y -q --no-install-recommends install ca-certificates gcc g++ libc6-dev make pkg-config git
-    DEBIAN_FRONTEND=noninteractive apt-get -y -q autoclean
-    DEBIAN_FRONTEND=noninteractive apt-get -y -q autoremove
-    rm -rf /var/lib/apt/lists/*
-elif [ -f /usr/bin/yum ] ; then
-    yum install -q -y ca-certificates gcc gcc-c++ glibc-devel glibc-headers make pkg-config git
-    yum clean all
-    rm -rf /var/cache/yum
-else
-    echo "unknown or missing package manager"
+
+case "${DISTRIB_LABEL}" in
+    debian*|ubuntu*)
+        DEBIAN_FRONTEND=noninteractive apt-get -y -q update
+        DEBIAN_FRONTEND=noninteractive apt-get -y -q --no-install-recommends install ca-certificates gcc g++ libc6-dev make pkg-config git
+        DEBIAN_FRONTEND=noninteractive apt-get -y -q autoclean
+        DEBIAN_FRONTEND=noninteractive apt-get -y -q autoremove
+        rm -rf /var/lib/apt/lists/*
+    ;;
+    centos8)
+        yum install -q -y ca-certificates gcc gcc-c++ glibc-devel glibc-headers make pkg-config git
+        yum clean all
+        rm -rf /var/cache/yum
+    ;;
+    *)
+    echo "distribution ${DISTRIB_LABEL} not supported"
     exit 1
-fi
-
-
+    ;;
+esac
 
 # set up nsswitch.conf for Go's "netgo" implementation
 # - https://github.com/golang/go/blob/go1.9.1/src/net/conf.go#L194-L275

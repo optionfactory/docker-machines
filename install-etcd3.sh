@@ -2,23 +2,25 @@
 echo "installing etcd3"
 
 
-if [ -f /usr/bin/apt-get ]; then
-    DEBIAN_FRONTEND=noninteractive apt-get -y -q update
-    DEBIAN_FRONTEND=noninteractive apt-get -y -q --no-install-recommends install ca-certificates openssl tar
-    DEBIAN_FRONTEND=noninteractive apt-get -y -q autoclean
-    DEBIAN_FRONTEND=noninteractive apt-get -y -q autoremove
-    rm -rf /var/lib/apt/lists/*
-elif [ -f /usr/bin/zypper ] ; then
-    zypper -n -q install ca-certificates openssl tar
-    zypper -n -q clean --all
-elif [ -f /usr/bin/yum ] ; then
-    yum install -q -y ca-certificates openssl tar
-    yum clean all
-    rm -rf /var/cache/yum
-else
-    echo "unknown or missing package manager"
+case "${DISTRIB_LABEL}" in
+    debian*|ubuntu*)
+        DEBIAN_FRONTEND=noninteractive apt-get -y -q update
+        DEBIAN_FRONTEND=noninteractive apt-get -y -q --no-install-recommends install ca-certificates openssl tar
+        DEBIAN_FRONTEND=noninteractive apt-get -y -q autoclean
+        DEBIAN_FRONTEND=noninteractive apt-get -y -q autoremove
+        rm -rf /var/lib/apt/lists/*
+    ;;
+    centos8)
+        yum install -q -y ca-certificates openssl tar
+        yum clean all
+        rm -rf /var/cache/yum
+    ;;
+    *)
+    echo "distribution ${DISTRIB_LABEL} not supported"
     exit 1
-fi
+    ;;
+esac
+
 
 cp -r /tmp/etcd* /opt/etcd/
 mkdir -p /opt/etcd/data/

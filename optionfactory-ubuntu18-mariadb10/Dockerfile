@@ -3,7 +3,7 @@ MAINTAINER Roberto Ferranti <roberto@optionfactory.net>
 
 COPY deps /tmp/
 
-RUN /tmp/install-mariadb10.sh
+RUN DISTRIB_LABEL=ubuntu18 DISTRIB_ID=ubuntu DISTRIB_RELEASE=18.04 DISTRIB_CODENAME=bionic /tmp/install-mariadb10.sh
 RUN cp /tmp/init-mariadb10.sh /mariadb
 
 RUN rm -rf /tmp/*
