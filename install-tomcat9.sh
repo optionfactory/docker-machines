@@ -3,6 +3,7 @@
 echo "Installing tomcat"
 mkdir -p /opt/apache-tomcat/conf
 cp -R /tmp/apache-tomcat*/* /opt/apache-tomcat
+cp /tmp/tomcat9-logging-error-report-valve-1.0.jar /opt/apache-tomcat/lib/
 rm -rf /opt/apache-tomcat/webapps/*
 
 cat <<-'EOF' > /opt/apache-tomcat/bin/setenv.sh
@@ -28,8 +29,7 @@ cat <<'EOF' > /opt/apache-tomcat/conf/server.xml
   <Service name="Catalina">
     <Connector Server=" " URIEncoding="utf-8" port="8084" connectionTimeout="20000" protocol="HTTP/1.1"/>
     <Engine name="Catalina" defaultHost="localhost">
-      <Host name="localhost" appBase="webapps" unpackWARs="true" autoDeploy="true">
-        <Valve className="org.apache.catalina.valves.ErrorReportValve" showReport="false" showServerInfo="false" />
+      <Host name="localhost" appBase="webapps" unpackWARs="true" autoDeploy="true" errorReportValveClass="net.optionfactory.tomcat9.lerv.LoggingErrorReportValve">
         <Valve className="org.apache.catalina.valves.RemoteIpValve" protocolHeader="X-Forwarded-Proto" />
       </Host>
     </Engine>
