@@ -1,7 +1,7 @@
 #we user squash here to remove unwanted layers, which is an experimental feature
 #{"experimental": true} > /etc/docker/daemon.json
 DOCKER_BUILD_OPTIONS=--no-cache=false --squash
-TAG_VERSION=6
+TAG_VERSION=7
 
 #software versions
 JDK11_VERSION=11.0.7
@@ -66,6 +66,11 @@ docker-optionfactory-debian9-etcd3: sync-etcd3 docker-optionfactory-debian9
 docker-optionfactory-ubuntu18-etcd3: sync-etcd3 docker-optionfactory-ubuntu18
 docker-optionfactory-ubuntu20-etcd3: sync-etcd3 docker-optionfactory-ubuntu20
 
+#docker-optionfactory-%-journal-remote: $(subst -journal-remote,,$@)
+docker-optionfactory-centos8-journal-remote: sync-journal-remote docker-optionfactory-centos8
+docker-optionfactory-debian9-journal-remote: sync-journal-remote docker-optionfactory-debian9
+docker-optionfactory-ubuntu18-journal-remote: sync-journal-remote docker-optionfactory-ubuntu18
+docker-optionfactory-ubuntu20-journal-remote: sync-journal-remote docker-optionfactory-ubuntu20
 
 #docker-optionfactory-%-jdk11-tomcat9: $(subst -tomcat9,,$@)
 docker-optionfactory-centos8-jdk11-tomcat9: sync-tomcat9 docker-optionfactory-centos8-jdk11
@@ -128,6 +133,11 @@ sync-etcd3: deps/etcd3
 	@echo optionfactory-*-etcd3/deps | xargs -n 1 rsync -az install-etcd3.sh
 	@echo optionfactory-*-etcd3/deps | xargs -n 1 rsync -az init-etcd3.sh
 	@echo optionfactory-*-etcd3/deps | xargs -n 1 rsync -az deps/etcd-v${ETCD3_VERSION}-linux-amd64
+sync-journal-remote:
+	@echo "syncing journal-remote"
+	@echo optionfactory-*-journal-remote/deps | xargs -n 1 rsync -az install-journal-remote.sh
+	@echo optionfactory-*-journal-remote/deps | xargs -n 1 rsync -az init-journal-remote.sh
+
 sync-golang1: deps/golang1
 	@echo "syncing golang"
 	@echo optionfactory-*-golang1/deps | xargs -n 1 rsync -az install-golang1.sh
