@@ -12,6 +12,7 @@ SPAWN_AND_TAIL_VERSION=0.2
 GOLANG1_VERSION=1.14.4
 ETCD3_VERSION=3.4.9
 KEYCLOAK10_VERSION=10.0.2
+KEYCLOAK11_VERSION=11.0.0
 PSQL_JDBC_VERSION=42.2.9
 #/software versions
 
@@ -54,6 +55,13 @@ docker-optionfactory-debian10-postgres12: sync-postgres12 docker-optionfactory-d
 docker-optionfactory-ubuntu18-postgres12: sync-postgres12 docker-optionfactory-ubuntu18
 docker-optionfactory-ubuntu20-postgres12: sync-postgres12 docker-optionfactory-ubuntu20
 
+#docker-optionfactory-%-barman2: $(subst -postgres12,,$@)
+docker-optionfactory-centos8-barman2: sync-barman2 docker-optionfactory-centos8
+docker-optionfactory-debian10-barman2: sync-barman2 docker-optionfactory-debian10
+docker-optionfactory-ubuntu18-barman2: sync-barman2 docker-optionfactory-ubuntu18
+docker-optionfactory-ubuntu20-barman2: sync-barman2 docker-optionfactory-ubuntu20
+
+
 #docker-optionfactory-%-golang1: $(subst -golang1,,$@)
 docker-optionfactory-centos8-golang1: sync-golang1 docker-optionfactory-centos8
 docker-optionfactory-debian10-golang1: sync-golang1 docker-optionfactory-debian10
@@ -78,11 +86,19 @@ docker-optionfactory-debian10-jdk11-tomcat9: sync-tomcat9 docker-optionfactory-d
 docker-optionfactory-ubuntu18-jdk11-tomcat9: sync-tomcat9 docker-optionfactory-ubuntu18-jdk11
 docker-optionfactory-ubuntu20-jdk11-tomcat9: sync-tomcat9 docker-optionfactory-ubuntu20-jdk11
 
-#docker-optionfactory-%-jdk11-keycloak10: $(subst -tomcat8,,$@)
+#docker-optionfactory-%-jdk11-keycloak10: $(subst -keycloak10,,$@)
 docker-optionfactory-centos8-jdk11-keycloak10: sync-psql-jdbc sync-keycloak10 docker-optionfactory-centos8-jdk11
 docker-optionfactory-debian10-jdk11-keycloak10: sync-psql-jdbc sync-keycloak10 docker-optionfactory-debian10-jdk11
 docker-optionfactory-ubuntu18-jdk11-keycloak10: sync-psql-jdbc sync-keycloak10 docker-optionfactory-ubuntu18-jdk11
 docker-optionfactory-ubuntu20-jdk11-keycloak10: sync-psql-jdbc sync-keycloak10 docker-optionfactory-ubuntu20-jdk11
+
+
+#docker-optionfactory-%-jdk11-keycloak11: $(subst -keycloak11,,$@)
+docker-optionfactory-centos8-jdk11-keycloak11: sync-psql-jdbc sync-keycloak11 docker-optionfactory-centos8-jdk11
+docker-optionfactory-debian10-jdk11-keycloak11: sync-psql-jdbc sync-keycloak11 docker-optionfactory-debian10-jdk11
+docker-optionfactory-ubuntu18-jdk11-keycloak11: sync-psql-jdbc sync-keycloak11 docker-optionfactory-ubuntu18-jdk11
+docker-optionfactory-ubuntu20-jdk11-keycloak11: sync-psql-jdbc sync-keycloak11 docker-optionfactory-ubuntu20-jdk11
+
 
 
 docker-optionfactory-%:
@@ -118,6 +134,11 @@ sync-keycloak10: deps/keycloak10
 	@echo optionfactory-*-keycloak10/deps | xargs -n 1 rsync -az install-keycloak10.sh
 	@echo optionfactory-*-keycloak10/deps | xargs -n 1 rsync -az init-keycloak10.sh
 	@echo optionfactory-*-keycloak10/deps | xargs -n 1 rsync -az deps/keycloak-${KEYCLOAK10_VERSION}
+sync-keycloak11: deps/keycloak11
+	@echo "syncing keycloak 11"
+	@echo optionfactory-*-keycloak11/deps | xargs -n 1 rsync -az install-keycloak11.sh
+	@echo optionfactory-*-keycloak11/deps | xargs -n 1 rsync -az init-keycloak11.sh
+	@echo optionfactory-*-keycloak11/deps | xargs -n 1 rsync -az deps/keycloak-${KEYCLOAK11_VERSION}
 sync-nginx118:
 	@echo optionfactory-*-nginx118/deps | xargs -n 1 rsync -az install-nginx118.sh
 	@echo optionfactory-*-nginx118/deps | xargs -n 1 rsync -az init-nginx118.sh
@@ -129,6 +150,10 @@ sync-postgres12: deps/postgres12
 	@echo "syncing postgres 12"
 	@echo optionfactory-*-postgres12/deps | xargs -n 1 rsync -az install-postgres12.sh
 	@echo optionfactory-*-postgres12/deps | xargs -n 1 rsync -az init-postgres12.sh
+sync-barman2: deps/barman2
+	@echo "syncing barman 2"
+	@echo optionfactory-*-barman2/deps | xargs -n 1 rsync -az install-barman2.sh
+	@echo optionfactory-*-barman2/deps | xargs -n 1 rsync -az init-barman2.sh
 sync-etcd3: deps/etcd3
 	@echo "syncing etcd3"
 	@echo optionfactory-*-etcd3/deps | xargs -n 1 rsync -az install-etcd3.sh
@@ -149,6 +174,7 @@ sync-golang1: deps/golang1
 sync-psql-jdbc: deps/psql-jdbc
 	@echo "syncing psql-jdbc driver"
 	@echo optionfactory-*-keycloak10/deps | xargs -n 1 rsync -az deps/postgresql-${PSQL_JDBC_VERSION}.jar
+	@echo optionfactory-*-keycloak11/deps | xargs -n 1 rsync -az deps/postgresql-${PSQL_JDBC_VERSION}.jar
 
 
 deps: deps/gosu1 deps/spawn-and-tail1 deps/jdk11 deps/tomcat9 deps/mariadb10 deps/postgres11 deps/golang1
@@ -158,9 +184,11 @@ deps/spawn-and-tail1: deps/spawn-and-tail-${SPAWN_AND_TAIL_VERSION}
 deps/jdk11: deps/jdk-${JDK11_VERSION}+${JDK11_BUILD}
 deps/tomcat9: deps/apache-tomcat-${TOMCAT9_VERSION}
 deps/keycloak10: deps/keycloak-${KEYCLOAK10_VERSION}
+deps/keycloak11: deps/keycloak-${KEYCLOAK11_VERSION}
 deps/psql-jdbc: deps/postgresql-${PSQL_JDBC_VERSION}.jar
 deps/mariadb10:
 deps/postgres12:
+deps/barman2:
 deps/golang1: deps/golang-${GOLANG1_VERSION}/bin/go
 deps/etcd3: deps/etcd-v${ETCD3_VERSION}-linux-amd64
 
@@ -183,6 +211,8 @@ deps/etcd-v${ETCD3_VERSION}-linux-amd64:
 	curl -# -j -k -L  https://github.com/coreos/etcd/releases/download/v${ETCD3_VERSION}/etcd-v${ETCD3_VERSION}-linux-amd64.tar.gz | tar xz -C deps
 deps/keycloak-${KEYCLOAK10_VERSION}:
 	curl -# -j -k -L  https://downloads.jboss.org/keycloak/${KEYCLOAK10_VERSION}/keycloak-${KEYCLOAK10_VERSION}.tar.gz | tar xz -C deps
+deps/keycloak-${KEYCLOAK11_VERSION}:
+	curl -# -j -k -L  https://downloads.jboss.org/keycloak/${KEYCLOAK11_VERSION}/keycloak-${KEYCLOAK11_VERSION}.tar.gz | tar xz -C deps
 deps/postgresql-${PSQL_JDBC_VERSION}.jar:
 	curl -# -j -k -L  https://repo1.maven.org/maven2/org/postgresql/postgresql/${PSQL_JDBC_VERSION}/postgresql-${PSQL_JDBC_VERSION}.jar -o deps/postgresql-${PSQL_JDBC_VERSION}.jar
 
