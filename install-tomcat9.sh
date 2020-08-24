@@ -26,6 +26,7 @@ cat <<'EOF' > /opt/apache-tomcat/conf/server.xml
   <Listener className="org.apache.catalina.core.JreMemoryLeakPreventionListener" />
   <Listener className="org.apache.catalina.mbeans.GlobalResourcesLifecycleListener" />
   <Listener className="org.apache.catalina.core.ThreadLocalLeakPreventionListener" />
+  <Listener className="net.optionfactory.tomcat9.asl.AbortOnDeploymentFailure" />
   <Service name="Catalina">
     <Connector Server=" " URIEncoding="utf-8" port="8084" connectionTimeout="20000" protocol="HTTP/1.1"/>
     <Engine name="Catalina" defaultHost="localhost">
