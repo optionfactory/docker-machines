@@ -3,7 +3,7 @@
 echo "Installing tomcat"
 mkdir -p /opt/apache-tomcat/conf
 cp -R /tmp/apache-tomcat*/* /opt/apache-tomcat
-cp /tmp/tomcat9-logging-error-report-valve-1.0.jar /opt/apache-tomcat/lib/
+cp /tmp/tomcat9-logging-error-report-valve-2.0.jar /opt/apache-tomcat/lib/
 rm -rf /opt/apache-tomcat/webapps/*
 
 cat <<-'EOF' > /opt/apache-tomcat/bin/setenv.sh

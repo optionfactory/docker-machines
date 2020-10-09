@@ -1,20 +1,20 @@
 #we user squash here to remove unwanted layers, which is an experimental feature
 #{"experimental": true} > /etc/docker/daemon.json
 DOCKER_BUILD_OPTIONS=--no-cache=false --squash
-TAG_VERSION=7
+TAG_VERSION=8
 
 #software versions
-JDK11_VERSION=11.0.7
+JDK11_VERSION=11.0.8
 JDK11_BUILD=10
-TOMCAT9_VERSION=9.0.36
+TOMCAT9_VERSION=9.0.37
 TOMCAT9_ERROR_REPORT_VALVE_VERSION=2.0
 GOSU1_VERSION=1.12
 SPAWN_AND_TAIL_VERSION=0.2
-GOLANG1_VERSION=1.14.4
-ETCD3_VERSION=3.4.9
+GOLANG1_VERSION=1.15
+ETCD3_VERSION=3.4.12
 KEYCLOAK10_VERSION=10.0.2
-KEYCLOAK11_VERSION=11.0.0
-PSQL_JDBC_VERSION=42.2.9
+KEYCLOAK11_VERSION=11.0.1
+PSQL_JDBC_VERSION=42.2.15
 #/software versions
 
 help:
@@ -71,13 +71,13 @@ docker-optionfactory-ubuntu20-golang1: sync-golang1 docker-optionfactory-ubuntu2
 
 #docker-optionfactory-%-etcd3: $(subst -etcd3,,$@)
 docker-optionfactory-centos8-etcd3: sync-etcd3 docker-optionfactory-centos8
-docker-optionfactory-debian9-etcd3: sync-etcd3 docker-optionfactory-debian9
+docker-optionfactory-debian10-etcd3: sync-etcd3 docker-optionfactory-debian10
 docker-optionfactory-ubuntu18-etcd3: sync-etcd3 docker-optionfactory-ubuntu18
 docker-optionfactory-ubuntu20-etcd3: sync-etcd3 docker-optionfactory-ubuntu20
 
 #docker-optionfactory-%-journal-remote: $(subst -journal-remote,,$@)
 docker-optionfactory-centos8-journal-remote: sync-journal-remote docker-optionfactory-centos8
-docker-optionfactory-debian9-journal-remote: sync-journal-remote docker-optionfactory-debian9
+docker-optionfactory-debian10-journal-remote: sync-journal-remote docker-optionfactory-debian10
 docker-optionfactory-ubuntu18-journal-remote: sync-journal-remote docker-optionfactory-ubuntu18
 docker-optionfactory-ubuntu20-journal-remote: sync-journal-remote docker-optionfactory-ubuntu20
 
@@ -99,6 +99,12 @@ docker-optionfactory-centos8-jdk11-keycloak11: sync-psql-jdbc sync-keycloak11 do
 docker-optionfactory-debian10-jdk11-keycloak11: sync-psql-jdbc sync-keycloak11 docker-optionfactory-debian10-jdk11
 docker-optionfactory-ubuntu18-jdk11-keycloak11: sync-psql-jdbc sync-keycloak11 docker-optionfactory-ubuntu18-jdk11
 docker-optionfactory-ubuntu20-jdk11-keycloak11: sync-psql-jdbc sync-keycloak11 docker-optionfactory-ubuntu20-jdk11
+
+#docker-optionfactory-%-restalpr: $(subst -restalpr,,$@)
+docker-optionfactory-centos8-restalpr: sync-restalpr docker-optionfactory-centos8
+docker-optionfactory-debian10-restalpr: sync-restalpr docker-optionfactory-debian10
+docker-optionfactory-ubuntu18-restalpr: sync-restalpr docker-optionfactory-ubuntu18
+docker-optionfactory-ubuntu20-restalpr: sync-restalpr docker-optionfactory-ubuntu20
 
 
 
@@ -176,9 +182,13 @@ sync-psql-jdbc: deps/psql-jdbc
 	@echo "syncing psql-jdbc driver"
 	@echo optionfactory-*-keycloak10/deps | xargs -n 1 rsync -az deps/postgresql-${PSQL_JDBC_VERSION}.jar
 	@echo optionfactory-*-keycloak11/deps | xargs -n 1 rsync -az deps/postgresql-${PSQL_JDBC_VERSION}.jar
+sync-restalpr: deps/restalpr
+	@echo "syncing alpr"
+	@echo optionfactory-*-restalpr/deps | xargs -n 1 rsync -az install-restalpr.sh
+	@echo optionfactory-*-restalpr/deps | xargs -n 1 rsync -az init-restalpr.sh
 
 
-deps: deps/gosu1 deps/spawn-and-tail1 deps/jdk11 deps/tomcat9 deps/mariadb10 deps/postgres11 deps/golang1
+deps: deps/gosu1 deps/spawn-and-tail1 deps/jdk11 deps/tomcat9 deps/keycloak10 deps/keycloak11 deps/psql-jdbc deps/mariadb10 deps/postgres12 deps/barman2 deps/golang1 deps/etcd3
 
 deps/gosu1: deps/gosu-${GOSU1_VERSION}
 deps/spawn-and-tail1: deps/spawn-and-tail-${SPAWN_AND_TAIL_VERSION}
@@ -192,6 +202,7 @@ deps/postgres12:
 deps/barman2:
 deps/golang1: deps/golang-${GOLANG1_VERSION}/bin/go
 deps/etcd3: deps/etcd-v${ETCD3_VERSION}-linux-amd64
+deps/restalpr:
 
 deps/jdk-${JDK11_VERSION}+${JDK11_BUILD}:
 	curl -# -j -k -L https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-${JDK11_VERSION}%2B${JDK11_BUILD}/OpenJDK11U-jdk_x64_linux_hotspot_${JDK11_VERSION}_${JDK11_BUILD}.tar.gz | tar xz -C deps
@@ -216,7 +227,8 @@ deps/keycloak-${KEYCLOAK11_VERSION}:
 	curl -# -j -k -L  https://downloads.jboss.org/keycloak/${KEYCLOAK11_VERSION}/keycloak-${KEYCLOAK11_VERSION}.tar.gz | tar xz -C deps
 deps/postgresql-${PSQL_JDBC_VERSION}.jar:
 	curl -# -j -k -L  https://repo1.maven.org/maven2/org/postgresql/postgresql/${PSQL_JDBC_VERSION}/postgresql-${PSQL_JDBC_VERSION}.jar -o deps/postgresql-${PSQL_JDBC_VERSION}.jar
-
+deps/restalpr:
+	#TODO: curl go-webservice
 
 clean: FORCE
 	rm -rf optionfactory-*/install-*.sh
