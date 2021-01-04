@@ -15,6 +15,7 @@ ETCD3_VERSION=3.4.12
 KEYCLOAK11_VERSION=11.0.3
 KEYCLOAK12_VERSION=12.0.1
 PSQL_JDBC_VERSION=42.2.15
+MAVEN3_VERSION=3.6.3
 #/software versions
 
 help:
@@ -34,12 +35,15 @@ docker-optionfactory-centos8-jdk11: sync-jdk11 docker-optionfactory-centos8
 docker-optionfactory-debian10-jdk11: sync-jdk11 docker-optionfactory-debian10
 docker-optionfactory-ubuntu20-jdk11: sync-jdk11 docker-optionfactory-ubuntu20
 
+#docker-optionfactory-%-jdk11-builder: $(subst -jdk11-builder,,$@)
+docker-optionfactory-centos8-jdk11-builder: sync-builder docker-optionfactory-centos8-jdk11
+docker-optionfactory-debian10-jdk11-builder: sync-builder docker-optionfactory-debian10-jdk11
+docker-optionfactory-ubuntu20-jdk11-builder: sync-builder docker-optionfactory-ubuntu20-jdk11
 
 #docker-optionfactory-%-nginx118: $(subst -nginx118,,$@)
 docker-optionfactory-centos8-nginx118: sync-nginx118 docker-optionfactory-centos8
 docker-optionfactory-debian10-nginx118: sync-nginx118 docker-optionfactory-debian10
 docker-optionfactory-ubuntu20-nginx118: sync-nginx118 docker-optionfactory-ubuntu20
-
 
 #docker-optionfactory-%-mariadb10: $(subst -mariadb10,,$@)
 docker-optionfactory-centos8-mariadb10: sync-mariadb10 docker-optionfactory-centos8
@@ -116,6 +120,10 @@ sync-jdk11: deps/jdk11
 	@echo "syncing jdk 11"
 	@echo optionfactory-*-jdk11/deps | xargs -n 1 rsync -az install-jdk11.sh
 	@echo optionfactory-*-jdk11/deps | xargs -n 1 rsync -az deps/jdk-${JDK11_VERSION}+${JDK11_BUILD}
+sync-builder: deps/maven3
+	@echo "syncing maven 3"
+	@echo optionfactory-*-jdk11-builder/deps | xargs -n 1 rsync -az install-builder.sh
+	@echo optionfactory-*-jdk11-builder/deps | xargs -n 1 rsync -az deps/apache-maven-${MAVEN3_VERSION}
 sync-tomcat9: deps/tomcat9
 	@echo "syncing tomcat 9"
 	@echo optionfactory-*-tomcat9/deps | xargs -n 1 rsync -az install-tomcat9.sh
@@ -179,6 +187,7 @@ deps: deps/gosu1 deps/spawn-and-tail1 deps/jdk11 deps/tomcat9 deps/keycloak11 de
 deps/gosu1: deps/gosu-${GOSU1_VERSION}
 deps/spawn-and-tail1: deps/spawn-and-tail-${SPAWN_AND_TAIL_VERSION}
 deps/jdk11: deps/jdk-${JDK11_VERSION}+${JDK11_BUILD}
+deps/maven3: deps/apache-maven-${MAVEN3_VERSION}
 deps/tomcat9: deps/apache-tomcat-${TOMCAT9_VERSION} deps/tomcat9-logging-error-report-valve-${TOMCAT9_ERROR_REPORT_VALVE_VERSION}.jar
 deps/keycloak11: deps/keycloak-${KEYCLOAK11_VERSION}
 deps/keycloak12: deps/keycloak-${KEYCLOAK12_VERSION}
@@ -192,6 +201,8 @@ deps/restalpr:
 
 deps/jdk-${JDK11_VERSION}+${JDK11_BUILD}:
 	curl -# -j -k -L https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-${JDK11_VERSION}%2B${JDK11_BUILD}/OpenJDK11U-jdk_x64_linux_hotspot_${JDK11_VERSION}_${JDK11_BUILD}.tar.gz | tar xz -C deps
+deps/apache-maven-${MAVEN3_VERSION}:
+	curl -# -j -k -L https://downloads.apache.org/maven/maven-3/${MAVEN3_VERSION}/binaries/apache-maven-${MAVEN3_VERSION}-bin.tar.gz | tar xz -C deps
 deps/apache-tomcat-${TOMCAT9_VERSION}:
 	curl -# -sSL -k https://archive.apache.org/dist/tomcat/tomcat-9/v${TOMCAT9_VERSION}/bin/apache-tomcat-${TOMCAT9_VERSION}.tar.gz | tar xz -C deps
 deps/tomcat9-logging-error-report-valve-${TOMCAT9_ERROR_REPORT_VALVE_VERSION}.jar:
