@@ -6,5 +6,5 @@ RUN DISTRIB_LABEL=ubuntu20 DISTRIB_ID=ubuntu DISTRIB_RELEASE=20.04 DISTRIB_CODEN
 RUN cp /tmp/init-builder.sh /builder
 RUN rm -rf /tmp/*
 
-WORKDIR $GOPATH
-ENTRYPOINT ["/builder"]
+WORKDIR /home/builder
+USER builder
