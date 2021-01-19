@@ -15,7 +15,6 @@ if [ $# -eq 0 ]; then
         sed -ri "s/(logging_collector) .*/\1 = off/" /var/lib/postgresql/data/postgresql.conf
         sed -ri "s/(log_line_prefix) .*/\1 = '[postgres][%u@%h:%d] '/" /var/lib/postgresql/data/postgresql.conf
         sed -ri "s/#listen_addresses .*$/listen_addresses='0.0.0.0'/" /var/lib/postgresql/data/postgresql.conf
-        echo "host all all 0.0.0.0/0 trust" >> "/var/lib/postgresql/data/pg_hba.conf"
         gosu postgres:docker-machines /usr/lib/postgresql/*/bin/pg_ctl -s -D "/var/lib/postgresql/data" -o "-c listen_addresses='127.0.0.1'" -w start
         psql=( psql -v ON_ERROR_STOP=1 --username "postgres" --dbname "postgres" )
         for f in /sql-init.d/*; do
