@@ -1,19 +1,19 @@
 #we user squash here to remove unwanted layers, which is an experimental feature
 #{"experimental": true} > /etc/docker/daemon.json
 DOCKER_BUILD_OPTIONS=--no-cache=false --squash
-TAG_VERSION=9
+TAG_VERSION=10
 
 #software versions
-JDK11_VERSION=11.0.9.1
-JDK11_BUILD=1
-TOMCAT9_VERSION=9.0.40
+JDK11_VERSION=11.0.10
+JDK11_BUILD=9
+TOMCAT9_VERSION=9.0.43
 TOMCAT9_ERROR_REPORT_VALVE_VERSION=2.0
 GOSU1_VERSION=1.12
 SPAWN_AND_TAIL_VERSION=0.2
-GOLANG1_VERSION=1.15
-ETCD3_VERSION=3.4.12
+GOLANG1_VERSION=1.16
+ETCD3_VERSION=3.4.15
 KEYCLOAK11_VERSION=11.0.3
-KEYCLOAK12_VERSION=12.0.1
+KEYCLOAK12_VERSION=12.0.4
 PSQL_JDBC_VERSION=42.2.15
 MAVEN3_VERSION=3.6.3
 #/software versions
@@ -217,7 +217,7 @@ deps/golang-${GOLANG1_VERSION}/bin/go:
 	mkdir -p deps/golang-${GOLANG1_VERSION}
 	curl -# -j -k -L https://golang.org/dl/go${GOLANG1_VERSION}.linux-amd64.tar.gz | tar xz -C deps/golang-${GOLANG1_VERSION} --strip-components=1
 deps/etcd-v${ETCD3_VERSION}-linux-amd64:
-	curl -# -j -k -L  https://github.com/coreos/etcd/releases/download/v${ETCD3_VERSION}/etcd-v${ETCD3_VERSION}-linux-amd64.tar.gz | tar xz -C deps
+	curl -# -j -k -L  https://github.com/etcd-io/etcd/releases/download/v${ETCD3_VERSION}/etcd-v${ETCD3_VERSION}-linux-amd64.tar.gz | tar xz -C deps
 deps/keycloak-${KEYCLOAK11_VERSION}:
 	curl -# -j -k -L  https://downloads.jboss.org/keycloak/${KEYCLOAK11_VERSION}/keycloak-${KEYCLOAK11_VERSION}.tar.gz | tar xz -C deps
 deps/keycloak-${KEYCLOAK12_VERSION}:
