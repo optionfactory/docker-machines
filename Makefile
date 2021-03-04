@@ -24,6 +24,11 @@ help:
 
 docker-images: $(addprefix docker-,$(wildcard optionfactory-*))
 
+docker-push:
+	@echo pushing tag: ${TAG}
+	@docker images --filter="reference=optionfactory/*:${TAG}" --format='{{.Repository}}' | sort | uniq |  xargs -L1 -I'{}' docker push {}:${TAG}
+	@echo pushing tag: latest
+	@docker images --filter="reference=optionfactory/*:${TAG}" --format='{{.Repository}}' | sort | uniq |  xargs -L1 -I'{}' docker push {}:latest
 
 docker-optionfactory-centos8: sync-tools
 docker-optionfactory-debian10: sync-tools
