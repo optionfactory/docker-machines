@@ -217,7 +217,7 @@ deps/golang-${GOLANG1_VERSION}/bin/go:
 	mkdir -p deps/golang-${GOLANG1_VERSION}
 	curl -# -j -k -L https://golang.org/dl/go${GOLANG1_VERSION}.linux-amd64.tar.gz | tar xz -C deps/golang-${GOLANG1_VERSION} --strip-components=1
 deps/etcd-v${ETCD3_VERSION}-linux-amd64:
-	curl -# -j -k -L  https://github.com/etcd-io/etcd/releases/download/v${ETCD3_VERSION}/etcd-v${ETCD3_VERSION}-linux-amd64.tar.gz | tar xz -C deps
+	curl -# -j -k -L  https://github.com/etcd-io/etcd/releases/download/v${ETCD3_VERSION}/etcd-v${ETCD3_VERSION}-linux-amd64.tar | tar x -C deps
 deps/keycloak-${KEYCLOAK11_VERSION}:
 	curl -# -j -k -L  https://downloads.jboss.org/keycloak/${KEYCLOAK11_VERSION}/keycloak-${KEYCLOAK11_VERSION}.tar.gz | tar xz -C deps
 deps/keycloak-${KEYCLOAK12_VERSION}:
