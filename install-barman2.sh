@@ -14,7 +14,7 @@ case "${DISTRIB_LABEL}" in
         DEBIAN_FRONTEND=noninteractive apt-get install -y -q barman
         rm -rf /var/lib/apt/lists/*
     ;;
-    centos8)
+    centos8|rocky8)
         yum module disable -q -y postgresql
         #we need locales
         yum install -q -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-8-x86_64/pgdg-redhat-repo-latest.noarch.rpm

@@ -28,6 +28,12 @@ case "${DISTRIB_LABEL}" in
         yum clean all
         rm -rf /var/cache/yum
     ;;
+    rocky8)
+        yum install -q -y epel-release
+        yum install -q -y ansible make which git  rsync
+        yum clean all
+        rm -rf /var/cache/yum
+    ;;
     *)
     echo "distribution ${DISTRIB_LABEL} not supported"
     exit 1

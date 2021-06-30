@@ -21,7 +21,7 @@ case "${DISTRIB_LABEL}" in
         DEBIAN_FRONTEND=noninteractive apt-get remove -y -q --purge --auto-remove ca-certificates
         rm -rf /var/lib/apt/lists/* /etc/apt/sources.list.d/nginx.list
     ;;
-    centos8)
+    centos8|rocky8)
         cat << EOF > /etc/yum.repos.d/nginx.repo
 [nginx-stable]
 name=nginx stable repo

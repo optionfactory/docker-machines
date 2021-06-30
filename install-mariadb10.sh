@@ -26,7 +26,7 @@ case "${DISTRIB_LABEL}" in
         DEBIAN_FRONTEND=noninteractive apt-get -y -q autoclean
         DEBIAN_FRONTEND=noninteractive apt-get -y -q autoremove
     ;;
-    centos8)
+    centos8|rocky8)
         cat << EOF > /etc/yum.repos.d/mariadb.repo
 [mariadb]
 name = MariaDB

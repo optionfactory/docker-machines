@@ -31,77 +31,93 @@ docker-push:
 	@echo pushing tag: latest
 	@docker images --filter="reference=optionfactory/*:${TAG_VERSION}" --format='{{.Repository}}' | sort | uniq |  xargs -I'{}' docker push {}:latest
 
+
 docker-optionfactory-centos8: sync-tools
 docker-optionfactory-debian10: sync-tools
 docker-optionfactory-ubuntu20: sync-tools
+docker-optionfactory-rocky8: sync-tools
 
 #docker-optionfactory-%-jdk11: $(subst -jdk11,,$@)
 docker-optionfactory-centos8-jdk11: sync-jdk11 docker-optionfactory-centos8
+docker-optionfactory-centos8-jdk11: sync-jdk11 docker-optionfactory-centos8
 docker-optionfactory-debian10-jdk11: sync-jdk11 docker-optionfactory-debian10
 docker-optionfactory-ubuntu20-jdk11: sync-jdk11 docker-optionfactory-ubuntu20
+docker-optionfactory-rocky8-jdk11: sync-jdk11 docker-optionfactory-rocky8
 
 #docker-optionfactory-%-jdk11-builder: $(subst -jdk11-builder,,$@)
 docker-optionfactory-centos8-jdk11-builder: sync-builder docker-optionfactory-centos8-jdk11
 docker-optionfactory-debian10-jdk11-builder: sync-builder docker-optionfactory-debian10-jdk11
 docker-optionfactory-ubuntu20-jdk11-builder: sync-builder docker-optionfactory-ubuntu20-jdk11
+docker-optionfactory-rocky8-jdk11-builder: sync-builder docker-optionfactory-rocky8-jdk11
 
 #docker-optionfactory-%-nginx120: $(subst -nginx120,,$@)
 docker-optionfactory-centos8-nginx120: sync-nginx120 docker-optionfactory-centos8
 docker-optionfactory-debian10-nginx120: sync-nginx120 docker-optionfactory-debian10
 docker-optionfactory-ubuntu20-nginx120: sync-nginx120 docker-optionfactory-ubuntu20
+docker-optionfactory-rocky8-nginx120: sync-nginx120 docker-optionfactory-rocky8
 
 #docker-optionfactory-%-mariadb10: $(subst -mariadb10,,$@)
 docker-optionfactory-centos8-mariadb10: sync-mariadb10 docker-optionfactory-centos8
 docker-optionfactory-debian10-mariadb10: sync-mariadb10 docker-optionfactory-debian10
 docker-optionfactory-ubuntu20-mariadb10: sync-mariadb10 docker-optionfactory-ubuntu20
+docker-optionfactory-rocky8-mariadb10: sync-mariadb10 docker-optionfactory-rocky8
 
 #docker-optionfactory-%-postgres12: $(subst -postgres12,,$@)
 docker-optionfactory-centos8-postgres12: sync-postgres12 docker-optionfactory-centos8
 docker-optionfactory-debian10-postgres12: sync-postgres12 docker-optionfactory-debian10
 docker-optionfactory-ubuntu20-postgres12: sync-postgres12 docker-optionfactory-ubuntu20
+docker-optionfactory-rocky8-postgres12: sync-postgres12 docker-optionfactory-rocky8
 
 #docker-optionfactory-%-barman2: $(subst -postgres12,,$@)
 docker-optionfactory-centos8-barman2: sync-barman2 docker-optionfactory-centos8
 docker-optionfactory-debian10-barman2: sync-barman2 docker-optionfactory-debian10
 docker-optionfactory-ubuntu20-barman2: sync-barman2 docker-optionfactory-ubuntu20
+docker-optionfactory-rocky8-barman2: sync-barman2 docker-optionfactory-rocky8
 
 
 #docker-optionfactory-%-golang1: $(subst -golang1,,$@)
 docker-optionfactory-centos8-golang1: sync-golang1 docker-optionfactory-centos8
 docker-optionfactory-debian10-golang1: sync-golang1 docker-optionfactory-debian10
 docker-optionfactory-ubuntu20-golang1: sync-golang1 docker-optionfactory-ubuntu20
+docker-optionfactory-rocky8-golang1: sync-golang1 docker-optionfactory-rocky8
 
 #docker-optionfactory-%-etcd3: $(subst -etcd3,,$@)
 docker-optionfactory-centos8-etcd3: sync-etcd3 docker-optionfactory-centos8
 docker-optionfactory-debian10-etcd3: sync-etcd3 docker-optionfactory-debian10
 docker-optionfactory-ubuntu20-etcd3: sync-etcd3 docker-optionfactory-ubuntu20
+docker-optionfactory-rocky8-etcd3: sync-etcd3 docker-optionfactory-rocky8
 
 #docker-optionfactory-%-journal-remote: $(subst -journal-remote,,$@)
 docker-optionfactory-centos8-journal-remote: sync-journal-remote docker-optionfactory-centos8
 docker-optionfactory-debian10-journal-remote: sync-journal-remote docker-optionfactory-debian10
 docker-optionfactory-ubuntu20-journal-remote: sync-journal-remote docker-optionfactory-ubuntu20
+docker-optionfactory-rocky8-journal-remote: sync-journal-remote docker-optionfactory-rocky8
 
 #docker-optionfactory-%-jdk11-tomcat9: $(subst -tomcat9,,$@)
 docker-optionfactory-centos8-jdk11-tomcat9: sync-tomcat9 docker-optionfactory-centos8-jdk11
 docker-optionfactory-debian10-jdk11-tomcat9: sync-tomcat9 docker-optionfactory-debian10-jdk11
 docker-optionfactory-ubuntu20-jdk11-tomcat9: sync-tomcat9 docker-optionfactory-ubuntu20-jdk11
+docker-optionfactory-rocky8-jdk11-tomcat9: sync-tomcat9 docker-optionfactory-rocky8-jdk11
 
 #docker-optionfactory-%-jdk11-keycloak12: $(subst -keycloak12,,$@)
 docker-optionfactory-centos8-jdk11-keycloak12: sync-psql-jdbc sync-keycloak12 docker-optionfactory-centos8-jdk11
 docker-optionfactory-debian10-jdk11-keycloak12: sync-psql-jdbc sync-keycloak12 docker-optionfactory-debian10-jdk11
 docker-optionfactory-ubuntu20-jdk11-keycloak12: sync-psql-jdbc sync-keycloak12 docker-optionfactory-ubuntu20-jdk11
+docker-optionfactory-rocky8-jdk11-keycloak12: sync-psql-jdbc sync-keycloak12 docker-optionfactory-rocky8-jdk11
 
 
 #docker-optionfactory-%-jdk11-keycloak14: $(subst -keycloak12,,$@)
 docker-optionfactory-centos8-jdk11-keycloak14: sync-psql-jdbc sync-keycloak14 docker-optionfactory-centos8-jdk11
 docker-optionfactory-debian10-jdk11-keycloak14: sync-psql-jdbc sync-keycloak14 docker-optionfactory-debian10-jdk11
 docker-optionfactory-ubuntu20-jdk11-keycloak14: sync-psql-jdbc sync-keycloak14 docker-optionfactory-ubuntu20-jdk11
+docker-optionfactory-rocky8-jdk11-keycloak14: sync-psql-jdbc sync-keycloak14 docker-optionfactory-rocky8-jdk11
 
 
 #docker-optionfactory-%-restalpr: $(subst -restalpr,,$@)
 docker-optionfactory-centos8-restalpr: sync-restalpr docker-optionfactory-centos8
 docker-optionfactory-debian10-restalpr: sync-restalpr docker-optionfactory-debian10
 docker-optionfactory-ubuntu20-restalpr: sync-restalpr docker-optionfactory-ubuntu20
+docker-optionfactory-rocky8-restalpr: sync-restalpr docker-optionfactory-rocky8
 
 
 
