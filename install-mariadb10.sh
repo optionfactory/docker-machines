@@ -49,7 +49,8 @@ esac
 rm -rf /var/lib/mysql
 mkdir -p /var/{lib,run,log}/mysql
 chown -R mysql:mysql /var/{lib,log,run}/mysql
-
+mkdir -p /run/mysqld
+chown -R mysql:mysql /run/mysqld
 
 cat <<-'EOF' > /etc/my.cnf
 	[mysqld]

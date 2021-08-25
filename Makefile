@@ -1,19 +1,19 @@
 #we user squash here to remove unwanted layers, which is an experimental feature
 #{"experimental": true} > /etc/docker/daemon.json
 DOCKER_BUILD_OPTIONS=--no-cache=false --squash
-TAG_VERSION=11
+TAG_VERSION=13
 
 #software versions
-JDK11_VERSION=11.0.11
-JDK11_BUILD=9
-TOMCAT9_VERSION=9.0.48
+JDK11_VERSION=11.0.12
+JDK11_BUILD=7
+TOMCAT9_VERSION=9.0.52
 TOMCAT9_ERROR_REPORT_VALVE_VERSION=2.0
 GOSU1_VERSION=1.12
 SPAWN_AND_TAIL_VERSION=0.2
-GOLANG1_VERSION=1.16.5
+GOLANG1_VERSION=1.17
 ETCD3_VERSION=3.5.0
 KEYCLOAK12_VERSION=12.0.4
-KEYCLOAK14_VERSION=14.0.0
+KEYCLOAK15_VERSION=15.0.2
 PSQL_JDBC_VERSION=42.2.22
 MAVEN3_VERSION=3.8.1
 #/software versions
@@ -106,11 +106,11 @@ docker-optionfactory-ubuntu20-jdk11-keycloak12: sync-psql-jdbc sync-keycloak12 d
 docker-optionfactory-rocky8-jdk11-keycloak12: sync-psql-jdbc sync-keycloak12 docker-optionfactory-rocky8-jdk11
 
 
-#docker-optionfactory-%-jdk11-keycloak14: $(subst -keycloak12,,$@)
-docker-optionfactory-centos8-jdk11-keycloak14: sync-psql-jdbc sync-keycloak14 docker-optionfactory-centos8-jdk11
-docker-optionfactory-debian10-jdk11-keycloak14: sync-psql-jdbc sync-keycloak14 docker-optionfactory-debian10-jdk11
-docker-optionfactory-ubuntu20-jdk11-keycloak14: sync-psql-jdbc sync-keycloak14 docker-optionfactory-ubuntu20-jdk11
-docker-optionfactory-rocky8-jdk11-keycloak14: sync-psql-jdbc sync-keycloak14 docker-optionfactory-rocky8-jdk11
+#docker-optionfactory-%-jdk11-keycloak15: $(subst -keycloak12,,$@)
+docker-optionfactory-centos8-jdk11-keycloak15: sync-psql-jdbc sync-keycloak15 docker-optionfactory-centos8-jdk11
+docker-optionfactory-debian10-jdk11-keycloak15: sync-psql-jdbc sync-keycloak15 docker-optionfactory-debian10-jdk11
+docker-optionfactory-ubuntu20-jdk11-keycloak15: sync-psql-jdbc sync-keycloak15 docker-optionfactory-ubuntu20-jdk11
+docker-optionfactory-rocky8-jdk11-keycloak15: sync-psql-jdbc sync-keycloak15 docker-optionfactory-rocky8-jdk11
 
 
 #docker-optionfactory-%-restalpr: $(subst -restalpr,,$@)
@@ -129,16 +129,16 @@ docker-optionfactory-%:
 
 
 
-sync: sync-tools sync-jdk11 sync-tomcat9 sync-keycloak12 sync-keycloak14 sync-nginx120 sync-mariadb10 sync-postgres12 sync-etcd3 sync-golang1 sync-psql-jdbc
+sync: sync-tools sync-jdk11 sync-tomcat9 sync-keycloak12 sync-keycloak15 sync-nginx120 sync-mariadb10 sync-postgres12 sync-etcd3 sync-golang1 sync-psql-jdbc
 
 sync-tools: deps/gosu1 deps/spawn-and-tail1
 	@echo "syncing gosu"
-	@echo optionfactory-centos8/deps optionfactory-debian10/deps optionfactory-ubuntu20/deps | xargs -n 1 rsync -az deps/gosu-${GOSU1_VERSION}
+	@echo optionfactory-centos8/deps optionfactory-rocky8/deps optionfactory-debian10/deps optionfactory-ubuntu20/deps | xargs -n 1 rsync -az deps/gosu-${GOSU1_VERSION}
 	@echo "syncing ps1"
-	@echo optionfactory-centos8/deps optionfactory-debian10/deps optionfactory-ubuntu20/deps | xargs -n 1 rsync -az install-ps1.sh
+	@echo optionfactory-centos8/deps optionfactory-rocky8/deps optionfactory-debian10/deps optionfactory-ubuntu20/deps | xargs -n 1 rsync -az install-ps1.sh
 	@echo "syncing spawn-and-tail"
-	@echo optionfactory-centos8/deps optionfactory-debian10/deps optionfactory-ubuntu20/deps | xargs -n 1 rsync -az install-spawn-and-tail.sh
-	@echo optionfactory-centos8/deps optionfactory-debian10/deps optionfactory-ubuntu20/deps | xargs -n 1 rsync -az deps/spawn-and-tail-${SPAWN_AND_TAIL_VERSION}
+	@echo optionfactory-centos8/deps optionfactory-rocky8/deps optionfactory-debian10/deps optionfactory-ubuntu20/deps | xargs -n 1 rsync -az install-spawn-and-tail.sh
+	@echo optionfactory-centos8/deps optionfactory-rocky8/deps optionfactory-debian10/deps optionfactory-ubuntu20/deps | xargs -n 1 rsync -az deps/spawn-and-tail-${SPAWN_AND_TAIL_VERSION}
 sync-jdk11: deps/jdk11
 	@echo "syncing jdk 11"
 	@echo optionfactory-*-jdk11/deps | xargs -n 1 rsync -az install-jdk11.sh
@@ -158,11 +158,11 @@ sync-keycloak12: deps/keycloak12
 	@echo optionfactory-*-keycloak12/deps | xargs -n 1 rsync -az install-keycloak12.sh
 	@echo optionfactory-*-keycloak12/deps | xargs -n 1 rsync -az init-keycloak12.sh
 	@echo optionfactory-*-keycloak12/deps | xargs -n 1 rsync -az deps/keycloak-${KEYCLOAK12_VERSION}
-sync-keycloak14: deps/keycloak14
-	@echo "syncing keycloak 14"
-	@echo optionfactory-*-keycloak14/deps | xargs -n 1 rsync -az install-keycloak14.sh
-	@echo optionfactory-*-keycloak14/deps | xargs -n 1 rsync -az init-keycloak14.sh
-	@echo optionfactory-*-keycloak14/deps | xargs -n 1 rsync -az deps/keycloak-${KEYCLOAK14_VERSION}	
+sync-keycloak15: deps/keycloak15
+	@echo "syncing keycloak 15"
+	@echo optionfactory-*-keycloak15/deps | xargs -n 1 rsync -az install-keycloak15.sh
+	@echo optionfactory-*-keycloak15/deps | xargs -n 1 rsync -az init-keycloak15.sh
+	@echo optionfactory-*-keycloak15/deps | xargs -n 1 rsync -az deps/keycloak-${KEYCLOAK15_VERSION}	
 sync-nginx120:
 	@echo optionfactory-*-nginx120/deps | xargs -n 1 rsync -az install-nginx120.sh
 	@echo optionfactory-*-nginx120/deps | xargs -n 1 rsync -az init-nginx120.sh
@@ -198,14 +198,14 @@ sync-golang1: deps/golang1
 sync-psql-jdbc: deps/psql-jdbc
 	@echo "syncing psql-jdbc driver"
 	@echo optionfactory-*-keycloak12/deps | xargs -n 1 rsync -az deps/postgresql-${PSQL_JDBC_VERSION}.jar
-	@echo optionfactory-*-keycloak14/deps | xargs -n 1 rsync -az deps/postgresql-${PSQL_JDBC_VERSION}.jar
+	@echo optionfactory-*-keycloak15/deps | xargs -n 1 rsync -az deps/postgresql-${PSQL_JDBC_VERSION}.jar
 sync-restalpr: deps/restalpr
 	@echo "syncing alpr"
 	@echo optionfactory-*-restalpr/deps | xargs -n 1 rsync -az install-restalpr.sh
 	@echo optionfactory-*-restalpr/deps | xargs -n 1 rsync -az init-restalpr.sh
 
 
-deps: deps/gosu1 deps/spawn-and-tail1 deps/jdk11 deps/tomcat9 deps/keycloak12 deps/psql-jdbc deps/mariadb10 deps/postgres12 deps/barman2 deps/golang1 deps/etcd3
+deps: deps/gosu1 deps/spawn-and-tail1 deps/jdk11 deps/tomcat9 deps/keycloak12 deps/keycloak15 deps/psql-jdbc deps/mariadb10 deps/postgres12 deps/barman2 deps/golang1 deps/etcd3
 
 deps/gosu1: deps/gosu-${GOSU1_VERSION}
 deps/spawn-and-tail1: deps/spawn-and-tail-${SPAWN_AND_TAIL_VERSION}
@@ -213,7 +213,7 @@ deps/jdk11: deps/jdk-${JDK11_VERSION}+${JDK11_BUILD}
 deps/maven3: deps/apache-maven-${MAVEN3_VERSION}
 deps/tomcat9: deps/apache-tomcat-${TOMCAT9_VERSION} deps/tomcat9-logging-error-report-valve-${TOMCAT9_ERROR_REPORT_VALVE_VERSION}.jar
 deps/keycloak12: deps/keycloak-${KEYCLOAK12_VERSION}
-deps/keycloak14: deps/keycloak-${KEYCLOAK14_VERSION}
+deps/keycloak15: deps/keycloak-${KEYCLOAK15_VERSION}
 deps/psql-jdbc: deps/postgresql-${PSQL_JDBC_VERSION}.jar
 deps/mariadb10:
 deps/postgres12:
@@ -223,7 +223,7 @@ deps/etcd3: deps/etcd-v${ETCD3_VERSION}-linux-amd64
 deps/restalpr:
 
 deps/jdk-${JDK11_VERSION}+${JDK11_BUILD}:
-	curl -# -j -k -L https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-${JDK11_VERSION}%2B${JDK11_BUILD}/OpenJDK11U-jdk_x64_linux_hotspot_${JDK11_VERSION}_${JDK11_BUILD}.tar.gz | tar xz -C deps
+	curl -# -j -k -L https://github.com/adoptium/temurin11-binaries/releases/download/jdk-${JDK11_VERSION}%2B${JDK11_BUILD}/OpenJDK11U-jdk_x64_linux_hotspot_${JDK11_VERSION}_${JDK11_BUILD}.tar.gz	| tar xz -C deps
 deps/apache-maven-${MAVEN3_VERSION}:
 	curl -# -j -k -L https://downloads.apache.org/maven/maven-3/${MAVEN3_VERSION}/binaries/apache-maven-${MAVEN3_VERSION}-bin.tar.gz | tar xz -C deps
 deps/apache-tomcat-${TOMCAT9_VERSION}:
@@ -243,8 +243,8 @@ deps/etcd-v${ETCD3_VERSION}-linux-amd64:
 	curl -# -j -k -L  https://github.com/etcd-io/etcd/releases/download/v${ETCD3_VERSION}/etcd-v${ETCD3_VERSION}-linux-amd64.tar.gz | tar xz -C deps
 deps/keycloak-${KEYCLOAK12_VERSION}:
 	curl -# -j -k -L  https://github.com/keycloak/keycloak/releases/download/${KEYCLOAK12_VERSION}/keycloak-${KEYCLOAK12_VERSION}.tar.gz | tar xz -C deps
-deps/keycloak-${KEYCLOAK14_VERSION}:
-	curl -# -j -k -L  https://github.com/keycloak/keycloak/releases/download/${KEYCLOAK14_VERSION}/keycloak-${KEYCLOAK14_VERSION}.tar.gz | tar xz -C deps
+deps/keycloak-${KEYCLOAK15_VERSION}:
+	curl -# -j -k -L  https://github.com/keycloak/keycloak/releases/download/${KEYCLOAK15_VERSION}/keycloak-${KEYCLOAK15_VERSION}.tar.gz | tar xz -C deps
 deps/postgresql-${PSQL_JDBC_VERSION}.jar:
 	curl -# -j -k -L  https://repo1.maven.org/maven2/org/postgresql/postgresql/${PSQL_JDBC_VERSION}/postgresql-${PSQL_JDBC_VERSION}.jar -o deps/postgresql-${PSQL_JDBC_VERSION}.jar
 deps/restalpr:

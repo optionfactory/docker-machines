@@ -9,7 +9,7 @@ if [ $# -eq 0 ]; then
 
         mysql_client=( mysql --protocol=socket -uroot )
         echo "database initialized"
-        gosu mysql:docker-machines mysqld --defaults-file=/etc/my.cnf --skip-networking &
+        gosu mysql:docker-machines mysqld_safe --user=mysql --defaults-file=/etc/my.cnf --skip-networking &
         pid="$!"
         for i in {30..0}; do
 			if echo 'select 1' | "${mysql_client[@]}" &> /dev/null; then
@@ -36,7 +36,7 @@ if [ $# -eq 0 ]; then
 		fi
 
     fi
-    exec gosu mysql:docker-machines mysqld --defaults-file=/etc/my.cnf
+    exec gosu mysql:docker-machines mysqld_safe --user=mysql --defaults-file=/etc/my.cnf
 fi
 
 exec "$@"
