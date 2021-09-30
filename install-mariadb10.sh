@@ -6,7 +6,7 @@ groupadd --system --gid 20000 docker-machines
 useradd --system --create-home --gid docker-machines --uid 20003 mysql
 
 case "${DISTRIB_LABEL}" in
-    debian10)
+    debian*)
         DEBIAN_FRONTEND=noninteractive apt-get -y -q update
         DEBIAN_FRONTEND=noninteractive apt-get -y -q install software-properties-common dirmngr
         DEBIAN_FRONTEND=noninteractive apt-key adv --recv-keys --keyserver keyserver.ubuntu.com 0xF1656F24C74CD1D8
@@ -51,6 +51,8 @@ mkdir -p /var/{lib,run,log}/mysql
 chown -R mysql:mysql /var/{lib,log,run}/mysql
 mkdir -p /run/mysqld
 chown -R mysql:mysql /run/mysqld
+mkdir -p /var/run/mysqld
+chown -R mysql:mysql /var/run/mysqld
 
 cat <<-'EOF' > /etc/my.cnf
 	[mysqld]

@@ -36,7 +36,7 @@ if [ $# -eq 0 ]; then
 		fi
 
     fi
-    exec gosu mysql:docker-machines mysqld_safe --user=mysql --defaults-file=/etc/my.cnf
+    exec gosu mysql:docker-machines mysqld_safe --defaults-file=/etc/my.cnf --user=mysql
 fi
 
 exec "$@"

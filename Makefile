@@ -1,16 +1,19 @@
 #we user squash here to remove unwanted layers, which is an experimental feature
 #{"experimental": true} > /etc/docker/daemon.json
 DOCKER_BUILD_OPTIONS=--no-cache=false --squash
-TAG_VERSION=13
+TAG_VERSION=14
 
 #software versions
 JDK11_VERSION=11.0.12
 JDK11_BUILD=7
-TOMCAT9_VERSION=9.0.52
+JDK17_VERSION=17
+JDK17_BUILD=35
+
+TOMCAT9_VERSION=9.0.53
 TOMCAT9_ERROR_REPORT_VALVE_VERSION=2.0
 GOSU1_VERSION=1.12
 SPAWN_AND_TAIL_VERSION=0.2
-GOLANG1_VERSION=1.17
+GOLANG1_VERSION=1.17.1
 ETCD3_VERSION=3.5.0
 KEYCLOAK12_VERSION=12.0.4
 KEYCLOAK15_VERSION=15.0.2
@@ -34,6 +37,7 @@ docker-push:
 
 docker-optionfactory-centos8: sync-tools
 docker-optionfactory-debian10: sync-tools
+docker-optionfactory-debian11: sync-tools
 docker-optionfactory-ubuntu20: sync-tools
 docker-optionfactory-rocky8: sync-tools
 
@@ -41,36 +45,59 @@ docker-optionfactory-rocky8: sync-tools
 docker-optionfactory-centos8-jdk11: sync-jdk11 docker-optionfactory-centos8
 docker-optionfactory-centos8-jdk11: sync-jdk11 docker-optionfactory-centos8
 docker-optionfactory-debian10-jdk11: sync-jdk11 docker-optionfactory-debian10
+docker-optionfactory-debian11-jdk11: sync-jdk11 docker-optionfactory-debian11
 docker-optionfactory-ubuntu20-jdk11: sync-jdk11 docker-optionfactory-ubuntu20
 docker-optionfactory-rocky8-jdk11: sync-jdk11 docker-optionfactory-rocky8
+
+
+#docker-optionfactory-%-jdk17: $(subst -jdk17,,$@)
+docker-optionfactory-centos8-jdk17: sync-jdk17 docker-optionfactory-centos8
+docker-optionfactory-centos8-jdk17: sync-jdk17 docker-optionfactory-centos8
+docker-optionfactory-debian10-jdk17: sync-jdk17 docker-optionfactory-debian10
+docker-optionfactory-debian11-jdk17: sync-jdk17 docker-optionfactory-debian11
+docker-optionfactory-ubuntu20-jdk17: sync-jdk17 docker-optionfactory-ubuntu20
+docker-optionfactory-rocky8-jdk17: sync-jdk17 docker-optionfactory-rocky8
 
 #docker-optionfactory-%-jdk11-builder: $(subst -jdk11-builder,,$@)
 docker-optionfactory-centos8-jdk11-builder: sync-builder docker-optionfactory-centos8-jdk11
 docker-optionfactory-debian10-jdk11-builder: sync-builder docker-optionfactory-debian10-jdk11
+docker-optionfactory-debian11-jdk11-builder: sync-builder docker-optionfactory-debian11-jdk11
 docker-optionfactory-ubuntu20-jdk11-builder: sync-builder docker-optionfactory-ubuntu20-jdk11
 docker-optionfactory-rocky8-jdk11-builder: sync-builder docker-optionfactory-rocky8-jdk11
+
+#docker-optionfactory-%-jdk17-builder: $(subst -jdk17-builder,,$@)
+docker-optionfactory-centos8-jdk17-builder: sync-builder docker-optionfactory-centos8-jdk17
+docker-optionfactory-debian10-jdk17-builder: sync-builder docker-optionfactory-debian10-jdk17
+docker-optionfactory-debian11-jdk17-builder: sync-builder docker-optionfactory-debian11-jdk17
+docker-optionfactory-ubuntu20-jdk17-builder: sync-builder docker-optionfactory-ubuntu20-jdk17
+docker-optionfactory-rocky8-jdk17-builder: sync-builder docker-optionfactory-rocky8-jdk17
+
 
 #docker-optionfactory-%-nginx120: $(subst -nginx120,,$@)
 docker-optionfactory-centos8-nginx120: sync-nginx120 docker-optionfactory-centos8
 docker-optionfactory-debian10-nginx120: sync-nginx120 docker-optionfactory-debian10
+docker-optionfactory-debian11-nginx120: sync-nginx120 docker-optionfactory-debian11
 docker-optionfactory-ubuntu20-nginx120: sync-nginx120 docker-optionfactory-ubuntu20
 docker-optionfactory-rocky8-nginx120: sync-nginx120 docker-optionfactory-rocky8
 
 #docker-optionfactory-%-mariadb10: $(subst -mariadb10,,$@)
 docker-optionfactory-centos8-mariadb10: sync-mariadb10 docker-optionfactory-centos8
 docker-optionfactory-debian10-mariadb10: sync-mariadb10 docker-optionfactory-debian10
+docker-optionfactory-debian11-mariadb10: sync-mariadb10 docker-optionfactory-debian11
 docker-optionfactory-ubuntu20-mariadb10: sync-mariadb10 docker-optionfactory-ubuntu20
 docker-optionfactory-rocky8-mariadb10: sync-mariadb10 docker-optionfactory-rocky8
 
 #docker-optionfactory-%-postgres12: $(subst -postgres12,,$@)
 docker-optionfactory-centos8-postgres12: sync-postgres12 docker-optionfactory-centos8
 docker-optionfactory-debian10-postgres12: sync-postgres12 docker-optionfactory-debian10
+docker-optionfactory-debian11-postgres12: sync-postgres12 docker-optionfactory-debian11
 docker-optionfactory-ubuntu20-postgres12: sync-postgres12 docker-optionfactory-ubuntu20
 docker-optionfactory-rocky8-postgres12: sync-postgres12 docker-optionfactory-rocky8
 
 #docker-optionfactory-%-barman2: $(subst -postgres12,,$@)
 docker-optionfactory-centos8-barman2: sync-barman2 docker-optionfactory-centos8
 docker-optionfactory-debian10-barman2: sync-barman2 docker-optionfactory-debian10
+docker-optionfactory-debian11-barman2: sync-barman2 docker-optionfactory-debian11
 docker-optionfactory-ubuntu20-barman2: sync-barman2 docker-optionfactory-ubuntu20
 docker-optionfactory-rocky8-barman2: sync-barman2 docker-optionfactory-rocky8
 
@@ -78,40 +105,59 @@ docker-optionfactory-rocky8-barman2: sync-barman2 docker-optionfactory-rocky8
 #docker-optionfactory-%-golang1: $(subst -golang1,,$@)
 docker-optionfactory-centos8-golang1: sync-golang1 docker-optionfactory-centos8
 docker-optionfactory-debian10-golang1: sync-golang1 docker-optionfactory-debian10
+docker-optionfactory-debian11-golang1: sync-golang1 docker-optionfactory-debian11
 docker-optionfactory-ubuntu20-golang1: sync-golang1 docker-optionfactory-ubuntu20
 docker-optionfactory-rocky8-golang1: sync-golang1 docker-optionfactory-rocky8
 
 #docker-optionfactory-%-etcd3: $(subst -etcd3,,$@)
 docker-optionfactory-centos8-etcd3: sync-etcd3 docker-optionfactory-centos8
 docker-optionfactory-debian10-etcd3: sync-etcd3 docker-optionfactory-debian10
+docker-optionfactory-debian11-etcd3: sync-etcd3 docker-optionfactory-debian11
 docker-optionfactory-ubuntu20-etcd3: sync-etcd3 docker-optionfactory-ubuntu20
 docker-optionfactory-rocky8-etcd3: sync-etcd3 docker-optionfactory-rocky8
 
 #docker-optionfactory-%-journal-remote: $(subst -journal-remote,,$@)
 docker-optionfactory-centos8-journal-remote: sync-journal-remote docker-optionfactory-centos8
 docker-optionfactory-debian10-journal-remote: sync-journal-remote docker-optionfactory-debian10
+docker-optionfactory-debian11-journal-remote: sync-journal-remote docker-optionfactory-debian11
 docker-optionfactory-ubuntu20-journal-remote: sync-journal-remote docker-optionfactory-ubuntu20
 docker-optionfactory-rocky8-journal-remote: sync-journal-remote docker-optionfactory-rocky8
 
 #docker-optionfactory-%-jdk11-tomcat9: $(subst -tomcat9,,$@)
 docker-optionfactory-centos8-jdk11-tomcat9: sync-tomcat9 docker-optionfactory-centos8-jdk11
 docker-optionfactory-debian10-jdk11-tomcat9: sync-tomcat9 docker-optionfactory-debian10-jdk11
+docker-optionfactory-debian11-jdk11-tomcat9: sync-tomcat9 docker-optionfactory-debian11-jdk11
 docker-optionfactory-ubuntu20-jdk11-tomcat9: sync-tomcat9 docker-optionfactory-ubuntu20-jdk11
 docker-optionfactory-rocky8-jdk11-tomcat9: sync-tomcat9 docker-optionfactory-rocky8-jdk11
+
+#docker-optionfactory-%-jdk17-tomcat9: $(subst -tomcat9,,$@)
+docker-optionfactory-centos8-jdk17-tomcat9: sync-tomcat9 docker-optionfactory-centos8-jdk17
+docker-optionfactory-debian10-jdk17-tomcat9: sync-tomcat9 docker-optionfactory-debian10-jdk17
+docker-optionfactory-debian11-jdk17-tomcat9: sync-tomcat9 docker-optionfactory-debian11-jdk17
+docker-optionfactory-ubuntu20-jdk17-tomcat9: sync-tomcat9 docker-optionfactory-ubuntu20-jdk17
+docker-optionfactory-rocky8-jdk17-tomcat9: sync-tomcat9 docker-optionfactory-rocky8-jdk17
+
 
 #docker-optionfactory-%-jdk11-keycloak12: $(subst -keycloak12,,$@)
 docker-optionfactory-centos8-jdk11-keycloak12: sync-psql-jdbc sync-keycloak12 docker-optionfactory-centos8-jdk11
 docker-optionfactory-debian10-jdk11-keycloak12: sync-psql-jdbc sync-keycloak12 docker-optionfactory-debian10-jdk11
+docker-optionfactory-debian11-jdk11-keycloak12: sync-psql-jdbc sync-keycloak12 docker-optionfactory-debian11-jdk11
 docker-optionfactory-ubuntu20-jdk11-keycloak12: sync-psql-jdbc sync-keycloak12 docker-optionfactory-ubuntu20-jdk11
 docker-optionfactory-rocky8-jdk11-keycloak12: sync-psql-jdbc sync-keycloak12 docker-optionfactory-rocky8-jdk11
-
 
 #docker-optionfactory-%-jdk11-keycloak15: $(subst -keycloak12,,$@)
 docker-optionfactory-centos8-jdk11-keycloak15: sync-psql-jdbc sync-keycloak15 docker-optionfactory-centos8-jdk11
 docker-optionfactory-debian10-jdk11-keycloak15: sync-psql-jdbc sync-keycloak15 docker-optionfactory-debian10-jdk11
+docker-optionfactory-debian11-jdk11-keycloak15: sync-psql-jdbc sync-keycloak15 docker-optionfactory-debian11-jdk11
 docker-optionfactory-ubuntu20-jdk11-keycloak15: sync-psql-jdbc sync-keycloak15 docker-optionfactory-ubuntu20-jdk11
 docker-optionfactory-rocky8-jdk11-keycloak15: sync-psql-jdbc sync-keycloak15 docker-optionfactory-rocky8-jdk11
 
+#docker-optionfactory-%-jdk17-keycloak15: $(subst -keycloak12,,$@)
+docker-optionfactory-centos8-jdk17-keycloak15: sync-psql-jdbc sync-keycloak15 docker-optionfactory-centos8-jdk17
+docker-optionfactory-debian10-jdk17-keycloak15: sync-psql-jdbc sync-keycloak15 docker-optionfactory-debian10-jdk17
+docker-optionfactory-debian11-jdk17-keycloak15: sync-psql-jdbc sync-keycloak15 docker-optionfactory-debian11-jdk17
+docker-optionfactory-ubuntu20-jdk17-keycloak15: sync-psql-jdbc sync-keycloak15 docker-optionfactory-ubuntu20-jdk17
+docker-optionfactory-rocky8-jdk17-keycloak15: sync-psql-jdbc sync-keycloak15 docker-optionfactory-rocky8-jdk17
 
 #docker-optionfactory-%-restalpr: $(subst -restalpr,,$@)
 docker-optionfactory-centos8-restalpr: sync-restalpr docker-optionfactory-centos8
@@ -129,24 +175,28 @@ docker-optionfactory-%:
 
 
 
-sync: sync-tools sync-jdk11 sync-tomcat9 sync-keycloak12 sync-keycloak15 sync-nginx120 sync-mariadb10 sync-postgres12 sync-etcd3 sync-golang1 sync-psql-jdbc
+sync: sync-tools sync-jdk11 sync-jdk17 sync-tomcat9 sync-keycloak12 sync-keycloak15 sync-nginx120 sync-mariadb10 sync-postgres12 sync-etcd3 sync-golang1 sync-psql-jdbc
 
 sync-tools: deps/gosu1 deps/spawn-and-tail1
 	@echo "syncing gosu"
-	@echo optionfactory-centos8/deps optionfactory-rocky8/deps optionfactory-debian10/deps optionfactory-ubuntu20/deps | xargs -n 1 rsync -az deps/gosu-${GOSU1_VERSION}
+	@echo optionfactory-centos8/deps optionfactory-rocky8/deps optionfactory-debian10/deps optionfactory-debian11/deps optionfactory-ubuntu20/deps | xargs -n 1 rsync -az deps/gosu-${GOSU1_VERSION}
 	@echo "syncing ps1"
-	@echo optionfactory-centos8/deps optionfactory-rocky8/deps optionfactory-debian10/deps optionfactory-ubuntu20/deps | xargs -n 1 rsync -az install-ps1.sh
+	@echo optionfactory-centos8/deps optionfactory-rocky8/deps optionfactory-debian10/deps optionfactory-debian11/deps optionfactory-ubuntu20/deps | xargs -n 1 rsync -az install-ps1.sh
 	@echo "syncing spawn-and-tail"
-	@echo optionfactory-centos8/deps optionfactory-rocky8/deps optionfactory-debian10/deps optionfactory-ubuntu20/deps | xargs -n 1 rsync -az install-spawn-and-tail.sh
-	@echo optionfactory-centos8/deps optionfactory-rocky8/deps optionfactory-debian10/deps optionfactory-ubuntu20/deps | xargs -n 1 rsync -az deps/spawn-and-tail-${SPAWN_AND_TAIL_VERSION}
+	@echo optionfactory-centos8/deps optionfactory-rocky8/deps optionfactory-debian10/deps optionfactory-debian11/deps optionfactory-ubuntu20/deps | xargs -n 1 rsync -az install-spawn-and-tail.sh
+	@echo optionfactory-centos8/deps optionfactory-rocky8/deps optionfactory-debian10/deps optionfactory-debian11/deps optionfactory-ubuntu20/deps | xargs -n 1 rsync -az deps/spawn-and-tail-${SPAWN_AND_TAIL_VERSION}
 sync-jdk11: deps/jdk11
 	@echo "syncing jdk 11"
 	@echo optionfactory-*-jdk11/deps | xargs -n 1 rsync -az install-jdk11.sh
 	@echo optionfactory-*-jdk11/deps | xargs -n 1 rsync -az deps/jdk-${JDK11_VERSION}+${JDK11_BUILD}
+sync-jdk17: deps/jdk17
+	@echo "syncing jdk 17"
+	@echo optionfactory-*-jdk17/deps | xargs -n 1 rsync -az install-jdk.sh
+	@echo optionfactory-*-jdk17/deps | xargs -n 1 rsync -az deps/jdk-${JDK17_VERSION}+${JDK17_BUILD}	
 sync-builder: deps/maven3
 	@echo "syncing maven 3"
-	@echo optionfactory-*-jdk11-builder/deps | xargs -n 1 rsync -az install-builder.sh
-	@echo optionfactory-*-jdk11-builder/deps | xargs -n 1 rsync -az deps/apache-maven-${MAVEN3_VERSION}
+	@echo optionfactory-*-jdk*-builder/deps | xargs -n 1 rsync -az install-builder.sh
+	@echo optionfactory-*-jdk*-builder/deps | xargs -n 1 rsync -az deps/apache-maven-${MAVEN3_VERSION}
 sync-tomcat9: deps/tomcat9
 	@echo "syncing tomcat 9"
 	@echo optionfactory-*-tomcat9/deps | xargs -n 1 rsync -az install-tomcat9.sh
@@ -210,6 +260,7 @@ deps: deps/gosu1 deps/spawn-and-tail1 deps/jdk11 deps/tomcat9 deps/keycloak12 de
 deps/gosu1: deps/gosu-${GOSU1_VERSION}
 deps/spawn-and-tail1: deps/spawn-and-tail-${SPAWN_AND_TAIL_VERSION}
 deps/jdk11: deps/jdk-${JDK11_VERSION}+${JDK11_BUILD}
+deps/jdk17: deps/jdk-${JDK17_VERSION}+${JDK17_BUILD}
 deps/maven3: deps/apache-maven-${MAVEN3_VERSION}
 deps/tomcat9: deps/apache-tomcat-${TOMCAT9_VERSION} deps/tomcat9-logging-error-report-valve-${TOMCAT9_ERROR_REPORT_VALVE_VERSION}.jar
 deps/keycloak12: deps/keycloak-${KEYCLOAK12_VERSION}
@@ -224,6 +275,8 @@ deps/restalpr:
 
 deps/jdk-${JDK11_VERSION}+${JDK11_BUILD}:
 	curl -# -j -k -L https://github.com/adoptium/temurin11-binaries/releases/download/jdk-${JDK11_VERSION}%2B${JDK11_BUILD}/OpenJDK11U-jdk_x64_linux_hotspot_${JDK11_VERSION}_${JDK11_BUILD}.tar.gz	| tar xz -C deps
+deps/jdk-${JDK17_VERSION}+${JDK17_BUILD}:
+	curl -# -j -k -L https://github.com/adoptium/temurin17-binaries/releases/download/jdk-${JDK17_VERSION}%2B${JDK17_BUILD}/OpenJDK17-jdk_x64_linux_hotspot_${JDK17_VERSION}_${JDK17_BUILD}.tar.gz	| tar xz -C deps
 deps/apache-maven-${MAVEN3_VERSION}:
 	curl -# -j -k -L https://downloads.apache.org/maven/maven-3/${MAVEN3_VERSION}/binaries/apache-maven-${MAVEN3_VERSION}-bin.tar.gz | tar xz -C deps
 deps/apache-tomcat-${TOMCAT9_VERSION}:
