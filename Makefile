@@ -17,6 +17,7 @@ GOLANG1_VERSION=1.17.5
 ETCD3_VERSION=3.5.0
 KEYCLOAK15_VERSION=15.1.0
 KEYCLOAK16_VERSION=16.0.0
+KEYCLOAKX16_VERSION=16.0.0
 PSQL_JDBC_VERSION=42.3.1
 MAVEN3_VERSION=3.8.4
 #/software versions
@@ -121,6 +122,12 @@ docker-optionfactory-debian11-jdk17-keycloak16: sync-psql-jdbc sync-keycloak16 d
 docker-optionfactory-ubuntu20-jdk17-keycloak16: sync-psql-jdbc sync-keycloak16 docker-optionfactory-ubuntu20-jdk17
 docker-optionfactory-rocky8-jdk17-keycloak16: sync-psql-jdbc sync-keycloak16 docker-optionfactory-rocky8-jdk17
 
+#docker-optionfactory-%-jdk17-keycloakx16: $(subst -keycloakx16,,$@)
+docker-optionfactory-debian11-jdk17-keycloakx16: sync-psql-jdbc sync-keycloakx16 docker-optionfactory-debian11-jdk17
+docker-optionfactory-ubuntu20-jdk17-keycloakx16: sync-psql-jdbc sync-keycloakx16 docker-optionfactory-ubuntu20-jdk17
+docker-optionfactory-rocky8-jdk17-keycloakx16: sync-psql-jdbc sync-keycloakx16 docker-optionfactory-rocky8-jdk17
+
+
 
 #docker-optionfactory-%-restalpr: $(subst -restalpr,,$@)
 docker-optionfactory-ubuntu20-restalpr: sync-restalpr docker-optionfactory-ubuntu20
@@ -136,7 +143,7 @@ docker-optionfactory-%:
 
 
 
-sync: sync-tools sync-jdk11 sync-jdk17 sync-tomcat9 sync-keycloak15 sync-keycloak16 sync-nginx120 sync-mariadb10 sync-postgres12 sync-etcd3 sync-golang1 sync-psql-jdbc
+sync: sync-tools sync-jdk11 sync-jdk17 sync-tomcat9 sync-keycloak15 sync-keycloak16 sync-keycloakx16 sync-nginx120 sync-mariadb10 sync-postgres12 sync-etcd3 sync-golang1 sync-psql-jdbc
 
 sync-tools: deps/gosu1 deps/spawn-and-tail1
 	@echo "syncing gosu"
@@ -174,6 +181,11 @@ sync-keycloak16: deps/keycloak16
 	@echo optionfactory-*-keycloak16/deps | xargs -n 1 rsync -az install-keycloak16.sh
 	@echo optionfactory-*-keycloak16/deps | xargs -n 1 rsync -az init-keycloak16.sh
 	@echo optionfactory-*-keycloak16/deps | xargs -n 1 rsync -az deps/keycloak-${KEYCLOAK16_VERSION}
+sync-keycloakx16: deps/keycloakx16
+	@echo "syncing keycloak 16"
+	@echo optionfactory-*-keycloakx16/deps | xargs -n 1 rsync -az install-keycloakx16.sh
+	@echo optionfactory-*-keycloakx16/deps | xargs -n 1 rsync -az init-keycloakx16.sh
+	@echo optionfactory-*-keycloakx16/deps | xargs -n 1 rsync -az deps/keycloak.x-${KEYCLOAKX16_VERSION}	
 sync-nginx120:
 	@echo optionfactory-*-nginx120/deps | xargs -n 1 rsync -az install-nginx120.sh
 	@echo optionfactory-*-nginx120/deps | xargs -n 1 rsync -az init-nginx120.sh
@@ -226,6 +238,7 @@ deps/maven3: deps/apache-maven-${MAVEN3_VERSION}
 deps/tomcat9: deps/apache-tomcat-${TOMCAT9_VERSION} deps/tomcat9-logging-error-report-valve-${TOMCAT9_ERROR_REPORT_VALVE_VERSION}.jar
 deps/keycloak15: deps/keycloak-${KEYCLOAK15_VERSION}
 deps/keycloak16: deps/keycloak-${KEYCLOAK16_VERSION}
+deps/keycloakx16: deps/keycloak.x-${KEYCLOAK16_VERSION}
 deps/psql-jdbc: deps/postgresql-${PSQL_JDBC_VERSION}.jar
 deps/mariadb10:
 deps/postgres12:
@@ -259,6 +272,8 @@ deps/keycloak-${KEYCLOAK15_VERSION}:
 	curl -# -j -k -L  https://github.com/keycloak/keycloak/releases/download/${KEYCLOAK15_VERSION}/keycloak-${KEYCLOAK15_VERSION}.tar.gz | tar xz -C deps
 deps/keycloak-${KEYCLOAK16_VERSION}:
 	curl -# -j -k -L  https://github.com/keycloak/keycloak/releases/download/${KEYCLOAK16_VERSION}/keycloak-${KEYCLOAK16_VERSION}.tar.gz | tar xz -C deps
+deps/keycloak.x-${KEYCLOAKX16_VERSION}:
+	curl -# -j -k -L  https://github.com/keycloak/keycloak/releases/download/${KEYCLOAKX16_VERSION}/keycloak.x-preview-${KEYCLOAKX16_VERSION}.tar.gz | tar xz -C deps
 deps/postgresql-${PSQL_JDBC_VERSION}.jar:
 	curl -# -j -k -L  https://repo1.maven.org/maven2/org/postgresql/postgresql/${PSQL_JDBC_VERSION}/postgresql-${PSQL_JDBC_VERSION}.jar -o deps/postgresql-${PSQL_JDBC_VERSION}.jar
 deps/restalpr:
