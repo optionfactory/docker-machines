@@ -6,13 +6,13 @@ cp -R /tmp/keycloak*/* /opt/keycloak
 
 
 mkdir -p /opt/keycloak/modules/org/postgresql/main/
-cp /tmp/postgresql-42.2.22.jar /opt/keycloak/modules/org/postgresql/main/
+cp /tmp/postgresql-42.3.1.jar /opt/keycloak/modules/org/postgresql/main/
 #cp driver
 cat <<-'EOF' > /opt/keycloak/modules/org/postgresql/main/module.xml
 <?xml version="1.0" ?>
 <module xmlns="urn:jboss:module:1.3" name="org.postgresql">
     <resources>
-        <resource-root path="postgresql-42.2.22.jar"/>
+        <resource-root path="postgresql-42.3.1.jar"/>
     </resources>
     <dependencies>
         <module name="javax.api"/>
