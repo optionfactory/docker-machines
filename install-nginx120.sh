@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-NGINX_VERSION=1.20.1
+NGINX_VERSION=1.20.2
 
 echo "Installing nginx ${NGINX_VERSION}"
 
