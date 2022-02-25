@@ -30,6 +30,8 @@ hostname.strict-https=false
 %import_export.hostname.strict=false
 %import_export.hostname.strict-https=false
 %import_export.cluster=local
+quarkus.log.console.color=false
+quarkus.log.console.format=[%d{yyyy-MM-dd HH:mm:ss,SSSz}][%-5p][%c{3.}] (%t) %s%e%n
 quarkus.log.category."org.jboss.resteasy.resteasy_jaxrs.i18n".level=WARN
 quarkus.log.category."org.infinispan.transaction.lookup.JBossStandaloneJTAManagerLookup".level=WARN
 
