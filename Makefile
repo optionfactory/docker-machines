@@ -18,7 +18,7 @@ ETCD3_VERSION=3.5.0
 KEYCLOAK15_VERSION=15.1.1
 KEYCLOAK16_VERSION=16.1.1
 KEYCLOAKX16_VERSION=16.1.1
-KEYCLOAK17_VERSION=17.0.1
+KEYCLOAK18_VERSION=18.0.0
 PSQL_JDBC_VERSION=42.3.1
 MAVEN3_VERSION=3.8.5
 #/software versions
@@ -128,13 +128,10 @@ docker-optionfactory-debian11-jdk17-keycloakx16: sync-psql-jdbc sync-keycloakx16
 docker-optionfactory-ubuntu20-jdk17-keycloakx16: sync-psql-jdbc sync-keycloakx16 docker-optionfactory-ubuntu20-jdk17
 docker-optionfactory-rocky8-jdk17-keycloakx16: sync-psql-jdbc sync-keycloakx16 docker-optionfactory-rocky8-jdk17
 
-#docker-optionfactory-%-jdk17-keycloak17: $(subst -keycloakx16,,$@)
-docker-optionfactory-debian11-jdk17-keycloak17: sync-psql-jdbc sync-keycloak17 docker-optionfactory-debian11-jdk17
-docker-optionfactory-ubuntu20-jdk17-keycloak17: sync-psql-jdbc sync-keycloak17 docker-optionfactory-ubuntu20-jdk17
-docker-optionfactory-rocky8-jdk17-keycloakx17: sync-psql-jdbc sync-keycloak17 docker-optionfactory-rocky8-jdk17
-
-
-
+#docker-optionfactory-%-jdk17-keycloak18: $(subst -keycloakx16,,$@)
+docker-optionfactory-debian11-jdk17-keycloak18: sync-psql-jdbc sync-keycloak18 docker-optionfactory-debian11-jdk17
+docker-optionfactory-ubuntu20-jdk17-keycloak18: sync-psql-jdbc sync-keycloak18 docker-optionfactory-ubuntu20-jdk17
+docker-optionfactory-rocky8-jdk17-keycloakx18: sync-psql-jdbc sync-keycloak18 docker-optionfactory-rocky8-jdk17
 
 
 #docker-optionfactory-%-restalpr: $(subst -restalpr,,$@)
@@ -194,11 +191,11 @@ sync-keycloakx16: deps/keycloakx16
 	@echo optionfactory-*-keycloakx16/deps | xargs -n 1 rsync -az install-keycloakx16.sh
 	@echo optionfactory-*-keycloakx16/deps | xargs -n 1 rsync -az init-keycloakx16.sh
 	@echo optionfactory-*-keycloakx16/deps | xargs -n 1 rsync -az deps/keycloak.x-${KEYCLOAKX16_VERSION}	
-sync-keycloak17: deps/keycloak17
+sync-keycloak18: deps/keycloak18
 	@echo "syncing keycloak 17"
-	@echo optionfactory-*-keycloak17/deps | xargs -n 1 rsync -az install-keycloak17.sh
-	@echo optionfactory-*-keycloak17/deps | xargs -n 1 rsync -az init-keycloak17.sh
-	@echo optionfactory-*-keycloak17/deps | xargs -n 1 rsync -az deps/keycloak-${KEYCLOAK17_VERSION}	
+	@echo optionfactory-*-keycloak18/deps | xargs -n 1 rsync -az install-keycloak18.sh
+	@echo optionfactory-*-keycloak18/deps | xargs -n 1 rsync -az init-keycloak18.sh
+	@echo optionfactory-*-keycloak18/deps | xargs -n 1 rsync -az deps/keycloak-${KEYCLOAK18_VERSION}	
 sync-nginx120:
 	@echo optionfactory-*-nginx120/deps | xargs -n 1 rsync -az install-nginx120.sh
 	@echo optionfactory-*-nginx120/deps | xargs -n 1 rsync -az init-nginx120.sh
@@ -252,7 +249,7 @@ deps/tomcat9: deps/apache-tomcat-${TOMCAT9_VERSION} deps/tomcat9-logging-error-r
 deps/keycloak15: deps/keycloak-${KEYCLOAK15_VERSION}
 deps/keycloak16: deps/keycloak-${KEYCLOAK16_VERSION}
 deps/keycloakx16: deps/keycloak.x-${KEYCLOAK16_VERSION}
-deps/keycloak17: deps/keycloak-${KEYCLOAK17_VERSION}
+deps/keycloak18: deps/keycloak-${KEYCLOAK18_VERSION}
 deps/psql-jdbc: deps/postgresql-${PSQL_JDBC_VERSION}.jar
 deps/mariadb10:
 deps/postgres12:
@@ -288,8 +285,8 @@ deps/keycloak-${KEYCLOAK16_VERSION}:
 	curl -# -j -k -L  https://github.com/keycloak/keycloak/releases/download/${KEYCLOAK16_VERSION}/keycloak-${KEYCLOAK16_VERSION}.tar.gz | tar xz -C deps
 deps/keycloak.x-${KEYCLOAKX16_VERSION}:
 	curl -# -j -k -L  https://github.com/keycloak/keycloak/releases/download/${KEYCLOAKX16_VERSION}/keycloak.x-preview-${KEYCLOAKX16_VERSION}.tar.gz | tar xz -C deps
-deps/keycloak-${KEYCLOAK17_VERSION}:
-	curl -# -j -k -L  https://github.com/keycloak/keycloak/releases/download/${KEYCLOAK17_VERSION}/keycloak-${KEYCLOAK17_VERSION}.tar.gz | tar xz -C deps
+deps/keycloak-${KEYCLOAK18_VERSION}:
+	curl -# -j -k -L  https://github.com/keycloak/keycloak/releases/download/${KEYCLOAK18_VERSION}/keycloak-${KEYCLOAK18_VERSION}.tar.gz | tar xz -C deps
 deps/postgresql-${PSQL_JDBC_VERSION}.jar:
 	curl -# -j -k -L  https://repo1.maven.org/maven2/org/postgresql/postgresql/${PSQL_JDBC_VERSION}/postgresql-${PSQL_JDBC_VERSION}.jar -o deps/postgresql-${PSQL_JDBC_VERSION}.jar
 deps/restalpr:
