@@ -1,6 +1,5 @@
 FROM optionfactory/debian11-jdk11:latest
-MAINTAINER Roberto Ferranti <roberto@optionfactory.net>
-
+LABEL maintainer="Roberto Ferranti <roberto@optionfactory.net>"
 
 COPY deps /tmp/
 

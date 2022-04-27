@@ -1,5 +1,5 @@
 FROM optionfactory/ubuntu22-jdk17:latest
-MAINTAINER Roberto Ferranti <roberto@optionfactory.net>
+LABEL maintainer="Roberto Ferranti <roberto@optionfactory.net>"
 
 COPY deps /tmp/
 

@@ -1,5 +1,5 @@
 FROM rockylinux/rockylinux:8
-MAINTAINER Roberto Ferranti <roberto@optionfactory.net>
+LABEL maintainer="Roberto Ferranti <roberto@optionfactory.net>"
 
 COPY deps /tmp/
 RUN cp /tmp/install-ps1.sh /etc/profile.d/ps1.sh

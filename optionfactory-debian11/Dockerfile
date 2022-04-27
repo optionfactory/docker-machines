@@ -1,5 +1,5 @@
 FROM debian:bullseye
-MAINTAINER Roberto Ferranti <roberto@optionfactory.net>
+LABEL maintainer="Roberto Ferranti <roberto@optionfactory.net>"
 
 COPY deps /tmp/
 RUN cp /tmp/install-ps1.sh /etc/bash.bashrc

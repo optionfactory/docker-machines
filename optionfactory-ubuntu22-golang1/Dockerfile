@@ -1,5 +1,5 @@
 FROM optionfactory/ubuntu22:latest
-MAINTAINER Roberto Ferranti <roberto@optionfactory.net>
+LABEL maintainer="Roberto Ferranti <roberto@optionfactory.net>"
 
 ENV GOPATH /go
 ENV PATH $GOPATH/bin:/usr/local/go/bin:$PATH
