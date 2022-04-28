@@ -5,35 +5,29 @@ mkdir -p /opt/keycloak
 cp -R /tmp/keycloak*/* /opt/keycloak
 
 cat <<-'EOF' > /opt/keycloak/conf/keycloak.conf
+#[build options]
+cache=local
 db=postgres
+transaction-xa-enabled=true
+features=
+http-relative-path=/auth
+health-enabled=false
+metrics-enabled=false
+
+#[runtime options]
 db-url=jdbc:postgresql://172.17.0.1/keycloak
 db-username=postgres
 db-password=
-cache=local
-metrics-enabled=false
-
-http-relative-path=/auth
 
 http-port=8080
-
 proxy=edge
 hostname-strict=false
-hostname-strict-https=false
-
+log=console
+log-console-color=false
+log-console-format=[%d{yyyy-MM-dd HH:mm:ss,SSSz}][%-5p][%c{3.}] (%t) %s%e%n
 %dev.proxy=none
-%dev.hostname.strict=false
-%dev.hostname.strict-https=false
+%dev.hostname-strict=false
 
-#spi.hostname.frontend-url=https://172.17.0.1:8443
-
-%import_export.http.enabled=true
-%import_export.hostname.strict=false
-%import_export.hostname.strict-https=false
-%import_export.cluster=local
-quarkus.log.console.color=false
-quarkus.log.console.format=[%d{yyyy-MM-dd HH:mm:ss,SSSz}][%-5p][%c{3.}] (%t) %s%e%n
-quarkus.log.category."org.jboss.resteasy.resteasy_jaxrs.i18n".level=WARN
-quarkus.log.category."org.infinispan.transaction.lookup.JBossStandaloneJTAManagerLookup".level=WARN
 
 EOF
 

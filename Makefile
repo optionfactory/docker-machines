@@ -82,6 +82,14 @@ docker-optionfactory-ubuntu20-postgres12: sync-postgres12 docker-optionfactory-u
 docker-optionfactory-ubuntu22-postgres12: sync-postgres12 docker-optionfactory-ubuntu22
 docker-optionfactory-rocky8-postgres12: sync-postgres12 docker-optionfactory-rocky8
 
+
+#docker-optionfactory-%-postgres14: $(subst -postgres14,,$@)
+docker-optionfactory-debian11-postgres14: sync-postgres14 docker-optionfactory-debian11
+docker-optionfactory-ubuntu20-postgres14: sync-postgres14 docker-optionfactory-ubuntu20
+docker-optionfactory-ubuntu22-postgres14: sync-postgres14 docker-optionfactory-ubuntu22
+docker-optionfactory-rocky8-postgres14: sync-postgres14 docker-optionfactory-rocky8
+
+
 #docker-optionfactory-%-barman2: $(subst -postgres12,,$@)
 docker-optionfactory-debian11-barman2: sync-barman2 docker-optionfactory-debian11
 docker-optionfactory-ubuntu20-barman2: sync-barman2 docker-optionfactory-ubuntu20
@@ -160,7 +168,7 @@ docker-optionfactory-%:
 
 
 
-sync: sync-tools sync-jdk11 sync-jdk17 sync-tomcat9 sync-quarkus-keycloak1 sync-wildfly-keycloak1 sync-nginx120 sync-mariadb10 sync-postgres12 sync-etcd3 sync-golang1 sync-psql-jdbc
+sync: sync-tools sync-jdk11 sync-jdk17 sync-tomcat9 sync-quarkus-keycloak1 sync-wildfly-keycloak1 sync-nginx120 sync-mariadb10 sync-postgres12 sync-postgres14 sync-etcd3 sync-golang1 sync-psql-jdbc
 
 sync-tools: deps/gosu1 deps/spawn-and-tail1
 	@echo "syncing gosu"
@@ -209,6 +217,10 @@ sync-postgres12: deps/postgres12
 	@echo "syncing postgres 12"
 	@echo optionfactory-*-postgres12/deps | xargs -n 1 rsync -az install-postgres12.sh
 	@echo optionfactory-*-postgres12/deps | xargs -n 1 rsync -az init-postgres12.sh
+sync-postgres14: deps/postgres14
+	@echo "syncing postgres 14"
+	@echo optionfactory-*-postgres14/deps | xargs -n 1 rsync -az install-postgres14.sh
+	@echo optionfactory-*-postgres14/deps | xargs -n 1 rsync -az init-postgres14.sh
 sync-barman2: deps/barman2
 	@echo "syncing barman 2"
 	@echo optionfactory-*-barman2/deps | xargs -n 1 rsync -az install-barman2.sh
@@ -253,6 +265,7 @@ deps/quarkus-keycloak1: deps/keycloak-${KEYCLOAK1_VERSION}
 deps/psql-jdbc: deps/postgresql-${PSQL_JDBC_VERSION}.jar
 deps/mariadb10:
 deps/postgres12:
+deps/postgres14:
 deps/barman2:
 deps/golang1: deps/golang-${GOLANG1_VERSION}/bin/go
 deps/etcd3: deps/etcd-v${ETCD3_VERSION}-linux-amd64
