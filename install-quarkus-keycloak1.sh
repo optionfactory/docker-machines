@@ -19,15 +19,13 @@ db-url=jdbc:postgresql://172.17.0.1/keycloak
 db-username=postgres
 db-password=
 
-http-port=8080
-proxy=edge
-hostname-strict=false
 log=console
 log-console-color=false
 log-console-format=[%d{yyyy-MM-dd HH:mm:ss,SSSz}][%-5p][%c{3.}] (%t) %s%e%n
-%dev.proxy=none
-%dev.hostname-strict=false
 
+http-port=8080
+proxy=edge
+hostname-strict=false
 
 EOF
 
