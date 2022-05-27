@@ -3,6 +3,7 @@
 echo "Installing Keycloak"
 mkdir -p /opt/keycloak
 cp -R /tmp/keycloak*/* /opt/keycloak
+cp -R /tmp/optionfactory-keycloak-*/* /opt/keycloak/providers/
 
 cat <<-'EOF' > /opt/keycloak/conf/keycloak.conf
 #[build options]
@@ -26,6 +27,13 @@ log-console-format=[%d{yyyy-MM-dd HH:mm:ss,SSSz}][%-5p][%c{3.}] (%t) %s%e%n
 http-port=8080
 proxy=edge
 hostname-strict=false
+
+
+#[email-sender-provider:opfa-cid-embedding]
+#spi-email-sender-provider=opfa-cid-embedding
+
+#[events-listener:opfa-login-stats]
+#spi-events-listener-opfa-login-stats-attribute=loginStats
 
 EOF
 
