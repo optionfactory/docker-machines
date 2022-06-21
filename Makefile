@@ -1,7 +1,7 @@
 #we user squash here to remove unwanted layers, which is an experimental feature
 #{"experimental": true} > /etc/docker/daemon.json
 DOCKER_BUILD_OPTIONS=--no-cache=false --squash
-TAG_VERSION=22
+TAG_VERSION=23
 
 #software versions
 JDK11_VERSION=11.0.15
@@ -15,8 +15,8 @@ GOSU1_VERSION=1.14
 SPAWN_AND_TAIL_VERSION=0.2
 GOLANG1_VERSION=1.18.2
 ETCD3_VERSION=3.5.3
-KEYCLOAK1_VERSION=18.0.0
-KEYCLOAK_OPFA_MODULES_VERSION=1.0
+KEYCLOAK1_VERSION=18.0.1
+KEYCLOAK_OPFA_MODULES_VERSION=1.5
 PSQL_JDBC_VERSION=42.3.1
 MAVEN3_VERSION=3.8.5
 #/software versions
@@ -297,8 +297,12 @@ deps/keycloak-${KEYCLOAK1_VERSION}:
 	curl -# -j -k -L  https://github.com/keycloak/keycloak/releases/download/${KEYCLOAK1_VERSION}/keycloak-${KEYCLOAK1_VERSION}.tar.gz | tar xz -C deps
 deps/optionfactory-keycloak-${KEYCLOAK_OPFA_MODULES_VERSION}:
 	mkdir -p deps/optionfactory-keycloak-${KEYCLOAK_OPFA_MODULES_VERSION}
+	curl -# -j -k -L https://repo1.maven.org/maven2/net/optionfactory/keycloak/optionfactory-keycloak-validation/${KEYCLOAK_OPFA_MODULES_VERSION}/optionfactory-keycloak-validation-${KEYCLOAK_OPFA_MODULES_VERSION}.jar  > deps/optionfactory-keycloak-${KEYCLOAK_OPFA_MODULES_VERSION}/optionfactory-keycloak-validation.jar
+	curl -# -j -k -L https://repo1.maven.org/maven2/net/optionfactory/keycloak/optionfactory-keycloak-resources-auth/${KEYCLOAK_OPFA_MODULES_VERSION}/optionfactory-keycloak-resources-auth-${KEYCLOAK_OPFA_MODULES_VERSION}.jar  > deps/optionfactory-keycloak-${KEYCLOAK_OPFA_MODULES_VERSION}/optionfactory-keycloak-resources-auth.jar
 	curl -# -j -k -L https://repo1.maven.org/maven2/net/optionfactory/keycloak/optionfactory-keycloak-email-sender/${KEYCLOAK_OPFA_MODULES_VERSION}/optionfactory-keycloak-email-sender-${KEYCLOAK_OPFA_MODULES_VERSION}.jar  > deps/optionfactory-keycloak-${KEYCLOAK_OPFA_MODULES_VERSION}/optionfactory-keycloak-email-sender.jar
-	curl -# -j -k -L https://repo1.maven.org/maven2/net/optionfactory/keycloak/optionfactory-keycloak-login-stats/${KEYCLOAK_OPFA_MODULES_VERSION}/optionfactory-keycloak-email-sender-${KEYCLOAK_OPFA_MODULES_VERSION}.jar  > deps/optionfactory-keycloak-${KEYCLOAK_OPFA_MODULES_VERSION}/optionfactory-keycloak-login-stats.jar
+	curl -# -j -k -L https://repo1.maven.org/maven2/net/optionfactory/keycloak/optionfactory-keycloak-login-stats/${KEYCLOAK_OPFA_MODULES_VERSION}/optionfactory-keycloak-login-stats-${KEYCLOAK_OPFA_MODULES_VERSION}.jar  > deps/optionfactory-keycloak-${KEYCLOAK_OPFA_MODULES_VERSION}/optionfactory-keycloak-login-stats.jar
+	curl -# -j -k -L https://repo1.maven.org/maven2/net/optionfactory/keycloak/optionfactory-keycloak-provisioning-api/${KEYCLOAK_OPFA_MODULES_VERSION}/optionfactory-keycloak-provisioning-api-${KEYCLOAK_OPFA_MODULES_VERSION}.jar  > deps/optionfactory-keycloak-${KEYCLOAK_OPFA_MODULES_VERSION}/optionfactory-keycloak-provisioning-api.jar
+	curl -# -j -k -L https://repo1.maven.org/maven2/net/optionfactory/keycloak/optionfactory-keycloak-welcome/${KEYCLOAK_OPFA_MODULES_VERSION}/optionfactory-keycloak-welcome-${KEYCLOAK_OPFA_MODULES_VERSION}.jar  > deps/optionfactory-keycloak-${KEYCLOAK_OPFA_MODULES_VERSION}/optionfactory-keycloak-welcome.jar
 deps/keycloak-legacy-${KEYCLOAK1_VERSION}:
 	curl -# -j -k -L  https://github.com/keycloak/keycloak/releases/download/${KEYCLOAK1_VERSION}/keycloak-legacy-${KEYCLOAK1_VERSION}.tar.gz | tar xz -C deps --transform s/keycloak-${KEYCLOAK1_VERSION}/keycloak-legacy-${KEYCLOAK1_VERSION}/
 deps/postgresql-${PSQL_JDBC_VERSION}.jar:

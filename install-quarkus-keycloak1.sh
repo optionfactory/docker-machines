@@ -35,6 +35,9 @@ hostname-strict=false
 #[events-listener:opfa-login-stats]
 #spi-events-listener-opfa-login-stats-attribute=loginStats
 
+#[theme-welcome-theme:opfablank]
+spi-theme-welcome-theme=opfablank
+
 EOF
 
 groupadd --system --gid 20000 docker-machines
