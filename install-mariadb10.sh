@@ -30,7 +30,7 @@ case "${DISTRIB_LABEL}" in
         cat << EOF > /etc/yum.repos.d/mariadb.repo
 [mariadb]
 name = MariaDB
-baseurl=http://yum.mariadb.org/${MARIA_DB_VERSION}/centos8-amd64
+baseurl=http://yum.mariadb.org/${MARIA_DB_VERSION}/rhel8-amd64
 gpgkey=https://yum.mariadb.org/RPM-GPG-KEY-MariaDB
 gpgcheck=1
 EOF

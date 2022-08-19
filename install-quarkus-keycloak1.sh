@@ -11,7 +11,7 @@ cache=local
 db=postgres
 transaction-xa-enabled=true
 features=
-http-relative-path=/auth
+http-relative-path=/
 health-enabled=false
 metrics-enabled=false
 
