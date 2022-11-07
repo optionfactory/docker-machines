@@ -1,7 +1,7 @@
 #we user squash here to remove unwanted layers, which is an experimental feature
 #{"experimental": true} > /etc/docker/daemon.json
 DOCKER_BUILD_OPTIONS=--no-cache=false --squash
-TAG_VERSION=27
+TAG_VERSION=29
 
 #software versions
 JDK11_VERSION=11.0.16.1
@@ -16,7 +16,7 @@ SPAWN_AND_TAIL_VERSION=0.2
 GOLANG1_VERSION=1.19.2
 ETCD3_VERSION=3.5.3
 KEYCLOAK1_VERSION=19.0.3
-KEYCLOAK_OPFA_MODULES_VERSION=1.11
+KEYCLOAK_OPFA_MODULES_VERSION=1.13
 MAVEN3_VERSION=3.8.6
 #/software versions
 
@@ -281,6 +281,7 @@ deps/optionfactory-keycloak-${KEYCLOAK_OPFA_MODULES_VERSION}:
 	curl -# -j -k -L https://repo1.maven.org/maven2/net/optionfactory/keycloak/optionfactory-keycloak-provisioning-api/${KEYCLOAK_OPFA_MODULES_VERSION}/optionfactory-keycloak-provisioning-api-${KEYCLOAK_OPFA_MODULES_VERSION}.jar  > deps/optionfactory-keycloak-${KEYCLOAK_OPFA_MODULES_VERSION}/optionfactory-keycloak-provisioning-api.jar
 	curl -# -j -k -L https://repo1.maven.org/maven2/net/optionfactory/keycloak/optionfactory-keycloak-welcome/${KEYCLOAK_OPFA_MODULES_VERSION}/optionfactory-keycloak-welcome-${KEYCLOAK_OPFA_MODULES_VERSION}.jar  > deps/optionfactory-keycloak-${KEYCLOAK_OPFA_MODULES_VERSION}/optionfactory-keycloak-welcome.jar
 	curl -# -j -k -L https://repo1.maven.org/maven2/net/optionfactory/keycloak/optionfactory-keycloak-bootstrap/${KEYCLOAK_OPFA_MODULES_VERSION}/optionfactory-keycloak-bootstrap-${KEYCLOAK_OPFA_MODULES_VERSION}.jar  > deps/optionfactory-keycloak-${KEYCLOAK_OPFA_MODULES_VERSION}/optionfactory-keycloak-bootstrap.jar
+	curl -# -j -k -L https://repo1.maven.org/maven2/net/optionfactory/keycloak/optionfactory-keycloak-apple-identity-provider/${KEYCLOAK_OPFA_MODULES_VERSION}/optionfactory-keycloak-apple-identity-provider-${KEYCLOAK_OPFA_MODULES_VERSION}.jar  > deps/optionfactory-keycloak-${KEYCLOAK_OPFA_MODULES_VERSION}/optionfactory-keycloak-apple-identity-provider.jar
 deps/restalpr:
 	#TODO: curl go-webservice
 
