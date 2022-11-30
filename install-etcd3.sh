@@ -10,7 +10,7 @@ case "${DISTRIB_LABEL}" in
         DEBIAN_FRONTEND=noninteractive apt-get -y -q autoremove
         rm -rf /var/lib/apt/lists/*
     ;;
-    centos8|rocky8)
+    rocky9)
         yum install -q -y ca-certificates openssl tar
         yum clean all
         rm -rf /var/cache/yum

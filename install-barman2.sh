@@ -7,17 +7,17 @@ useradd --system --create-home --gid docker-machines --uid 20005 barman
 case "${DISTRIB_LABEL}" in
     debian*|ubuntu*)
         DEBIAN_FRONTEND=noninteractive apt-get -y -q update
-        DEBIAN_FRONTEND=noninteractive apt-get install -y -q curl gnupg
-        curl -# -L https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
+        DEBIAN_FRONTEND=noninteractive apt-get install -y -q curl
+        curl -# -L https://www.postgresql.org/media/keys/ACCC4CF8.asc > /etc/apt/trusted.gpg.d/barman.asc
         echo "deb http://apt.postgresql.org/pub/repos/apt/ ${DISTRIB_CODENAME}-pgdg main" > /etc/apt/sources.list.d/pgdg.list
         DEBIAN_FRONTEND=noninteractive apt-get -y -q update
         DEBIAN_FRONTEND=noninteractive apt-get install -y -q barman
         rm -rf /var/lib/apt/lists/*
     ;;
-    centos8|rocky8)
+    rocky9)
         yum module disable -q -y postgresql
         #we need locales
-        yum install -q -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-8-x86_64/pgdg-redhat-repo-latest.noarch.rpm
+        yum install -q -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-9-x86_64/pgdg-redhat-repo-latest.noarch.rpm
         yum install -q -y glibc-locale-source
         yum install -q -y barman
         yum clean all

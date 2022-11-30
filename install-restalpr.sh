@@ -13,7 +13,7 @@ case "${DISTRIB_LABEL}" in
         cp -R /usr/share/openalpr/runtime_data/ocr/tessdata/*.traineddata /usr/share/openalpr/runtime_data/ocr/
         rm -rf /var/lib/apt/lists/* /etc/apt/sources.list.d/nginx.list
     ;;
-    centos8|rocky8)
+    rocky9)
         exit 1
     ;;
     *)

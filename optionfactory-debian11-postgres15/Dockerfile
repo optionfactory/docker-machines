@@ -1,8 +1,8 @@
-FROM optionfactory/ubuntu22:latest
+FROM optionfactory/debian11:latest
 LABEL maintainer="Roberto Ferranti <roberto@optionfactory.net>"
 
 COPY deps /tmp/
-RUN DISTRIB_LABEL=ubuntu22 DISTRIB_ID=ubuntu DISTRIB_RELEASE=22.04 DISTRIB_CODENAME=jammy PSQL_MAJOR_VERSION=14 /tmp/install-postgres.sh
+RUN DISTRIB_LABEL=debian11 DISTRIB_ID=debian DISTRIB_RELEASE=11 DISTRIB_CODENAME=bullseye PSQL_MAJOR_VERSION=15 tmp/install-postgres.sh
 RUN cp /tmp/init-postgres.sh /postgres
 
 RUN rm -rf /tmp/*

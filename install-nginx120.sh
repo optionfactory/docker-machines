@@ -12,20 +12,18 @@ PKG_RELEASE=1~${DISTRIB_CODENAME}
 case "${DISTRIB_LABEL}" in
     debian*|ubuntu*)
         DEBIAN_FRONTEND=noninteractive apt-get -y -q update
-        DEBIAN_FRONTEND=noninteractive apt-get -y -q install gnupg1 ca-certificates curl
-        DEBIAN_FRONTEND=noninteractive curl -fsSL https://nginx.org/keys/nginx_signing.key | apt-key add -
-        DEBIAN_FRONTEND=noninteractive apt-get -y -q remove gnupg1 ca-certificates curl
+        DEBIAN_FRONTEND=noninteractive apt-get -y -q install curl
+        curl -# -L https://nginx.org/keys/nginx_signing.key > /etc/apt/trusted.gpg.d/nginx.asc
         echo "deb https://nginx.org/packages/${DISTRIB_ID}/ ${DISTRIB_CODENAME} nginx" >> /etc/apt/sources.list.d/nginx.list
         DEBIAN_FRONTEND=noninteractive apt-get -y -q update
         DEBIAN_FRONTEND=noninteractive apt-get -y -q install --no-install-recommends --no-install-suggests nginx=${NGINX_VERSION}-${PKG_RELEASE} gettext-base
-        DEBIAN_FRONTEND=noninteractive apt-get remove -y -q --purge --auto-remove ca-certificates
         rm -rf /var/lib/apt/lists/* /etc/apt/sources.list.d/nginx.list
     ;;
-    centos8|rocky8)
+    rocky9)
         cat << EOF > /etc/yum.repos.d/nginx.repo
 [nginx-stable]
 name=nginx stable repo
-baseurl=http://nginx.org/packages/centos/8/x86_64/
+baseurl=http://nginx.org/packages/rhel/9/x86_64/
 gpgcheck=1
 enabled=1
 gpgkey=https://nginx.org/keys/nginx_signing.key

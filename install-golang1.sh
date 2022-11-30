@@ -9,7 +9,7 @@ case "${DISTRIB_LABEL}" in
         DEBIAN_FRONTEND=noninteractive apt-get -y -q autoremove
         rm -rf /var/lib/apt/lists/*
     ;;
-    centos8|rocky8)
+    rocky9)
         yum install -q -y ca-certificates gcc gcc-c++ glibc-devel glibc-headers make pkg-config git
         yum clean all
         rm -rf /var/cache/yum

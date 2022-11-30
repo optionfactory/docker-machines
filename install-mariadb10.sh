@@ -8,8 +8,8 @@ useradd --system --create-home --gid docker-machines --uid 20003 mysql
 case "${DISTRIB_LABEL}" in
     debian*)
         DEBIAN_FRONTEND=noninteractive apt-get -y -q update
-        DEBIAN_FRONTEND=noninteractive apt-get -y -q install software-properties-common dirmngr
-        DEBIAN_FRONTEND=noninteractive apt-key adv --recv-keys --keyserver keyserver.ubuntu.com 0xF1656F24C74CD1D8
+        DEBIAN_FRONTEND=noninteractive apt-get -y -q install software-properties-common dirmngr curl
+        curl -# -L https://supplychain.mariadb.com/MariaDB-Server-GPG-KEY > /etc/apt/trusted.gpg.d/mariadb.asc
         DEBIAN_FRONTEND=noninteractive add-apt-repository "deb [arch=amd64] http://lon1.mirrors.digitalocean.com/mariadb/repo/${MARIA_DB_VERSION}/${DISTRIB_ID} ${DISTRIB_CODENAME} main"
         DEBIAN_FRONTEND=noninteractive apt-get -y -q update
         DEBIAN_FRONTEND=noninteractive apt-get -y -q install mariadb-server
@@ -18,19 +18,19 @@ case "${DISTRIB_LABEL}" in
     ;;
     ubuntu*)
         DEBIAN_FRONTEND=noninteractive apt-get -y -q update
-        DEBIAN_FRONTEND=noninteractive apt-get -y -q install software-properties-common
-        DEBIAN_FRONTEND=noninteractive apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 0xF1656F24C74CD1D8
+        DEBIAN_FRONTEND=noninteractive apt-get -y -q install software-properties-common curl
+        curl -# -L https://supplychain.mariadb.com/MariaDB-Server-GPG-KEY > /etc/apt/trusted.gpg.d/mariadb.asc
         DEBIAN_FRONTEND=noninteractive add-apt-repository "deb [arch=amd64,arm64,ppc64el] http://lon1.mirrors.digitalocean.com/mariadb/repo/${MARIA_DB_VERSION}/${DISTRIB_ID} ${DISTRIB_CODENAME} main"
         DEBIAN_FRONTEND=noninteractive apt-get -y -q update
         DEBIAN_FRONTEND=noninteractive apt-get -y -q install mariadb-server
         DEBIAN_FRONTEND=noninteractive apt-get -y -q autoclean
         DEBIAN_FRONTEND=noninteractive apt-get -y -q autoremove
     ;;
-    centos8|rocky8)
+    rocky9)
         cat << EOF > /etc/yum.repos.d/mariadb.repo
 [mariadb]
 name = MariaDB
-baseurl=http://yum.mariadb.org/${MARIA_DB_VERSION}/rhel8-amd64
+baseurl=http://yum.mariadb.org/${MARIA_DB_VERSION}/rhel9-amd64
 gpgkey=https://yum.mariadb.org/RPM-GPG-KEY-MariaDB
 gpgcheck=1
 EOF

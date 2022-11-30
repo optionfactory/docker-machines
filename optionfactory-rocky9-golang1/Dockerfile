@@ -1,11 +1,12 @@
-FROM optionfactory/ubuntu22:latest
+FROM optionfactory/rocky9:latest
 LABEL maintainer="Roberto Ferranti <roberto@optionfactory.net>"
 
 ENV GOPATH /go
 ENV PATH $GOPATH/bin:/usr/local/go/bin:$PATH
 
 COPY deps /tmp/
-RUN DISTRIB_LABEL=ubuntu22 DISTRIB_ID=ubuntu DISTRIB_RELEASE=22.04 DISTRIB_CODENAME=jammy /tmp/install-golang1.sh
+RUN DISTRIB_LABEL=rocky9 DISTRIB_ID=rocky DISTRIB_RELEASE=9 DISTRIB_CODENAME=9 /tmp/install-golang1.sh
 RUN rm -rf /tmp/*
 
 WORKDIR $GOPATH
+

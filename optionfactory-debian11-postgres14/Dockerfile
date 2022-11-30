@@ -2,8 +2,8 @@ FROM optionfactory/debian11:latest
 LABEL maintainer="Roberto Ferranti <roberto@optionfactory.net>"
 
 COPY deps /tmp/
-RUN DISTRIB_LABEL=debian11 DISTRIB_ID=debian DISTRIB_RELEASE=11 DISTRIB_CODENAME=bullseye /tmp/install-postgres14.sh
-RUN cp /tmp/init-postgres14.sh /postgres
+RUN DISTRIB_LABEL=debian11 DISTRIB_ID=debian DISTRIB_RELEASE=11 DISTRIB_CODENAME=bullseye PSQL_MAJOR_VERSION=14 tmp/install-postgres.sh
+RUN cp /tmp/init-postgres.sh /postgres
 
 RUN rm -rf /tmp/*
 
