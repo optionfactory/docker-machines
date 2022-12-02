@@ -13,13 +13,24 @@ JDK19_BUILD=10
 
 TOMCAT9_VERSION=9.0.69
 TOMCAT9_ERROR_REPORT_VALVE_VERSION=2.0
+TOMCAT10_VERSION=10.1.2
+TOMCAT10_ERROR_REPORT_VALVE_VERSION=2.0
 GOSU1_VERSION=1.14
 GOLANG1_VERSION=1.19.3
 ETCD3_VERSION=3.5.6
 KEYCLOAK1_VERSION=20.0.1
-KEYCLOAK_OPFA_MODULES_VERSION=2.0
+KEYCLOAK_OPFA_MODULES_VERSION=2.1
 MAVEN3_VERSION=3.8.6
 #/software versions
+
+
+define task
+	@echo "\033[1;32m"$(1)"\033[0m"
+endef
+
+define irun 
+    @$(1) | sed 's/^/    /'
+endef
 
 help:
 	@echo usage: make [clean-deps] [clean] sync docker-images
@@ -29,10 +40,10 @@ help:
 docker-images: sync-base-images $(addprefix docker-,$(wildcard optionfactory-*))
 
 docker-push:
-	@echo pushing tag: ${TAG_VERSION}
-	@docker images --filter="reference=optionfactory/*:${TAG_VERSION}" --format='{{.Repository}}' | sort | uniq |  xargs -I'{}' docker push {}:${TAG_VERSION}
-	@echo pushing tag: latest
-	@docker images --filter="reference=optionfactory/*:${TAG_VERSION}" --format='{{.Repository}}' | sort | uniq |  xargs -I'{}' docker push {}:latest
+	$(call task,pushing tag: ${TAG_VERSION})
+	$(call irun,docker images --filter="reference=optionfactory/*:${TAG_VERSION}" --format='{{.Repository}}' | sort | uniq |  xargs -I'{}' docker push {}:${TAG_VERSION})
+	$(call task,pushing tag: latest)
+	$(call irun,docker images --filter="reference=optionfactory/*:${TAG_VERSION}" --format='{{.Repository}}' | sort | uniq |  xargs -I'{}' docker push {}:latest)
 
 
 docker-optionfactory-debian11: sync-tools
@@ -89,7 +100,6 @@ docker-optionfactory-debian11-postgres15: sync-postgres docker-optionfactory-deb
 docker-optionfactory-ubuntu22-postgres15: sync-postgres docker-optionfactory-ubuntu22
 docker-optionfactory-rocky9-postgres15: sync-postgres docker-optionfactory-rocky9
 
-
 #docker-optionfactory-%-barman2: $(subst -barman2,,$@)
 docker-optionfactory-debian11-barman2: sync-barman2 docker-optionfactory-debian11
 docker-optionfactory-ubuntu22-barman2: sync-barman2 docker-optionfactory-ubuntu22
@@ -125,6 +135,11 @@ docker-optionfactory-debian11-jdk19-tomcat9: sync-tomcat9 docker-optionfactory-d
 docker-optionfactory-ubuntu22-jdk19-tomcat9: sync-tomcat9 docker-optionfactory-ubuntu22-jdk19
 docker-optionfactory-rocky9-jdk19-tomcat9: sync-tomcat9 docker-optionfactory-rocky9-jdk19
 
+#docker-optionfactory-%-jdk19-tomcat10: $(subst -tomcat9,,$@)
+docker-optionfactory-debian11-jdk19-tomcat10: sync-tomcat10 docker-optionfactory-debian11-jdk19
+docker-optionfactory-ubuntu22-jdk19-tomcat10: sync-tomcat10 docker-optionfactory-ubuntu22-jdk19
+docker-optionfactory-rocky9-jdk19-tomcat10: sync-tomcat10 docker-optionfactory-rocky9-jdk19
+
 #docker-optionfactory-%-jdk17-quarkus-keycloak1: $(subst -quarkus-keycloak1,,$@)
 docker-optionfactory-debian11-jdk17-quarkus-keycloak1: sync-quarkus-keycloak1 docker-optionfactory-debian11-jdk17
 docker-optionfactory-ubuntu22-jdk17-quarkus-keycloak1: sync-quarkus-keycloak1 docker-optionfactory-ubuntu22-jdk17
@@ -135,94 +150,90 @@ docker-optionfactory-debian11-jdk11-quarkus-keycloak1: sync-quarkus-keycloak1 do
 docker-optionfactory-ubuntu22-jdk11-quarkus-keycloak1: sync-quarkus-keycloak1 docker-optionfactory-ubuntu22-jdk11
 docker-optionfactory-rocky9-jdk11-quarkus-keycloak1: sync-quarkus-keycloak1 docker-optionfactory-rocky9-jdk11
 
-#docker-optionfactory-%-restalpr: $(subst -restalpr,,$@)
-docker-optionfactory-ubuntu22-restalpr: sync-restalpr docker-optionfactory-ubuntu22
-docker-optionfactory-rocky9-restalpr: sync-restalpr docker-optionfactory-rocky9
-
 
 
 docker-optionfactory-%:
-	@echo building $@
+	$(call task,building $@)
 	$(eval name=$(subst docker-optionfactory-,,$@))
-	docker build ${DOCKER_BUILD_OPTIONS} --tag=optionfactory/$(name):${TAG_VERSION} optionfactory-$(name)
-	docker tag optionfactory/$(name):${TAG_VERSION} optionfactory/$(name):latest
+	$(call irun,docker build ${DOCKER_BUILD_OPTIONS} --tag=optionfactory/$(name):${TAG_VERSION} optionfactory-$(name))
+	$(call irun,docker tag optionfactory/$(name):${TAG_VERSION} optionfactory/$(name):latest)
 
-
-
-sync: sync-base-images sync-tools sync-jdk11 sync-jdk17 sync-jdk19 sync-builder sync-tomcat9 sync-quarkus-keycloak1 sync-nginx120 sync-mariadb10 sync-postgres sync-barman2 sync-etcd3 sync-journal-remote sync-golang1 sync-restalpr
+sync: sync-base-images sync-tools sync-jdk11 sync-jdk17 sync-jdk19 sync-builder sync-tomcat9 sync-tomcat10 sync-quarkus-keycloak1 sync-nginx120 sync-mariadb10 sync-postgres sync-barman2 sync-etcd3 sync-journal-remote sync-golang1
 
 sync-base-images:
-	@echo "updating base images"
-	docker pull debian:bullseye
-	docker pull rockylinux/rockylinux:9
-	docker pull ubuntu:22.04
+	$(call task,updating base images)
+	$(call irun,docker pull debian:bullseye)
+	$(call irun,docker pull rockylinux/rockylinux:9)
+	$(call irun,docker pull ubuntu:22.04)
 
 sync-tools: deps/gosu1 
-	@echo "syncing gosu"
-	@echo optionfactory-rocky9/deps optionfactory-debian11/deps optionfactory-ubuntu22/deps | xargs -n 1 rsync -az deps/gosu-${GOSU1_VERSION}
-	@echo "syncing ps1"
-	@echo optionfactory-rocky9/deps optionfactory-debian11/deps optionfactory-ubuntu22/deps | xargs -n 1 rsync -az install-ps1.sh
+	$(call task,syncing gosu)
+	$(call irun,echo optionfactory-rocky9/deps optionfactory-debian11/deps optionfactory-ubuntu22/deps | xargs -n 1 rsync -az deps/gosu-${GOSU1_VERSION})
+	$(call task,syncing ps1)
+	$(call irun,echo optionfactory-rocky9/deps optionfactory-debian11/deps optionfactory-ubuntu22/deps | xargs -n 1 rsync -az install-ps1.sh)
 sync-jdk11: deps/jdk11
-	@echo "syncing jdk 11"
-	@echo optionfactory-*-jdk11/deps | xargs -n 1 rsync -az install-jdk.sh
-	@echo optionfactory-*-jdk11/deps | xargs -n 1 rsync -az deps/jdk-${JDK11_VERSION}+${JDK11_BUILD}
+	$(call task,syncing jdk 11)
+	$(call irun,echo optionfactory-*-jdk11/deps | xargs -n 1 rsync -az install-jdk.sh)
+	$(call irun,echo optionfactory-*-jdk11/deps | xargs -n 1 rsync -az deps/jdk-${JDK11_VERSION}+${JDK11_BUILD})
 sync-jdk17: deps/jdk17
-	@echo "syncing jdk 17"
-	@echo optionfactory-*-jdk17/deps | xargs -n 1 rsync -az install-jdk.sh
-	@echo optionfactory-*-jdk17/deps | xargs -n 1 rsync -az deps/jdk-${JDK17_VERSION}+${JDK17_BUILD}	
+	$(call task,syncing jdk 17)
+	$(call irun,echo optionfactory-*-jdk17/deps | xargs -n 1 rsync -az install-jdk.sh)
+	$(call irun,echo optionfactory-*-jdk17/deps | xargs -n 1 rsync -az deps/jdk-${JDK17_VERSION}+${JDK17_BUILD})
 sync-jdk19: deps/jdk19
-	@echo "syncing jdk 19"
-	@echo optionfactory-*-jdk19/deps | xargs -n 1 rsync -az install-jdk.sh
-	@echo optionfactory-*-jdk19/deps | xargs -n 1 rsync -az deps/jdk-${JDK19_VERSION}+${JDK19_BUILD}
+	$(call task,syncing jdk 19)
+	$(call irun,echo optionfactory-*-jdk19/deps | xargs -n 1 rsync -az install-jdk.sh)
+	$(call irun,echo optionfactory-*-jdk19/deps | xargs -n 1 rsync -az deps/jdk-${JDK19_VERSION}+${JDK19_BUILD})
 sync-builder: deps/maven3
-	@echo "syncing maven 3"
-	@echo optionfactory-*-jdk*-builder/deps | xargs -n 1 rsync -az install-builder.sh
-	@echo optionfactory-*-jdk*-builder/deps | xargs -n 1 rsync -az deps/apache-maven-${MAVEN3_VERSION}
+	$(call task,syncing maven 3)
+	$(call irun,echo optionfactory-*-jdk*-builder/deps | xargs -n 1 rsync -az install-builder.sh)
+	$(call irun,echo optionfactory-*-jdk*-builder/deps | xargs -n 1 rsync -az deps/apache-maven-${MAVEN3_VERSION})
 sync-tomcat9: deps/tomcat9
-	@echo "syncing tomcat 9"
-	@echo optionfactory-*-tomcat9/deps | xargs -n 1 rsync -az install-tomcat9.sh
-	@echo optionfactory-*-tomcat9/deps | xargs -n 1 rsync -az init-tomcat9.sh
-	@echo optionfactory-*-tomcat9/deps | xargs -n 1 rsync -az deps/apache-tomcat-${TOMCAT9_VERSION}
-	@echo optionfactory-*-tomcat9/deps | xargs -n 1 rsync -az deps/tomcat9-logging-error-report-valve-${TOMCAT9_ERROR_REPORT_VALVE_VERSION}.jar
+	$(call task,syncing tomcat 9)
+	$(call irun,echo optionfactory-*-tomcat9/deps | xargs -n 1 rsync -az install-tomcat.sh)
+	$(call irun,echo optionfactory-*-tomcat9/deps | xargs -n 1 rsync -az init-tomcat.sh)
+	$(call irun,echo optionfactory-*-tomcat9/deps | xargs -n 1 rsync -az deps/apache-tomcat-${TOMCAT9_VERSION})
+	$(call irun,echo optionfactory-*-tomcat9/deps | xargs -n 1 rsync -az deps/tomcat9-logging-error-report-valve-${TOMCAT9_ERROR_REPORT_VALVE_VERSION}.jar)
+sync-tomcat10: deps/tomcat10
+	$(call task,syncing tomcat 10)
+	$(call irun,echo optionfactory-*-tomcat10/deps | xargs -n 1 rsync -az install-tomcat.sh)
+	$(call irun,echo optionfactory-*-tomcat10/deps | xargs -n 1 rsync -az init-tomcat.sh)
+	$(call irun,echo optionfactory-*-tomcat10/deps | xargs -n 1 rsync -az deps/apache-tomcat-${TOMCAT10_VERSION})
+	$(call irun,echo optionfactory-*-tomcat10/deps | xargs -n 1 rsync -az deps/tomcat10-logging-error-report-valve-${TOMCAT10_ERROR_REPORT_VALVE_VERSION}.jar)
 sync-quarkus-keycloak1: deps/quarkus-keycloak1
-	@echo "syncing quarkus-keycloak"
-	@echo optionfactory-*-quarkus-keycloak1/deps | xargs -n 1 rsync -az install-quarkus-keycloak1.sh
-	@echo optionfactory-*-quarkus-keycloak1/deps | xargs -n 1 rsync -az init-quarkus-keycloak1.sh
-	@echo optionfactory-*-quarkus-keycloak1/deps | xargs -n 1 rsync -az deps/keycloak-${KEYCLOAK1_VERSION}
-	@echo optionfactory-*-quarkus-keycloak1/deps | xargs -n 1 rsync -az deps/optionfactory-keycloak-${KEYCLOAK_OPFA_MODULES_VERSION}
+	$(call task,syncing quarkus-keycloak)
+	$(call irun,echo optionfactory-*-quarkus-keycloak1/deps | xargs -n 1 rsync -az install-quarkus-keycloak1.sh)
+	$(call irun,echo optionfactory-*-quarkus-keycloak1/deps | xargs -n 1 rsync -az init-quarkus-keycloak1.sh)
+	$(call irun,echo optionfactory-*-quarkus-keycloak1/deps | xargs -n 1 rsync -az deps/keycloak-${KEYCLOAK1_VERSION})
+	$(call irun,echo optionfactory-*-quarkus-keycloak1/deps | xargs -n 1 rsync -az deps/optionfactory-keycloak-${KEYCLOAK_OPFA_MODULES_VERSION})
 sync-nginx120:
-	@echo optionfactory-*-nginx120/deps | xargs -n 1 rsync -az install-nginx120.sh
-	@echo optionfactory-*-nginx120/deps | xargs -n 1 rsync -az init-nginx120.sh
+	$(call task,syncing nginx)
+	$(call irun,echo optionfactory-*-nginx120/deps | xargs -n 1 rsync -az install-nginx120.sh)
+	$(call irun,echo optionfactory-*-nginx120/deps | xargs -n 1 rsync -az init-nginx120.sh)
 sync-mariadb10: deps/mariadb10
-	@echo "syncing mariadb 10"
-	@echo optionfactory-*-mariadb10/deps | xargs -n 1 rsync -az install-mariadb10.sh
-	@echo optionfactory-*-mariadb10/deps | xargs -n 1 rsync -az init-mariadb10.sh
+	$(call task,syncing mariadb 10)
+	$(call irun,echo optionfactory-*-mariadb10/deps | xargs -n 1 rsync -az install-mariadb10.sh)
+	$(call irun,echo optionfactory-*-mariadb10/deps | xargs -n 1 rsync -az init-mariadb10.sh)
 sync-postgres: deps/postgres
-	@echo "syncing postgres"
-	@echo optionfactory-*-postgres*/deps | xargs -n 1 rsync -az install-postgres.sh
-	@echo optionfactory-*-postgres*/deps | xargs -n 1 rsync -az init-postgres.sh
+	$(call task,syncing postgres)
+	$(call irun,echo optionfactory-*-postgres*/deps | xargs -n 1 rsync -az install-postgres.sh)
+	$(call irun,echo optionfactory-*-postgres*/deps | xargs -n 1 rsync -az init-postgres.sh)
 sync-barman2: deps/barman2
-	@echo "syncing barman 2"
-	@echo optionfactory-*-barman2/deps | xargs -n 1 rsync -az install-barman2.sh
-	@echo optionfactory-*-barman2/deps | xargs -n 1 rsync -az init-barman2.sh
+	$(call task,syncing barman2)
+	$(call irun,echo optionfactory-*-barman2/deps | xargs -n 1 rsync -az install-barman2.sh)
+	$(call irun,echo optionfactory-*-barman2/deps | xargs -n 1 rsync -az init-barman2.sh)
 sync-etcd3: deps/etcd3
-	@echo "syncing etcd3"
-	@echo optionfactory-*-etcd3/deps | xargs -n 1 rsync -az install-etcd3.sh
-	@echo optionfactory-*-etcd3/deps | xargs -n 1 rsync -az init-etcd3.sh
-	@echo optionfactory-*-etcd3/deps | xargs -n 1 rsync -az deps/etcd-v${ETCD3_VERSION}-linux-amd64
+	$(call task,syncing etcd3)
+	$(call irun,echo optionfactory-*-etcd3/deps | xargs -n 1 rsync -az install-etcd3.sh)
+	$(call irun,echo optionfactory-*-etcd3/deps | xargs -n 1 rsync -az init-etcd3.sh)
+	$(call irun,echo optionfactory-*-etcd3/deps | xargs -n 1 rsync -az deps/etcd-v${ETCD3_VERSION}-linux-amd64)
 sync-journal-remote:
-	@echo "syncing journal-remote"
-	@echo optionfactory-*-journal-remote/deps | xargs -n 1 rsync -az install-journal-remote.sh
-	@echo optionfactory-*-journal-remote/deps | xargs -n 1 rsync -az init-journal-remote.sh
-
+	$(call task,syncing journal-remote)
+	$(call irun,echo optionfactory-*-journal-remote/deps | xargs -n 1 rsync -az install-journal-remote.sh)
+	$(call irun,echo optionfactory-*-journal-remote/deps | xargs -n 1 rsync -az init-journal-remote.sh)
 sync-golang1: deps/golang1
-	@echo "syncing golang"
-	@echo optionfactory-*-golang1/deps | xargs -n 1 rsync -az install-golang1.sh
-	@echo optionfactory-*-golang1/deps | xargs -n 1 rsync -az deps/golang-${GOLANG1_VERSION}
-sync-restalpr: deps/restalpr
-	@echo "syncing alpr"
-	@echo optionfactory-*-restalpr/deps | xargs -n 1 rsync -az install-restalpr.sh
-	@echo optionfactory-*-restalpr/deps | xargs -n 1 rsync -az init-restalpr.sh
+	$(call task,syncing golang)
+	$(call irun,echo optionfactory-*-golang1/deps | xargs -n 1 rsync -az install-golang1.sh)
+	$(call irun,echo optionfactory-*-golang1/deps | xargs -n 1 rsync -az deps/golang-${GOLANG1_VERSION})
 
 
 deps: deps/gosu1 deps/jdk11 deps/tomcat9 deps/wildfly-keycloak1 deps/quarkus-keycloak1 deps/psql-jdbc deps/mariadb10 deps/postgres12 deps/barman2 deps/golang1 deps/etcd3
@@ -233,55 +244,54 @@ deps/jdk17: deps/jdk-${JDK17_VERSION}+${JDK17_BUILD}
 deps/jdk19: deps/jdk-${JDK19_VERSION}+${JDK19_BUILD}
 deps/maven3: deps/apache-maven-${MAVEN3_VERSION}
 deps/tomcat9: deps/apache-tomcat-${TOMCAT9_VERSION} deps/tomcat9-logging-error-report-valve-${TOMCAT9_ERROR_REPORT_VALVE_VERSION}.jar
+deps/tomcat10: deps/apache-tomcat-${TOMCAT10_VERSION} deps/tomcat10-logging-error-report-valve-${TOMCAT10_ERROR_REPORT_VALVE_VERSION}.jar
 deps/quarkus-keycloak1: deps/keycloak-${KEYCLOAK1_VERSION} deps/optionfactory-keycloak-${KEYCLOAK_OPFA_MODULES_VERSION}
 deps/mariadb10:
 deps/postgres:
 deps/barman2:
 deps/golang1: deps/golang-${GOLANG1_VERSION}/bin/go
 deps/etcd3: deps/etcd-v${ETCD3_VERSION}-linux-amd64
-deps/restalpr:
 
 deps/jdk-${JDK11_VERSION}+${JDK11_BUILD}:
-	curl -# -j -k -L https://github.com/adoptium/temurin11-binaries/releases/download/jdk-${JDK11_VERSION}%2B${JDK11_BUILD}/OpenJDK11U-jdk_x64_linux_hotspot_${JDK11_VERSION}_${JDK11_BUILD}.tar.gz	| tar xz -C deps
+	$(call irun,curl -# -j -k -L https://github.com/adoptium/temurin11-binaries/releases/download/jdk-${JDK11_VERSION}%2B${JDK11_BUILD}/OpenJDK11U-jdk_x64_linux_hotspot_${JDK11_VERSION}_${JDK11_BUILD}.tar.gz	| tar xz -C deps)
 deps/jdk-${JDK17_VERSION}+${JDK17_BUILD}:
-	curl -# -j -k -L https://github.com/adoptium/temurin17-binaries/releases/download/jdk-${JDK17_VERSION}%2B${JDK17_BUILD}/OpenJDK17U-jdk_x64_linux_hotspot_${JDK17_VERSION}_${JDK17_BUILD}.tar.gz	| tar xz -C deps
+	$(call irun,curl -# -j -k -L https://github.com/adoptium/temurin17-binaries/releases/download/jdk-${JDK17_VERSION}%2B${JDK17_BUILD}/OpenJDK17U-jdk_x64_linux_hotspot_${JDK17_VERSION}_${JDK17_BUILD}.tar.gz	| tar xz -C deps)
 deps/jdk-${JDK19_VERSION}+${JDK19_BUILD}:
-	curl -# -j -k -L https://github.com/adoptium/temurin19-binaries/releases/download/jdk-${JDK19_VERSION}%2B${JDK19_BUILD}/OpenJDK19U-jdk_x64_linux_hotspot_${JDK19_VERSION}_${JDK19_BUILD}.tar.gz	| tar xz -C deps
+	$(call irun,curl -# -j -k -L https://github.com/adoptium/temurin19-binaries/releases/download/jdk-${JDK19_VERSION}%2B${JDK19_BUILD}/OpenJDK19U-jdk_x64_linux_hotspot_${JDK19_VERSION}_${JDK19_BUILD}.tar.gz	| tar xz -C deps)
 deps/apache-maven-${MAVEN3_VERSION}:
-	curl -# -j -k -L https://downloads.apache.org/maven/maven-3/${MAVEN3_VERSION}/binaries/apache-maven-${MAVEN3_VERSION}-bin.tar.gz | tar xz -C deps
+	$(call irun,curl -# -j -k -L https://downloads.apache.org/maven/maven-3/${MAVEN3_VERSION}/binaries/apache-maven-${MAVEN3_VERSION}-bin.tar.gz | tar xz -C deps)
 deps/apache-tomcat-${TOMCAT9_VERSION}:
-	curl -# -sSL -k https://archive.apache.org/dist/tomcat/tomcat-9/v${TOMCAT9_VERSION}/bin/apache-tomcat-${TOMCAT9_VERSION}.tar.gz | tar xz -C deps
+	$(call irun,curl -# -sSL -k https://archive.apache.org/dist/tomcat/tomcat-9/v${TOMCAT9_VERSION}/bin/apache-tomcat-${TOMCAT9_VERSION}.tar.gz | tar xz -C deps)
 deps/tomcat9-logging-error-report-valve-${TOMCAT9_ERROR_REPORT_VALVE_VERSION}.jar:
-	curl -# -j -k -L  https://repo1.maven.org/maven2/net/optionfactory/tomcat9-logging-error-report-valve/${TOMCAT9_ERROR_REPORT_VALVE_VERSION}/tomcat9-logging-error-report-valve-${TOMCAT9_ERROR_REPORT_VALVE_VERSION}.jar -o deps/tomcat9-logging-error-report-valve-${TOMCAT9_ERROR_REPORT_VALVE_VERSION}.jar
+	$(call irun,curl -# -j -k -L  https://repo1.maven.org/maven2/net/optionfactory/tomcat9-logging-error-report-valve/${TOMCAT9_ERROR_REPORT_VALVE_VERSION}/tomcat9-logging-error-report-valve-${TOMCAT9_ERROR_REPORT_VALVE_VERSION}.jar -o deps/tomcat9-logging-error-report-valve-${TOMCAT9_ERROR_REPORT_VALVE_VERSION}.jar)
+deps/apache-tomcat-${TOMCAT10_VERSION}:
+	$(call irun,curl -# -sSL -k https://archive.apache.org/dist/tomcat/tomcat-10/v${TOMCAT10_VERSION}/bin/apache-tomcat-${TOMCAT10_VERSION}.tar.gz | tar xz -C deps)
+deps/tomcat10-logging-error-report-valve-${TOMCAT10_ERROR_REPORT_VALVE_VERSION}.jar:
+	$(call irun,curl -# -j -k -L  https://repo1.maven.org/maven2/net/optionfactory/tomcat9-logging-error-report-valve/${TOMCAT10_ERROR_REPORT_VALVE_VERSION}/tomcat9-logging-error-report-valve-${TOMCAT9_ERROR_REPORT_VALVE_VERSION}.jar -o deps/tomcat10-logging-error-report-valve-${TOMCAT9_ERROR_REPORT_VALVE_VERSION}.jar)
 deps/gosu-${GOSU1_VERSION}:
-	curl -# -sSL -k https://github.com/tianon/gosu/releases/download/${GOSU1_VERSION}/gosu-amd64 -o deps/gosu-${GOSU1_VERSION}
-	chmod +x deps/gosu-${GOSU1_VERSION}
+	$(call irun,curl -# -sSL -k https://github.com/tianon/gosu/releases/download/${GOSU1_VERSION}/gosu-amd64 -o deps/gosu-${GOSU1_VERSION})
+	$(call irun,chmod +x deps/gosu-${GOSU1_VERSION})
 deps/golang-${GOLANG1_VERSION}/bin/go:
-	mkdir -p deps/golang-${GOLANG1_VERSION}
-	curl -# -j -k -L https://golang.org/dl/go${GOLANG1_VERSION}.linux-amd64.tar.gz | tar xz -C deps/golang-${GOLANG1_VERSION} --strip-components=1
+	$(call irun,mkdir -p deps/golang-${GOLANG1_VERSION})
+	$(call irun,curl -# -j -k -L https://golang.org/dl/go${GOLANG1_VERSION}.linux-amd64.tar.gz | tar xz -C deps/golang-${GOLANG1_VERSION} --strip-components=1)
 deps/etcd-v${ETCD3_VERSION}-linux-amd64:
-	curl -# -j -k -L  https://github.com/etcd-io/etcd/releases/download/v${ETCD3_VERSION}/etcd-v${ETCD3_VERSION}-linux-amd64.tar.gz | tar xz -C deps
+	$(call irun,curl -# -j -k -L  https://github.com/etcd-io/etcd/releases/download/v${ETCD3_VERSION}/etcd-v${ETCD3_VERSION}-linux-amd64.tar.gz | tar xz -C deps)
 deps/keycloak-${KEYCLOAK1_VERSION}:
-	curl -# -j -k -L  https://github.com/keycloak/keycloak/releases/download/${KEYCLOAK1_VERSION}/keycloak-${KEYCLOAK1_VERSION}.tar.gz | tar xz -C deps
+	$(call irun,curl -# -j -k -L  https://github.com/keycloak/keycloak/releases/download/${KEYCLOAK1_VERSION}/keycloak-${KEYCLOAK1_VERSION}.tar.gz | tar xz -C deps)
 deps/optionfactory-keycloak-${KEYCLOAK_OPFA_MODULES_VERSION}:
-	mkdir -p deps/optionfactory-keycloak-${KEYCLOAK_OPFA_MODULES_VERSION}
-	curl -# -j -k -L https://repo1.maven.org/maven2/net/optionfactory/keycloak/optionfactory-keycloak-validation/${KEYCLOAK_OPFA_MODULES_VERSION}/optionfactory-keycloak-validation-${KEYCLOAK_OPFA_MODULES_VERSION}.jar  > deps/optionfactory-keycloak-${KEYCLOAK_OPFA_MODULES_VERSION}/optionfactory-keycloak-validation.jar
-	curl -# -j -k -L https://repo1.maven.org/maven2/net/optionfactory/keycloak/optionfactory-keycloak-resources-auth/${KEYCLOAK_OPFA_MODULES_VERSION}/optionfactory-keycloak-resources-auth-${KEYCLOAK_OPFA_MODULES_VERSION}.jar  > deps/optionfactory-keycloak-${KEYCLOAK_OPFA_MODULES_VERSION}/optionfactory-keycloak-resources-auth.jar
-	curl -# -j -k -L https://repo1.maven.org/maven2/net/optionfactory/keycloak/optionfactory-keycloak-email-sender/${KEYCLOAK_OPFA_MODULES_VERSION}/optionfactory-keycloak-email-sender-${KEYCLOAK_OPFA_MODULES_VERSION}.jar  > deps/optionfactory-keycloak-${KEYCLOAK_OPFA_MODULES_VERSION}/optionfactory-keycloak-email-sender.jar
-	curl -# -j -k -L https://repo1.maven.org/maven2/net/optionfactory/keycloak/optionfactory-keycloak-login-stats/${KEYCLOAK_OPFA_MODULES_VERSION}/optionfactory-keycloak-login-stats-${KEYCLOAK_OPFA_MODULES_VERSION}.jar  > deps/optionfactory-keycloak-${KEYCLOAK_OPFA_MODULES_VERSION}/optionfactory-keycloak-login-stats.jar
-	curl -# -j -k -L https://repo1.maven.org/maven2/net/optionfactory/keycloak/optionfactory-keycloak-provisioning-api/${KEYCLOAK_OPFA_MODULES_VERSION}/optionfactory-keycloak-provisioning-api-${KEYCLOAK_OPFA_MODULES_VERSION}.jar  > deps/optionfactory-keycloak-${KEYCLOAK_OPFA_MODULES_VERSION}/optionfactory-keycloak-provisioning-api.jar
-	curl -# -j -k -L https://repo1.maven.org/maven2/net/optionfactory/keycloak/optionfactory-keycloak-welcome/${KEYCLOAK_OPFA_MODULES_VERSION}/optionfactory-keycloak-welcome-${KEYCLOAK_OPFA_MODULES_VERSION}.jar  > deps/optionfactory-keycloak-${KEYCLOAK_OPFA_MODULES_VERSION}/optionfactory-keycloak-welcome.jar
-	curl -# -j -k -L https://repo1.maven.org/maven2/net/optionfactory/keycloak/optionfactory-keycloak-bootstrap/${KEYCLOAK_OPFA_MODULES_VERSION}/optionfactory-keycloak-bootstrap-${KEYCLOAK_OPFA_MODULES_VERSION}.jar  > deps/optionfactory-keycloak-${KEYCLOAK_OPFA_MODULES_VERSION}/optionfactory-keycloak-bootstrap.jar
-	curl -# -j -k -L https://repo1.maven.org/maven2/net/optionfactory/keycloak/optionfactory-keycloak-apple-identity-provider/${KEYCLOAK_OPFA_MODULES_VERSION}/optionfactory-keycloak-apple-identity-provider-${KEYCLOAK_OPFA_MODULES_VERSION}.jar  > deps/optionfactory-keycloak-${KEYCLOAK_OPFA_MODULES_VERSION}/optionfactory-keycloak-apple-identity-provider.jar
-deps/restalpr:
-	#TODO: curl go-webservice
+	$(call irun,mkdir -p deps/optionfactory-keycloak-${KEYCLOAK_OPFA_MODULES_VERSION})
+	$(eval modules=$(shell curl https://repo1.maven.org/maven2/net/optionfactory/keycloak/optionfactory-keycloak/${KEYCLOAK_OPFA_MODULES_VERSION}/optionfactory-keycloak-${KEYCLOAK_OPFA_MODULES_VERSION}.pom | grep '<module>' | grep -Po '(?<=>)[^<]+(?=<)'))
+	$(call irun,for module in ${modules}; do curl -# -j -k -L "https://repo1.maven.org/maven2/net/optionfactory/keycloak/$${module}/${KEYCLOAK_OPFA_MODULES_VERSION}/$${module}-${KEYCLOAK_OPFA_MODULES_VERSION}.jar" > "deps/optionfactory-keycloak-${KEYCLOAK_OPFA_MODULES_VERSION}/$${module}.jar"; done)
 
 clean: FORCE
-	rm -rf optionfactory-*/install-*.sh
-	rm -rf optionfactory-*/deps/*
+	$(call task,removing install scripts)
+	$(call irun,rm -rf optionfactory-*/install-*.sh)
+	$(call task,removing deps from build contexts)
+	$(call irun,rm -rf optionfactory-*/deps/*)
 
 clean-deps: FORCE
-	rm -rf deps/*
+	$(call task,removing cached deps)
+	$(call irun,rm -rf deps/*)
 
 cleanup-docker-images:
 	-docker images --quiet --filter=dangling=true | xargs --no-run-if-empty docker rmi

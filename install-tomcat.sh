@@ -1,9 +1,9 @@
 #!/bin/bash -e
 
-echo "Installing tomcat"
+echo "Installing tomcat ${TOMCAT_MAJOR_VERSION}"
 mkdir -p /opt/apache-tomcat/conf
 cp -R /tmp/apache-tomcat*/* /opt/apache-tomcat
-cp /tmp/tomcat9-logging-error-report-valve-2.0.jar /opt/apache-tomcat/lib/
+cp /tmp/tomcat*-logging-error-report-valve-2.0.jar /opt/apache-tomcat/lib/
 rm -rf /opt/apache-tomcat/webapps/*
 
 cat <<-'EOF' > /opt/apache-tomcat/bin/setenv.sh
@@ -16,7 +16,7 @@ cat <<-'EOF' > /opt/apache-tomcat/conf/logging.properties
 
 	java.util.logging.ConsoleHandler.level = INFO
 	java.util.logging.ConsoleHandler.formatter=java.util.logging.SimpleFormatter
-	java.util.logging.SimpleFormatter.format=[tomcat9][%4$s][%3$s] %5$s%6$s%n
+	java.util.logging.SimpleFormatter.format=[tomcat][%4$s][%3$s] %5$s%6$s%n
 EOF
 
 cat <<'EOF' > /opt/apache-tomcat/conf/server.xml
