@@ -9,7 +9,7 @@ if [ ! -d "/var/lib/mysql/mysql" ]; then
 	mysql_client=( mysql --protocol=socket -uroot )
 	echo "database initialized"
 	gosu mysql:docker-machines mysqld_safe --defaults-file=/etc/my.cnf --user=mysql --skip-networking &
-	pid="$!"
+	jid="$!"
 	for i in {30..0}; do
 		if echo 'select 1' | "${mysql_client[@]}" &> /dev/null; then
 			break
@@ -28,8 +28,8 @@ if [ ! -d "/var/lib/mysql/mysql" ]; then
 		esac
 		echo
 	done
-
-	if ! kill -s TERM "$pid" || ! wait "$pid"; then
+	pid=$(ps h -opid --ppid $jid)
+	if ! kill -s TERM "$pid" || ! wait "$jid"; then
 		echo >&2 'initialization failed.'
 		exit 1
 	fi
