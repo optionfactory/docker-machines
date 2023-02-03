@@ -5,6 +5,7 @@ COPY deps /tmp/
 
 RUN DISTRIB_LABEL=debian11 DISTRIB_ID=debian DISTRIB_RELEASE=11 DISTRIB_CODENAME=bullseye /tmp/install-nginx120.sh
 RUN cp /tmp/init-nginx120.sh /nginx
+RUN cp /tmp/opfa_* /etc/nginx/modules/
 
 RUN rm -rf /tmp/*
 
