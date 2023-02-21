@@ -1,7 +1,7 @@
 #we user squash here to remove unwanted layers, which is an experimental feature
 #{"experimental": true} > /etc/docker/daemon.json
 DOCKER_BUILD_OPTIONS=--no-cache=false --squash
-TAG_VERSION=41
+TAG_VERSION=42
 
 #software versions
 JDK11_VERSION=11.0.18
@@ -16,11 +16,12 @@ TOMCAT9_ERROR_REPORT_VALVE_VERSION=2.0
 TOMCAT10_VERSION=10.1.5
 TOMCAT10_ERROR_REPORT_VALVE_VERSION=2.0
 GOSU1_VERSION=1.14
-GOLANG1_VERSION=1.19.3
+GOLANG1_VERSION=1.20.1
+LEGOPFA_VERSION=1.0
 ETCD3_VERSION=3.5.6
 KEYCLOAK1_VERSION=20.0.3
 KEYCLOAK_OPFA_MODULES_VERSION=2.1
-MAVEN3_VERSION=3.8.6
+MAVEN3_VERSION=3.9.0
 
 NGINX_REMOVE_SERVER_HEADER_MODULE_VERSION=1.0-1.22.1
 #/software versions
@@ -90,7 +91,6 @@ docker-optionfactory-rocky9-mariadb10: sync-mariadb10 docker-optionfactory-rocky
 #docker-optionfactory-%-postgres12: $(subst -postgres12,,$@)
 docker-optionfactory-debian11-postgres12: sync-postgres docker-optionfactory-debian11
 docker-optionfactory-ubuntu22-postgres12: sync-postgres docker-optionfactory-ubuntu22
-docker-optionfactory-rocky9-postgres12: sync-postgres docker-optionfactory-rocky9
 
 #docker-optionfactory-%-postgres14: $(subst -postgres14,,$@)
 docker-optionfactory-debian11-postgres14: sync-postgres docker-optionfactory-debian11
@@ -207,11 +207,12 @@ sync-quarkus-keycloak1: deps/quarkus-keycloak1
 	$(call irun,echo optionfactory-*-quarkus-keycloak1/deps | xargs -n 1 rsync -az init-quarkus-keycloak1.sh)
 	$(call irun,echo optionfactory-*-quarkus-keycloak1/deps | xargs -n 1 rsync -az deps/keycloak-${KEYCLOAK1_VERSION})
 	$(call irun,echo optionfactory-*-quarkus-keycloak1/deps | xargs -n 1 rsync -az deps/optionfactory-keycloak-${KEYCLOAK_OPFA_MODULES_VERSION})
-sync-nginx120: deps/nginx_remove_server_header_module
+sync-nginx120: deps/nginx_remove_server_header_module deps/legopfa1
 	$(call task,syncing nginx)
 	$(call irun,echo optionfactory-*-nginx120/deps | xargs -n 1 rsync -az install-nginx120.sh)
 	$(call irun,echo optionfactory-*-nginx120/deps | xargs -n 1 rsync -az init-nginx120.sh)
 	$(call irun,echo optionfactory-*-nginx120/deps | xargs -n 1 rsync -az deps/opfa_http_remove_server_header_module-${NGINX_REMOVE_SERVER_HEADER_MODULE_VERSION}.so)
+	$(call irun,echo optionfactory-*-nginx120/deps | xargs -n 1 rsync -az deps/legopfa-${LEGOPFA_VERSION})
 sync-mariadb10: deps/mariadb10
 	$(call task,syncing mariadb 10)
 	$(call irun,echo optionfactory-*-mariadb10/deps | xargs -n 1 rsync -az install-mariadb10.sh)
@@ -242,6 +243,7 @@ sync-golang1: deps/golang1
 deps: deps/gosu1 deps/jdk11 deps/tomcat9 deps/wildfly-keycloak1 deps/quarkus-keycloak1 deps/psql-jdbc deps/mariadb10 deps/postgres12 deps/barman2 deps/golang1 deps/etcd3
 
 deps/gosu1: deps/gosu-${GOSU1_VERSION}
+deps/legopfa1: deps/legopfa-${LEGOPFA_VERSION}
 deps/jdk11: deps/jdk-${JDK11_VERSION}+${JDK11_BUILD}
 deps/jdk17: deps/jdk-${JDK17_VERSION}+${JDK17_BUILD}
 deps/jdk19: deps/jdk-${JDK19_VERSION}+${JDK19_BUILD}
@@ -275,6 +277,9 @@ deps/tomcat10-logging-error-report-valve-${TOMCAT10_ERROR_REPORT_VALVE_VERSION}.
 deps/gosu-${GOSU1_VERSION}:
 	$(call irun,curl -# -sSL -k https://github.com/tianon/gosu/releases/download/${GOSU1_VERSION}/gosu-amd64 -o deps/gosu-${GOSU1_VERSION})
 	$(call irun,chmod +x deps/gosu-${GOSU1_VERSION})
+deps/legopfa-${LEGOPFA_VERSION}:	
+	$(call irun,curl -# -j -k -L https://github.com/optionfactory/legopfa/releases/download/v${LEGOPFA_VERSION}/legopfa-${LEGOPFA_VERSION} -o deps/legopfa-${LEGOPFA_VERSION})
+	$(call irun,chmod +x deps/legopfa-${LEGOPFA_VERSION})
 deps/golang-${GOLANG1_VERSION}/bin/go:
 	$(call irun,mkdir -p deps/golang-${GOLANG1_VERSION})
 	$(call irun,curl -# -j -k -L https://golang.org/dl/go${GOLANG1_VERSION}.linux-amd64.tar.gz | tar xz -C deps/golang-${GOLANG1_VERSION} --strip-components=1)

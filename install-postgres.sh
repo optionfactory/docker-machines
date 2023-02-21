@@ -11,8 +11,9 @@ case "${DISTRIB_LABEL}" in
         curl -# -L https://www.postgresql.org/media/keys/ACCC4CF8.asc > /etc/apt/trusted.gpg.d/postgres.asc
         echo "deb http://apt.postgresql.org/pub/repos/apt/ ${DISTRIB_CODENAME}-pgdg main" > /etc/apt/sources.list.d/pgdg.list
         DEBIAN_FRONTEND=noninteractive apt-get -y -q update
-        DEBIAN_FRONTEND=noninteractive apt-get install -y -q postgresql-common postgresql-${PSQL_MAJOR_VERSION} postgresql-contrib-${PSQL_MAJOR_VERSION}
-        rm -rf /var/lib/apt/lists/*
+        DEBIAN_FRONTEND=noninteractive apt-get install -y -q postgresql-common 
+        sed -ri 's/^# *(create_main_cluster) .*$/\1 = false/' /etc/postgresql-common/createcluster.conf
+        DEBIAN_FRONTEND=noninteractive apt-get install -y -q postgresql-${PSQL_MAJOR_VERSION} postgresql-contrib-${PSQL_MAJOR_VERSION} postgresql-${PSQL_MAJOR_VERSION}-postgis-3
     ;;
     rocky9)
         #we need locales
@@ -20,17 +21,16 @@ case "${DISTRIB_LABEL}" in
         yum install -q -y glibc-locale-source
         yum install -q -y postgresql${PSQL_MAJOR_VERSION} postgresql${PSQL_MAJOR_VERSION}-server postgresql${PSQL_MAJOR_VERSION}-contrib
         yum clean all
+        rm -rf /var/lib/pgsql
         rm -rf /var/cache/yum
+        mkdir -p /usr/lib/postgresql
+        ln -s /usr/pgsql-${PSQL_MAJOR_VERSION}/ /usr/lib/postgresql/${PSQL_MAJOR_VERSION}
     ;;
     *)
     echo "distribution ${DISTRIB_LABEL} not supported"
     exit 1
     ;;
 esac
-
-if [ -f /etc/postgresql-common/createcluster.conf ]; then
-    sed -ri 's/#(create_main_cluster) .*$/\1 = false/' /etc/postgresql-common/createcluster.conf
-fi
 
 mkdir -p /var/run/postgresql
 chown -R postgres:docker-machines /var/run/postgresql

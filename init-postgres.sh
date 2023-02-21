@@ -10,10 +10,18 @@ fi
 
 if [ ! -s "/var/lib/postgresql/data/PG_VERSION" ]; then
     echo "initializing a new database"
-    gosu postgres:docker-machines /usr/lib/postgresql/*/bin/initdb /var/lib/postgresql/data -E 'UTF-8' --lc-collate='en_US.UTF-8' --lc-ctype='en_US.UTF-8'
-    sed -ri "s/(logging_collector) .*/\1 = off/" /var/lib/postgresql/data/postgresql.conf
-    sed -ri "s/(log_line_prefix) .*/\1 = '[postgres][%u@%h:%d] '/" /var/lib/postgresql/data/postgresql.conf
-    sed -ri "s/#listen_addresses .*$/listen_addresses='0.0.0.0'/" /var/lib/postgresql/data/postgresql.conf
+    gosu postgres:docker-machines /usr/lib/postgresql/*/bin/initdb \
+        /var/lib/postgresql/data \
+        --encoding 'UTF-8' --lc-collate='en_US.UTF-8' --lc-ctype='en_US.UTF-8' \
+        --allow-group-access \
+        --no-instructions
+    sed -ri "s/^#? *(shared_preload_libraries) .*/\1 = 'pg_stat_statements'/" /var/lib/postgresql/data/postgresql.conf
+    sed -ri "s/^#? *(logging_collector) .*/\1 = off/" /var/lib/postgresql/data/postgresql.conf
+    sed -ri "s/^#? *(log_line_prefix) .*/\1 = '[postgres][a:%a][u:%u][s:%c][x:%x] '/" /var/lib/postgresql/data/postgresql.conf
+    sed -ri "s/^#? *(listen_addresses) .*/\1 = '0.0.0.0'/" /var/lib/postgresql/data/postgresql.conf
+    sed -ri "s/^#? *(shared_buffers) .*/\1 = 256MB/" /var/lib/postgresql/data/postgresql.conf
+    sed -ri "s/^#? *(log_destination) .*/\1 = 'stderr'/" /var/lib/postgresql/data/postgresql.conf
+    sed -ri "s/^#? *(log_min_duration_statement) .*/\1 = 10000/" /var/lib/postgresql/data/postgresql.conf
     gosu postgres:docker-machines /usr/lib/postgresql/*/bin/pg_ctl -s -D "/var/lib/postgresql/data" -o "-c listen_addresses='127.0.0.1'" -w start
     psql=( psql -v ON_ERROR_STOP=1 --username "postgres" --dbname "postgres" )
     for f in /sql-init.d/*; do
@@ -26,7 +34,7 @@ if [ ! -s "/var/lib/postgresql/data/PG_VERSION" ]; then
     done
 
     gosu postgres:docker-machines /usr/lib/postgresql/*/bin/pg_ctl -s -D "/var/lib/postgresql/data" -m fast -w stop
-
+    echo "host    all    all    0.0.0.0/0    md5" >> /var/lib/postgresql/data/pg_hba.conf
     echo
     echo 'PostgreSQL init process complete; ready for start up.'
     echo
