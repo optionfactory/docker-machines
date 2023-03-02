@@ -1,7 +1,7 @@
 #we user squash here to remove unwanted layers, which is an experimental feature
 #{"experimental": true} > /etc/docker/daemon.json
 DOCKER_BUILD_OPTIONS=--no-cache=false --squash
-TAG_VERSION=42
+TAG_VERSION=43
 
 #software versions
 JDK11_VERSION=11.0.18
@@ -11,15 +11,16 @@ JDK17_BUILD=10
 JDK19_VERSION=19.0.2
 JDK19_BUILD=7
 
-TOMCAT9_VERSION=9.0.71
+SONARQUBE9_VERSION=9.9.0.65466
+
+TOMCAT9_VERSION=9.0.72
 TOMCAT9_ERROR_REPORT_VALVE_VERSION=2.0
-TOMCAT10_VERSION=10.1.5
+TOMCAT10_VERSION=10.1.6
 TOMCAT10_ERROR_REPORT_VALVE_VERSION=2.0
 GOSU1_VERSION=1.14
 GOLANG1_VERSION=1.20.1
-LEGOPFA_VERSION=1.0
-ETCD3_VERSION=3.5.6
-KEYCLOAK1_VERSION=20.0.5
+LEGOPFA_VERSION=1.1
+KEYCLOAK1_VERSION=21.0.0
 KEYCLOAK_OPFA_MODULES_VERSION=2.1
 MAVEN3_VERSION=3.9.0
 
@@ -68,6 +69,11 @@ docker-optionfactory-debian11-jdk19: sync-jdk19 docker-optionfactory-debian11
 docker-optionfactory-ubuntu22-jdk19: sync-jdk19 docker-optionfactory-ubuntu22
 docker-optionfactory-rocky9-jdk19: sync-jdk19 docker-optionfactory-rocky9
 
+#docker-optionfactory-%-jdk17-sonarqube9: $(subst -jdk17-sonarqube9,,$@)
+docker-optionfactory-debian11-jdk17-sonarqube9: sync-sonarqube9 docker-optionfactory-debian11-jdk17
+docker-optionfactory-ubuntu22-jdk17-sonarqube9: sync-sonarqube9 docker-optionfactory-ubuntu22-jdk17
+docker-optionfactory-rocky9-jdk17-sonarqube9: sync-sonarqube9 docker-optionfactory-rocky9F-jdk17
+
 #docker-optionfactory-%-jdk11-builder: $(subst -jdk11-builder,,$@)
 docker-optionfactory-debian11-jdk11-builder: sync-builder docker-optionfactory-debian11-jdk11
 docker-optionfactory-ubuntu22-jdk11-builder: sync-builder docker-optionfactory-ubuntu22-jdk11
@@ -88,15 +94,6 @@ docker-optionfactory-debian11-mariadb10: sync-mariadb10 docker-optionfactory-deb
 docker-optionfactory-ubuntu22-mariadb10: sync-mariadb10 docker-optionfactory-ubuntu22
 docker-optionfactory-rocky9-mariadb10: sync-mariadb10 docker-optionfactory-rocky9
 
-#docker-optionfactory-%-postgres12: $(subst -postgres12,,$@)
-docker-optionfactory-debian11-postgres12: sync-postgres docker-optionfactory-debian11
-docker-optionfactory-ubuntu22-postgres12: sync-postgres docker-optionfactory-ubuntu22
-
-#docker-optionfactory-%-postgres14: $(subst -postgres14,,$@)
-docker-optionfactory-debian11-postgres14: sync-postgres docker-optionfactory-debian11
-docker-optionfactory-ubuntu22-postgres14: sync-postgres docker-optionfactory-ubuntu22
-docker-optionfactory-rocky9-postgres14: sync-postgres docker-optionfactory-rocky9
-
 #docker-optionfactory-%-postgres15: $(subst -postgres15,,$@)
 docker-optionfactory-debian11-postgres15: sync-postgres docker-optionfactory-debian11
 docker-optionfactory-ubuntu22-postgres15: sync-postgres docker-optionfactory-ubuntu22
@@ -111,11 +108,6 @@ docker-optionfactory-rocky9-barman2: sync-barman2 docker-optionfactory-rocky9
 docker-optionfactory-debian11-golang1: sync-golang1 docker-optionfactory-debian11
 docker-optionfactory-ubuntu22-golang1: sync-golang1 docker-optionfactory-ubuntu22
 docker-optionfactory-rocky9-golang1: sync-golang1 docker-optionfactory-rocky9
-
-#docker-optionfactory-%-etcd3: $(subst -etcd3,,$@)
-docker-optionfactory-debian11-etcd3: sync-etcd3 docker-optionfactory-debian11
-docker-optionfactory-ubuntu22-etcd3: sync-etcd3 docker-optionfactory-ubuntu22
-docker-optionfactory-rocky9-etcd3: sync-etcd3 docker-optionfactory-rocky9
 
 #docker-optionfactory-%-journal-remote: $(subst -journal-remote,,$@)
 docker-optionfactory-debian11-journal-remote: sync-journal-remote docker-optionfactory-debian11
@@ -160,7 +152,7 @@ docker-optionfactory-%:
 	$(call irun,docker build ${DOCKER_BUILD_OPTIONS} --tag=optionfactory/$(name):${TAG_VERSION} optionfactory-$(name))
 	$(call irun,docker tag optionfactory/$(name):${TAG_VERSION} optionfactory/$(name):latest)
 
-sync: sync-base-images sync-tools sync-jdk11 sync-jdk17 sync-jdk19 sync-builder sync-tomcat9 sync-tomcat10 sync-quarkus-keycloak1 sync-nginx120 sync-mariadb10 sync-postgres sync-barman2 sync-etcd3 sync-journal-remote sync-golang1
+sync: sync-base-images sync-tools sync-jdk11 sync-jdk17 sync-jdk19 sync-sonarqube9 sync-builder sync-tomcat9 sync-tomcat10 sync-quarkus-keycloak1 sync-nginx120 sync-mariadb10 sync-postgres sync-barman2 sync-journal-remote sync-golang1
 
 sync-base-images:
 	$(call task,updating base images)
@@ -185,6 +177,12 @@ sync-jdk19: deps/jdk19
 	$(call task,syncing jdk 19)
 	$(call irun,echo optionfactory-*-jdk19/deps | xargs -n 1 rsync -az install-jdk.sh)
 	$(call irun,echo optionfactory-*-jdk19/deps | xargs -n 1 rsync -az deps/jdk-${JDK19_VERSION}+${JDK19_BUILD})
+sync-sonarqube9: deps/sonarqube9
+	$(call task,syncing sonarqube 9)
+	$(call irun,echo optionfactory-*-jdk*-sonarqube9/deps | xargs -n 1 rsync -az install-sonarqube9.sh)
+	$(call irun,echo optionfactory-*-jdk*-sonarqube9/deps | xargs -n 1 rsync -az init-sonarqube9.sh)
+	$(call irun,echo optionfactory-*-jdk*-sonarqube9/deps | xargs -n 1 rsync -az deps/sonarqube-${SONARQUBE9_VERSION})
+
 sync-builder: deps/maven3
 	$(call task,syncing maven 3)
 	$(call irun,echo optionfactory-*-jdk*-builder/deps | xargs -n 1 rsync -az install-builder.sh)
@@ -225,11 +223,6 @@ sync-barman2: deps/barman2
 	$(call task,syncing barman2)
 	$(call irun,echo optionfactory-*-barman2/deps | xargs -n 1 rsync -az install-barman2.sh)
 	$(call irun,echo optionfactory-*-barman2/deps | xargs -n 1 rsync -az init-barman2.sh)
-sync-etcd3: deps/etcd3
-	$(call task,syncing etcd3)
-	$(call irun,echo optionfactory-*-etcd3/deps | xargs -n 1 rsync -az install-etcd3.sh)
-	$(call irun,echo optionfactory-*-etcd3/deps | xargs -n 1 rsync -az init-etcd3.sh)
-	$(call irun,echo optionfactory-*-etcd3/deps | xargs -n 1 rsync -az deps/etcd-v${ETCD3_VERSION}-linux-amd64)
 sync-journal-remote:
 	$(call task,syncing journal-remote)
 	$(call irun,echo optionfactory-*-journal-remote/deps | xargs -n 1 rsync -az install-journal-remote.sh)
@@ -240,7 +233,7 @@ sync-golang1: deps/golang1
 	$(call irun,echo optionfactory-*-golang1/deps | xargs -n 1 rsync -az deps/golang-${GOLANG1_VERSION})
 
 
-deps: deps/gosu1 deps/jdk11 deps/tomcat9 deps/wildfly-keycloak1 deps/quarkus-keycloak1 deps/psql-jdbc deps/mariadb10 deps/postgres12 deps/barman2 deps/golang1 deps/etcd3
+deps: deps/gosu1 deps/jdk11 deps/tomcat9 deps/wildfly-keycloak1 deps/quarkus-keycloak1 deps/psql-jdbc deps/mariadb10 deps/postgres deps/barman2 deps/golang1
 
 deps/gosu1: deps/gosu-${GOSU1_VERSION}
 deps/legopfa1: deps/legopfa-${LEGOPFA_VERSION}
@@ -248,6 +241,7 @@ deps/jdk11: deps/jdk-${JDK11_VERSION}+${JDK11_BUILD}
 deps/jdk17: deps/jdk-${JDK17_VERSION}+${JDK17_BUILD}
 deps/jdk19: deps/jdk-${JDK19_VERSION}+${JDK19_BUILD}
 deps/maven3: deps/apache-maven-${MAVEN3_VERSION}
+deps/sonarqube9: deps/sonarqube-${SONARQUBE9_VERSION}
 deps/tomcat9: deps/apache-tomcat-${TOMCAT9_VERSION} deps/tomcat9-logging-error-report-valve-${TOMCAT9_ERROR_REPORT_VALVE_VERSION}.jar
 deps/tomcat10: deps/apache-tomcat-${TOMCAT10_VERSION} deps/tomcat10-logging-error-report-valve-${TOMCAT10_ERROR_REPORT_VALVE_VERSION}.jar
 deps/quarkus-keycloak1: deps/keycloak-${KEYCLOAK1_VERSION} deps/optionfactory-keycloak-${KEYCLOAK_OPFA_MODULES_VERSION}
@@ -256,7 +250,6 @@ deps/mariadb10:
 deps/postgres:
 deps/barman2:
 deps/golang1: deps/golang-${GOLANG1_VERSION}/bin/go
-deps/etcd3: deps/etcd-v${ETCD3_VERSION}-linux-amd64
 
 deps/jdk-${JDK11_VERSION}+${JDK11_BUILD}:
 	$(call irun,curl -# -j -k -L https://github.com/adoptium/temurin11-binaries/releases/download/jdk-${JDK11_VERSION}%2B${JDK11_BUILD}/OpenJDK11U-jdk_x64_linux_hotspot_${JDK11_VERSION}_${JDK11_BUILD}.tar.gz	| tar xz -C deps)
@@ -266,6 +259,8 @@ deps/jdk-${JDK19_VERSION}+${JDK19_BUILD}:
 	$(call irun,curl -# -j -k -L https://github.com/adoptium/temurin19-binaries/releases/download/jdk-${JDK19_VERSION}%2B${JDK19_BUILD}/OpenJDK19U-jdk_x64_linux_hotspot_${JDK19_VERSION}_${JDK19_BUILD}.tar.gz	| tar xz -C deps)
 deps/apache-maven-${MAVEN3_VERSION}:
 	$(call irun,curl -# -j -k -L https://downloads.apache.org/maven/maven-3/${MAVEN3_VERSION}/binaries/apache-maven-${MAVEN3_VERSION}-bin.tar.gz | tar xz -C deps)
+deps/sonarqube-${SONARQUBE9_VERSION}:	
+	$(call irun,cd deps && curl -# -sSL -k https://binaries.sonarsource.com/Distribution/sonarqube/sonarqube-${SONARQUBE9_VERSION}.zip | jar xf /dev/stdin)
 deps/apache-tomcat-${TOMCAT9_VERSION}:
 	$(call irun,curl -# -sSL -k https://archive.apache.org/dist/tomcat/tomcat-9/v${TOMCAT9_VERSION}/bin/apache-tomcat-${TOMCAT9_VERSION}.tar.gz | tar xz -C deps)
 deps/tomcat9-logging-error-report-valve-${TOMCAT9_ERROR_REPORT_VALVE_VERSION}.jar:
@@ -283,8 +278,6 @@ deps/legopfa-${LEGOPFA_VERSION}:
 deps/golang-${GOLANG1_VERSION}/bin/go:
 	$(call irun,mkdir -p deps/golang-${GOLANG1_VERSION})
 	$(call irun,curl -# -j -k -L https://golang.org/dl/go${GOLANG1_VERSION}.linux-amd64.tar.gz | tar xz -C deps/golang-${GOLANG1_VERSION} --strip-components=1)
-deps/etcd-v${ETCD3_VERSION}-linux-amd64:
-	$(call irun,curl -# -j -k -L  https://github.com/etcd-io/etcd/releases/download/v${ETCD3_VERSION}/etcd-v${ETCD3_VERSION}-linux-amd64.tar.gz | tar xz -C deps)
 deps/keycloak-${KEYCLOAK1_VERSION}:
 	$(call irun,curl -# -j -k -L  https://github.com/keycloak/keycloak/releases/download/${KEYCLOAK1_VERSION}/keycloak-${KEYCLOAK1_VERSION}.tar.gz | tar xz -C deps)
 deps/optionfactory-keycloak-${KEYCLOAK_OPFA_MODULES_VERSION}:

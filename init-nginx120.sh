@@ -1,3 +1,3 @@
 #!/bin/bash -e
-find /etc/nginx/certificates/ -maxdepth 1 -name '*.json' -exec legopfa {} ";"
+/legopfa-all
 exec nginx -g "daemon off;"
