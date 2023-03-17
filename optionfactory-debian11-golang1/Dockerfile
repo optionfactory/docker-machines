@@ -1,5 +1,6 @@
 FROM optionfactory/debian11:latest
 LABEL maintainer="Roberto Ferranti <roberto@optionfactory.net>"
+LABEL org.opencontainers.image.source https://github.com/optionfactory/docker-machines
 
 ENV GOPATH /go
 ENV PATH $GOPATH/bin:/usr/local/go/bin:$PATH

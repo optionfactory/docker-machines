@@ -1,5 +1,6 @@
 FROM optionfactory/ubuntu22-jdk11:latest
 LABEL maintainer="Roberto Ferranti <roberto@optionfactory.net>"
+LABEL org.opencontainers.image.source https://github.com/optionfactory/docker-machines
 
 COPY deps /tmp/
 

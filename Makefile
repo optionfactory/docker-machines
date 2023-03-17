@@ -21,7 +21,7 @@ GOSU1_VERSION=1.14
 GOLANG1_VERSION=1.20.2
 LEGOPFA_VERSION=1.2
 KEYCLOAK1_VERSION=21.0.1
-KEYCLOAK_OPFA_MODULES_VERSION=2.2
+KEYCLOAK_OPFA_MODULES_VERSION=2.3
 MAVEN3_VERSION=3.9.0
 
 NGINX_REMOVE_SERVER_HEADER_MODULE_VERSION=1.0-1.22.1
@@ -48,6 +48,20 @@ docker-push:
 	$(call irun,docker images --filter="reference=optionfactory/*:${TAG_VERSION}" --format='{{.Repository}}' | sort | uniq |  xargs -I'{}' docker push {}:${TAG_VERSION})
 	$(call task,pushing tag: latest)
 	$(call irun,docker images --filter="reference=optionfactory/*:${TAG_VERSION}" --format='{{.Repository}}' | sort | uniq |  xargs -I'{}' docker push {}:latest)
+
+docker-push-github:
+	$(call task,logging in to ghcr.io)
+	$(eval github_user=$(shell echo url=https://github.com/optionfactory | git credential fill | grep '^username=' | sed 's/username=//'))
+	$(eval github_token=$(shell echo url=https://github.com/optionfactory | git credential fill | grep '^password=' | sed 's/password=//'))
+	$(call irun,echo ${github_token} | docker login ghcr.io -u ${github_user} --password-stdin)
+	$(call task,creating ghcr.io image tags: ${TAG_VERSION})
+	$(call irun,docker images --filter="reference=optionfactory/*:${TAG_VERSION}" --format='{{.Repository}}' | sort | uniq |  xargs -I'{}' docker tag {}:${TAG_VERSION} ghcr.io/{}:${TAG_VERSION})
+	$(call task,creating ghcr.io image tags: latest)
+	$(call irun,docker images --filter="reference=optionfactory/*:${TAG_VERSION}" --format='{{.Repository}}' | sort | uniq |  xargs -I'{}' docker tag {}:${TAG_VERSION} ghcr.io/{}:latest)
+	$(call task,pushing tag: ${TAG_VERSION})
+	$(call irun,docker images --filter="reference=optionfactory/*:${TAG_VERSION}" --format='{{.Repository}}' | sort | uniq |  xargs -I'{}' docker push ghcr.io/{}:${TAG_VERSION})
+	$(call task,pushing tag: latest)
+	$(call irun,docker images --filter="reference=optionfactory/*:${TAG_VERSION}" --format='{{.Repository}}' | sort | uniq |  xargs -I'{}' docker push ghcr.io/{}:latest)
 
 
 docker-optionfactory-debian11: sync-tools
