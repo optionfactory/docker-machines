@@ -287,7 +287,7 @@ deps/gosu-${GOSU1_VERSION}:
 	$(call irun,curl -# -sSL -k https://github.com/tianon/gosu/releases/download/${GOSU1_VERSION}/gosu-amd64 -o deps/gosu-${GOSU1_VERSION})
 	$(call irun,chmod +x deps/gosu-${GOSU1_VERSION})
 deps/legopfa-${LEGOPFA_VERSION}:	
-	$(call irun,curl -# -j -k -L https://github.com/optionfactory/legopfa/releases/download/v${LEGOPFA_VERSION}/legopfa-${LEGOPFA_VERSION} -o deps/legopfa-${LEGOPFA_VERSION})
+	$(call irun,curl -# -j -k -L https://github.com/optionfactory/legopfa/releases/download/${LEGOPFA_VERSION}/legopfa-${LEGOPFA_VERSION} -o deps/legopfa-${LEGOPFA_VERSION})
 	$(call irun,chmod +x deps/legopfa-${LEGOPFA_VERSION})
 deps/golang-${GOLANG1_VERSION}/bin/go:
 	$(call irun,mkdir -p deps/golang-${GOLANG1_VERSION})
