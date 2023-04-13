@@ -1,7 +1,7 @@
 #we user squash here to remove unwanted layers, which is an experimental feature
 #{"experimental": true} > /etc/docker/daemon.json
 DOCKER_BUILD_OPTIONS=--no-cache=false --squash
-TAG_VERSION=45
+TAG_VERSION=46
 
 #software versions
 JDK11_VERSION=11.0.18
@@ -18,11 +18,11 @@ TOMCAT9_ERROR_REPORT_VALVE_VERSION=2.0
 TOMCAT10_VERSION=10.1.7
 TOMCAT10_ERROR_REPORT_VALVE_VERSION=2.0
 GOSU1_VERSION=1.14
-GOLANG1_VERSION=1.20.2
+GOLANG1_VERSION=1.20.3
 LEGOPFA_VERSION=1.2
 KEYCLOAK1_VERSION=21.0.2
-KEYCLOAK_OPFA_MODULES_VERSION=2.5
-MAVEN3_VERSION=3.9.0
+KEYCLOAK_OPFA_MODULES_VERSION=2.7
+MAVEN3_VERSION=3.9.1
 
 NGINX_REMOVE_SERVER_HEADER_MODULE_VERSION=1.0-1.22.1
 #/software versions
@@ -246,8 +246,6 @@ sync-golang1: deps/golang1
 	$(call irun,echo optionfactory-*-golang1/deps | xargs -n 1 rsync -az install-golang1.sh)
 	$(call irun,echo optionfactory-*-golang1/deps | xargs -n 1 rsync -az deps/golang-${GOLANG1_VERSION})
 
-
-deps: deps/gosu1 deps/jdk11 deps/tomcat9 deps/wildfly-keycloak1 deps/quarkus-keycloak1 deps/psql-jdbc deps/mariadb10 deps/postgres deps/barman2 deps/golang1
 
 deps/gosu1: deps/gosu-${GOSU1_VERSION}
 deps/legopfa1: deps/legopfa-${LEGOPFA_VERSION}
