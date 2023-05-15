@@ -1,27 +1,27 @@
 #we user squash here to remove unwanted layers, which is an experimental feature
 #{"experimental": true} > /etc/docker/daemon.json
 DOCKER_BUILD_OPTIONS=--no-cache=false --squash
-TAG_VERSION=46
+TAG_VERSION=47
 
 #software versions
-JDK11_VERSION=11.0.18
-JDK11_BUILD=10
-JDK17_VERSION=17.0.6
-JDK17_BUILD=10
+JDK11_VERSION=11.0.19
+JDK11_BUILD=7
+JDK17_VERSION=17.0.7
+JDK17_BUILD=7
 JDK19_VERSION=19.0.2
 JDK19_BUILD=7
 
 SONARQUBE9_VERSION=9.9.0.65466
 
-TOMCAT9_VERSION=9.0.73
+TOMCAT9_VERSION=9.0.74
 TOMCAT9_ERROR_REPORT_VALVE_VERSION=2.0
-TOMCAT10_VERSION=10.1.7
+TOMCAT10_VERSION=10.1.8
 TOMCAT10_ERROR_REPORT_VALVE_VERSION=2.0
 GOSU1_VERSION=1.14
 GOLANG1_VERSION=1.20.3
 LEGOPFA_VERSION=1.2
-KEYCLOAK1_VERSION=21.0.2
-KEYCLOAK_OPFA_MODULES_VERSION=2.7
+KEYCLOAK1_VERSION=21.1.1
+KEYCLOAK_OPFA_MODULES_VERSION=3.5
 MAVEN3_VERSION=3.9.1
 
 NGINX_REMOVE_SERVER_HEADER_MODULE_VERSION=1.0-1.22.1
@@ -296,6 +296,10 @@ deps/optionfactory-keycloak-${KEYCLOAK_OPFA_MODULES_VERSION}:
 	$(call irun,mkdir -p deps/optionfactory-keycloak-${KEYCLOAK_OPFA_MODULES_VERSION})
 	$(eval modules=$(shell curl https://repo1.maven.org/maven2/net/optionfactory/keycloak/optionfactory-keycloak/${KEYCLOAK_OPFA_MODULES_VERSION}/optionfactory-keycloak-${KEYCLOAK_OPFA_MODULES_VERSION}.pom | grep '<module>' | grep -Po '(?<=>)[^<]+(?=<)'))
 	$(call irun,for module in ${modules}; do curl -# -j -k -L "https://repo1.maven.org/maven2/net/optionfactory/keycloak/$${module}/${KEYCLOAK_OPFA_MODULES_VERSION}/$${module}-${KEYCLOAK_OPFA_MODULES_VERSION}.jar" > "deps/optionfactory-keycloak-${KEYCLOAK_OPFA_MODULES_VERSION}/$${module}.jar"; done)
+	$(eval lpn_version=$(shell curl https://repo1.maven.org/maven2/net/optionfactory/keycloak/optionfactory-keycloak/${KEYCLOAK_OPFA_MODULES_VERSION}/optionfactory-keycloak-${KEYCLOAK_OPFA_MODULES_VERSION}.pom | grep '<libphonenumber.version>' | grep -Po '(?<=>)[^<]+(?=<)'))	
+	$(call irun,curl -# -j -k -L "https://repo1.maven.org/maven2/com/googlecode/libphonenumber/libphonenumber/${lpn_version}/libphonenumber-${lpn_version}.jar" > "deps/optionfactory-keycloak-${KEYCLOAK_OPFA_MODULES_VERSION}/libphonenumber-${lpn_version}.jar")	
+	$(eval hv_version=$(shell curl https://repo1.maven.org/maven2/net/optionfactory/keycloak/optionfactory-keycloak/${KEYCLOAK_OPFA_MODULES_VERSION}/optionfactory-keycloak-${KEYCLOAK_OPFA_MODULES_VERSION}.pom | grep '<hibernatevalidator.version>' | grep -Po '(?<=>)[^<]+(?=<)'))	
+	$(call irun,curl -# -j -k -L "https://repo1.maven.org/maven2/org/hibernate/validator/hibernate-validator/${hv_version}/hibernate-validator-${hv_version}.jar" > "deps/optionfactory-keycloak-${KEYCLOAK_OPFA_MODULES_VERSION}/hibernate-validator-${hv_version}.jar")	
 deps/opfa_http_remove_server_header_module-${NGINX_REMOVE_SERVER_HEADER_MODULE_VERSION}.so:
 	$(call irun,curl -# -j -k -L  https://github.com/optionfactory/nginx-remove-server-header-module/releases/download/v1.0/opfa_http_remove_server_header_module-${NGINX_REMOVE_SERVER_HEADER_MODULE_VERSION}.so -o deps/opfa_http_remove_server_header_module-${NGINX_REMOVE_SERVER_HEADER_MODULE_VERSION}.so)
 

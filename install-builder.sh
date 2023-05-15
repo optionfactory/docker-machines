@@ -24,7 +24,7 @@ case "${DISTRIB_LABEL}" in
         rm -rf /var/lib/apt/lists/* /etc/apt/sources.list.d/*
     ;;
     rocky9)
-        yum install -q -y epel-release ansible-core make which git rsync curl
+        yum install -q -y epel-release ansible-core make which git rsync
         yum clean all
         rm -rf /var/cache/yum
     ;;
