@@ -1,7 +1,7 @@
 #we user squash here to remove unwanted layers, which is an experimental feature
 #{"experimental": true} > /etc/docker/daemon.json
 DOCKER_BUILD_OPTIONS=--no-cache=false --squash
-TAG_VERSION=47
+TAG_VERSION=50
 
 #software versions
 JDK11_VERSION=11.0.19
@@ -10,6 +10,9 @@ JDK17_VERSION=17.0.7
 JDK17_BUILD=7
 JDK19_VERSION=19.0.2
 JDK19_BUILD=7
+JDK21_VERSION=21
+JDK21_BUILD=18
+JDK21_NIGHTLY_BUILD=2023-05-19-14-20
 
 SONARQUBE9_VERSION=9.9.0.65466
 
@@ -20,7 +23,7 @@ TOMCAT10_ERROR_REPORT_VALVE_VERSION=2.0
 GOSU1_VERSION=1.14
 GOLANG1_VERSION=1.20.3
 LEGOPFA_VERSION=1.2
-KEYCLOAK1_VERSION=21.1.1
+KEYCLOAK2_VERSION=21.1.1
 KEYCLOAK_OPFA_MODULES_VERSION=3.6
 MAVEN3_VERSION=3.9.1
 
@@ -78,10 +81,15 @@ docker-optionfactory-debian11-jdk17: sync-jdk17 docker-optionfactory-debian11
 docker-optionfactory-ubuntu22-jdk17: sync-jdk17 docker-optionfactory-ubuntu22
 docker-optionfactory-rocky9-jdk17: sync-jdk17 docker-optionfactory-rocky9
 
-#docker-optionfactory-%-jdk19: $(subst -jdk17,,$@)
+#docker-optionfactory-%-jdk19: $(subst -jdk19,,$@)
 docker-optionfactory-debian11-jdk19: sync-jdk19 docker-optionfactory-debian11
 docker-optionfactory-ubuntu22-jdk19: sync-jdk19 docker-optionfactory-ubuntu22
 docker-optionfactory-rocky9-jdk19: sync-jdk19 docker-optionfactory-rocky9
+
+#docker-optionfactory-%-jdk21: $(subst -jdk21,,$@)
+docker-optionfactory-debian11-jdk21: sync-jdk21 docker-optionfactory-debian11
+docker-optionfactory-ubuntu22-jdk21: sync-jdk21 docker-optionfactory-ubuntu22
+docker-optionfactory-rocky9-jdk21: sync-jdk21 docker-optionfactory-rocky9
 
 #docker-optionfactory-%-jdk17-sonarqube9: $(subst -jdk17-sonarqube9,,$@)
 docker-optionfactory-debian11-jdk17-sonarqube9: sync-sonarqube9 docker-optionfactory-debian11-jdk17
@@ -148,15 +156,21 @@ docker-optionfactory-debian11-jdk19-tomcat10: sync-tomcat10 docker-optionfactory
 docker-optionfactory-ubuntu22-jdk19-tomcat10: sync-tomcat10 docker-optionfactory-ubuntu22-jdk19
 docker-optionfactory-rocky9-jdk19-tomcat10: sync-tomcat10 docker-optionfactory-rocky9-jdk19
 
-#docker-optionfactory-%-jdk17-quarkus-keycloak1: $(subst -quarkus-keycloak1,,$@)
-docker-optionfactory-debian11-jdk17-quarkus-keycloak1: sync-quarkus-keycloak1 docker-optionfactory-debian11-jdk17
-docker-optionfactory-ubuntu22-jdk17-quarkus-keycloak1: sync-quarkus-keycloak1 docker-optionfactory-ubuntu22-jdk17
-docker-optionfactory-rocky9-jdk17-quarkus-keycloak1: sync-quarkus-keycloak1 docker-optionfactory-rocky9-jdk17
+#docker-optionfactory-%-jdk21-tomcat9: $(subst -tomcat9,,$@)
+docker-optionfactory-debian11-jdk21-tomcat9: sync-tomcat9 docker-optionfactory-debian11-jdk21
+docker-optionfactory-ubuntu22-jdk21-tomcat9: sync-tomcat9 docker-optionfactory-ubuntu22-jdk21
+docker-optionfactory-rocky9-jdk21-tomcat9: sync-tomcat9 docker-optionfactory-rocky9-jdk21
 
-#docker-optionfactory-%-jdk11-quarkus-keycloak1: $(subst -quarkus-keycloak1,,$@)
-docker-optionfactory-debian11-jdk11-quarkus-keycloak1: sync-quarkus-keycloak1 docker-optionfactory-debian11-jdk11
-docker-optionfactory-ubuntu22-jdk11-quarkus-keycloak1: sync-quarkus-keycloak1 docker-optionfactory-ubuntu22-jdk11
-docker-optionfactory-rocky9-jdk11-quarkus-keycloak1: sync-quarkus-keycloak1 docker-optionfactory-rocky9-jdk11
+#docker-optionfactory-%-jdk21-tomcat10: $(subst -tomcat9,,$@)
+docker-optionfactory-debian11-jdk21-tomcat10: sync-tomcat10 docker-optionfactory-debian11-jdk21
+docker-optionfactory-ubuntu22-jdk21-tomcat10: sync-tomcat10 docker-optionfactory-ubuntu22-jdk21
+docker-optionfactory-rocky9-jdk21-tomcat10: sync-tomcat10 docker-optionfactory-rocky9-jdk21
+
+
+#docker-optionfactory-%-jdk17-keycloak2: $(subst -keycloak2,,$@)
+docker-optionfactory-debian11-jdk17-keycloak2: sync-keycloak2 docker-optionfactory-debian11-jdk17
+docker-optionfactory-ubuntu22-jdk17-keycloak2: sync-keycloak2 docker-optionfactory-ubuntu22-jdk17
+docker-optionfactory-rocky9-jdk17-keycloak2: sync-keycloak2 docker-optionfactory-rocky9-jdk17
 
 
 
@@ -166,7 +180,7 @@ docker-optionfactory-%:
 	$(call irun,docker build ${DOCKER_BUILD_OPTIONS} --tag=optionfactory/$(name):${TAG_VERSION} optionfactory-$(name))
 	$(call irun,docker tag optionfactory/$(name):${TAG_VERSION} optionfactory/$(name):latest)
 
-sync: sync-base-images sync-tools sync-jdk11 sync-jdk17 sync-jdk19 sync-sonarqube9 sync-builder sync-tomcat9 sync-tomcat10 sync-quarkus-keycloak1 sync-nginx120 sync-mariadb10 sync-postgres sync-barman2 sync-journal-remote sync-golang1
+sync: sync-base-images sync-tools sync-jdk11 sync-jdk17 sync-jdk19 sync-jdk21 sync-sonarqube9 sync-builder sync-tomcat9 sync-tomcat10 sync-keycloak2 sync-nginx120 sync-mariadb10 sync-postgres sync-barman2 sync-journal-remote sync-golang1
 
 sync-base-images:
 	$(call task,updating base images)
@@ -191,6 +205,10 @@ sync-jdk19: deps/jdk19
 	$(call task,syncing jdk 19)
 	$(call irun,echo optionfactory-*-jdk19/deps | xargs -n 1 rsync -az install-jdk.sh)
 	$(call irun,echo optionfactory-*-jdk19/deps | xargs -n 1 rsync -az deps/jdk-${JDK19_VERSION}+${JDK19_BUILD})
+sync-jdk21: deps/jdk21
+	$(call task,syncing jdk 21)
+	$(call irun,echo optionfactory-*-jdk21/deps | xargs -n 1 rsync -az install-jdk.sh)
+	$(call irun,echo optionfactory-*-jdk21/deps | xargs -n 1 rsync -az deps/jdk-${JDK21_VERSION}+${JDK21_BUILD})
 sync-sonarqube9: deps/sonarqube9
 	$(call task,syncing sonarqube 9)
 	$(call irun,echo optionfactory-*-jdk*-sonarqube9/deps | xargs -n 1 rsync -az install-sonarqube9.sh)
@@ -213,12 +231,12 @@ sync-tomcat10: deps/tomcat10
 	$(call irun,echo optionfactory-*-tomcat10/deps | xargs -n 1 rsync -az init-tomcat.sh)
 	$(call irun,echo optionfactory-*-tomcat10/deps | xargs -n 1 rsync -az deps/apache-tomcat-${TOMCAT10_VERSION})
 	$(call irun,echo optionfactory-*-tomcat10/deps | xargs -n 1 rsync -az deps/tomcat10-logging-error-report-valve-${TOMCAT10_ERROR_REPORT_VALVE_VERSION}.jar)
-sync-quarkus-keycloak1: deps/quarkus-keycloak1
-	$(call task,syncing quarkus-keycloak)
-	$(call irun,echo optionfactory-*-quarkus-keycloak1/deps | xargs -n 1 rsync -az install-quarkus-keycloak1.sh)
-	$(call irun,echo optionfactory-*-quarkus-keycloak1/deps | xargs -n 1 rsync -az init-quarkus-keycloak1.sh)
-	$(call irun,echo optionfactory-*-quarkus-keycloak1/deps | xargs -n 1 rsync -az deps/keycloak-${KEYCLOAK1_VERSION})
-	$(call irun,echo optionfactory-*-quarkus-keycloak1/deps | xargs -n 1 rsync -az deps/optionfactory-keycloak-${KEYCLOAK_OPFA_MODULES_VERSION})
+sync-keycloak2: deps/keycloak2
+	$(call task,syncing keycloak 2x)
+	$(call irun,echo optionfactory-*-keycloak2/deps | xargs -n 1 rsync -az install-keycloak2.sh)
+	$(call irun,echo optionfactory-*-keycloak2/deps | xargs -n 1 rsync -az init-keycloak2.sh)
+	$(call irun,echo optionfactory-*-keycloak2/deps | xargs -n 1 rsync -az deps/keycloak-${KEYCLOAK2_VERSION})
+	$(call irun,echo optionfactory-*-keycloak2/deps | xargs -n 1 rsync -az deps/optionfactory-keycloak-${KEYCLOAK_OPFA_MODULES_VERSION})
 sync-nginx120: deps/nginx_remove_server_header_module deps/legopfa1
 	$(call task,syncing nginx)
 	$(call irun,echo optionfactory-*-nginx120/deps | xargs -n 1 rsync -az install-nginx120.sh)
@@ -252,11 +270,12 @@ deps/legopfa1: deps/legopfa-${LEGOPFA_VERSION}
 deps/jdk11: deps/jdk-${JDK11_VERSION}+${JDK11_BUILD}
 deps/jdk17: deps/jdk-${JDK17_VERSION}+${JDK17_BUILD}
 deps/jdk19: deps/jdk-${JDK19_VERSION}+${JDK19_BUILD}
+deps/jdk21: deps/jdk-${JDK21_VERSION}+${JDK21_BUILD}
 deps/maven3: deps/apache-maven-${MAVEN3_VERSION}
 deps/sonarqube9: deps/sonarqube-${SONARQUBE9_VERSION}
 deps/tomcat9: deps/apache-tomcat-${TOMCAT9_VERSION} deps/tomcat9-logging-error-report-valve-${TOMCAT9_ERROR_REPORT_VALVE_VERSION}.jar
 deps/tomcat10: deps/apache-tomcat-${TOMCAT10_VERSION} deps/tomcat10-logging-error-report-valve-${TOMCAT10_ERROR_REPORT_VALVE_VERSION}.jar
-deps/quarkus-keycloak1: deps/keycloak-${KEYCLOAK1_VERSION} deps/optionfactory-keycloak-${KEYCLOAK_OPFA_MODULES_VERSION}
+deps/keycloak2: deps/keycloak-${KEYCLOAK2_VERSION} deps/optionfactory-keycloak-${KEYCLOAK_OPFA_MODULES_VERSION}
 deps/nginx_remove_server_header_module: deps/opfa_http_remove_server_header_module-${NGINX_REMOVE_SERVER_HEADER_MODULE_VERSION}.so
 deps/mariadb10:
 deps/postgres:
@@ -269,6 +288,8 @@ deps/jdk-${JDK17_VERSION}+${JDK17_BUILD}:
 	$(call irun,curl -# -j -k -L https://github.com/adoptium/temurin17-binaries/releases/download/jdk-${JDK17_VERSION}%2B${JDK17_BUILD}/OpenJDK17U-jdk_x64_linux_hotspot_${JDK17_VERSION}_${JDK17_BUILD}.tar.gz	| tar xz -C deps)
 deps/jdk-${JDK19_VERSION}+${JDK19_BUILD}:
 	$(call irun,curl -# -j -k -L https://github.com/adoptium/temurin19-binaries/releases/download/jdk-${JDK19_VERSION}%2B${JDK19_BUILD}/OpenJDK19U-jdk_x64_linux_hotspot_${JDK19_VERSION}_${JDK19_BUILD}.tar.gz	| tar xz -C deps)
+deps/jdk-${JDK21_VERSION}+${JDK21_BUILD}:
+	$(call irun,curl -# -j -k -L https://github.com/adoptium/temurin21-binaries/releases/download/jdk-${JDK21_NIGHTLY_BUILD}-beta/OpenJDK-jdk_x64_linux_hotspot_${JDK21_NIGHTLY_BUILD}.tar.gz | tar xz -C deps)
 deps/apache-maven-${MAVEN3_VERSION}:
 	$(call irun,curl -# -j -k -L https://downloads.apache.org/maven/maven-3/${MAVEN3_VERSION}/binaries/apache-maven-${MAVEN3_VERSION}-bin.tar.gz | tar xz -C deps)
 deps/sonarqube-${SONARQUBE9_VERSION}:	
@@ -290,8 +311,8 @@ deps/legopfa-${LEGOPFA_VERSION}:
 deps/golang-${GOLANG1_VERSION}/bin/go:
 	$(call irun,mkdir -p deps/golang-${GOLANG1_VERSION})
 	$(call irun,curl -# -j -k -L https://golang.org/dl/go${GOLANG1_VERSION}.linux-amd64.tar.gz | tar xz -C deps/golang-${GOLANG1_VERSION} --strip-components=1)
-deps/keycloak-${KEYCLOAK1_VERSION}:
-	$(call irun,curl -# -j -k -L  https://github.com/keycloak/keycloak/releases/download/${KEYCLOAK1_VERSION}/keycloak-${KEYCLOAK1_VERSION}.tar.gz | tar xz -C deps)
+deps/keycloak-${KEYCLOAK2_VERSION}:
+	$(call irun,curl -# -j -k -L  https://github.com/keycloak/keycloak/releases/download/${KEYCLOAK2_VERSION}/keycloak-${KEYCLOAK2_VERSION}.tar.gz | tar xz -C deps)
 deps/optionfactory-keycloak-${KEYCLOAK_OPFA_MODULES_VERSION}:
 	$(call irun,mkdir -p deps/optionfactory-keycloak-${KEYCLOAK_OPFA_MODULES_VERSION})
 	$(eval modules=$(shell curl https://repo1.maven.org/maven2/net/optionfactory/keycloak/optionfactory-keycloak/${KEYCLOAK_OPFA_MODULES_VERSION}/optionfactory-keycloak-${KEYCLOAK_OPFA_MODULES_VERSION}.pom | grep '<module>' | grep -Po '(?<=>)[^<]+(?=<)'))

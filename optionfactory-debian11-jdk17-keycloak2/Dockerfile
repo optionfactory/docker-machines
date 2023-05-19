@@ -4,8 +4,8 @@ LABEL org.opencontainers.image.source https://github.com/optionfactory/docker-ma
 
 COPY deps /tmp/
 
-RUN DISTRIB_LABEL=debian11 DISTRIB_ID=debian DISTRIB_RELEASE=11 DISTRIB_CODENAME=bullseye /tmp/install-quarkus-keycloak1.sh
-RUN cp /tmp/init-quarkus-keycloak1.sh /keycloak
+RUN DISTRIB_LABEL=debian11 DISTRIB_ID=debian DISTRIB_RELEASE=11 DISTRIB_CODENAME=bullseye /tmp/install-keycloak2.sh
+RUN cp /tmp/init-keycloak2.sh /keycloak
 RUN rm -rf /tmp/*
 
 EXPOSE 8080
