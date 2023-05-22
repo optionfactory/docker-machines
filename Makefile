@@ -24,6 +24,7 @@ LEGOPFA_VERSION=1.2
 KEYCLOAK2_VERSION=21.1.1
 KEYCLOAK_OPFA_MODULES_VERSION=3.6
 MAVEN3_VERSION=3.9.1
+CADDY2_VERSION=2.6.4
 
 NGINX_REMOVE_SERVER_HEADER_MODULE_VERSION=1.0-1.22.1
 #/software versions
@@ -103,6 +104,11 @@ docker-optionfactory-rocky9-jdk17-builder: sync-builder docker-optionfactory-roc
 docker-optionfactory-debian11-nginx120: sync-nginx120 docker-optionfactory-debian11
 docker-optionfactory-ubuntu22-nginx120: sync-nginx120 docker-optionfactory-ubuntu22
 docker-optionfactory-rocky9-nginx120: sync-nginx120 docker-optionfactory-rocky9
+
+#docker-optionfactory-%-caddy2: $(subst -caddy2,,$@)
+docker-optionfactory-debian11-caddy2: sync-caddy2 docker-optionfactory-debian11
+docker-optionfactory-ubuntu22-caddy2: sync-caddy2 docker-optionfactory-ubuntu22
+docker-optionfactory-rocky9-caddy2: sync-caddy2 docker-optionfactory-rocky9
 
 #docker-optionfactory-%-mariadb10: $(subst -mariadb10,,$@)
 docker-optionfactory-debian11-mariadb10: sync-mariadb10 docker-optionfactory-debian11
@@ -193,7 +199,6 @@ sync-sonarqube9: deps/sonarqube9
 	$(call irun,echo optionfactory-*-jdk*-sonarqube9/deps | xargs -n 1 rsync -az install-sonarqube9.sh)
 	$(call irun,echo optionfactory-*-jdk*-sonarqube9/deps | xargs -n 1 rsync -az init-sonarqube9.sh)
 	$(call irun,echo optionfactory-*-jdk*-sonarqube9/deps | xargs -n 1 rsync -az deps/sonarqube-${SONARQUBE9_VERSION})
-
 sync-builder: deps/maven3
 	$(call task,syncing maven 3)
 	$(call irun,echo optionfactory-*-jdk*-builder/deps | xargs -n 1 rsync -az install-builder.sh)
@@ -222,6 +227,11 @@ sync-nginx120: deps/nginx_remove_server_header_module deps/legopfa1
 	$(call irun,echo optionfactory-*-nginx120/deps | xargs -n 1 rsync -az init-nginx120.sh)
 	$(call irun,echo optionfactory-*-nginx120/deps | xargs -n 1 rsync -az deps/opfa_http_remove_server_header_module-${NGINX_REMOVE_SERVER_HEADER_MODULE_VERSION}.so)
 	$(call irun,echo optionfactory-*-nginx120/deps | xargs -n 1 rsync -az deps/legopfa-${LEGOPFA_VERSION})
+sync-caddy2: deps/caddy2
+	$(call task,syncing caddy 2)
+	$(call irun,echo optionfactory-*-caddy2/deps | xargs -n 1 rsync -az install-caddy2.sh)
+	$(call irun,echo optionfactory-*-caddy2/deps | xargs -n 1 rsync -az init-caddy2.sh)
+	$(call irun,echo optionfactory-*-caddy2/deps | xargs -n 1 rsync -az deps/caddy-${CADDY2_VERSION})
 sync-mariadb10: deps/mariadb10
 	$(call task,syncing mariadb 10)
 	$(call irun,echo optionfactory-*-mariadb10/deps | xargs -n 1 rsync -az install-mariadb10.sh)
@@ -255,6 +265,7 @@ deps/tomcat9: deps/apache-tomcat-${TOMCAT9_VERSION} deps/tomcat9-logging-error-r
 deps/tomcat10: deps/apache-tomcat-${TOMCAT10_VERSION} deps/tomcat10-logging-error-report-valve-${TOMCAT10_ERROR_REPORT_VALVE_VERSION}.jar
 deps/keycloak2: deps/keycloak-${KEYCLOAK2_VERSION} deps/optionfactory-keycloak-${KEYCLOAK_OPFA_MODULES_VERSION}
 deps/nginx_remove_server_header_module: deps/opfa_http_remove_server_header_module-${NGINX_REMOVE_SERVER_HEADER_MODULE_VERSION}.so
+deps/caddy2: deps/caddy-${CADDY2_VERSION}
 deps/mariadb10:
 deps/postgres:
 deps/barman2:
@@ -299,6 +310,8 @@ deps/optionfactory-keycloak-${KEYCLOAK_OPFA_MODULES_VERSION}:
 	$(call irun,curl -# -j -k -L "https://repo1.maven.org/maven2/org/hibernate/validator/hibernate-validator/${hv_version}/hibernate-validator-${hv_version}.jar" > "deps/optionfactory-keycloak-${KEYCLOAK_OPFA_MODULES_VERSION}/hibernate-validator-${hv_version}.jar")	
 deps/opfa_http_remove_server_header_module-${NGINX_REMOVE_SERVER_HEADER_MODULE_VERSION}.so:
 	$(call irun,curl -# -j -k -L  https://github.com/optionfactory/nginx-remove-server-header-module/releases/download/v1.0/opfa_http_remove_server_header_module-${NGINX_REMOVE_SERVER_HEADER_MODULE_VERSION}.so -o deps/opfa_http_remove_server_header_module-${NGINX_REMOVE_SERVER_HEADER_MODULE_VERSION}.so)
+deps/caddy-${CADDY2_VERSION}:
+	$(call irun,curl -# -j -k -L  "https://github.com/caddyserver/caddy/releases/download/v${CADDY2_VERSION}/caddy_${CADDY2_VERSION}_linux_amd64.tar.gz" | tar xz -C deps caddy && mv deps/caddy deps/caddy-${CADDY2_VERSION})
 
 clean: FORCE
 	$(call task,removing install scripts)
