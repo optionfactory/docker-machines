@@ -8,8 +8,6 @@ JDK11_VERSION=11.0.19
 JDK11_BUILD=7
 JDK17_VERSION=17.0.7
 JDK17_BUILD=7
-JDK19_VERSION=19.0.2
-JDK19_BUILD=7
 JDK21_VERSION=21
 JDK21_BUILD=18
 JDK21_NIGHTLY_BUILD=2023-05-19-14-20
@@ -81,11 +79,6 @@ docker-optionfactory-debian11-jdk17: sync-jdk17 docker-optionfactory-debian11
 docker-optionfactory-ubuntu22-jdk17: sync-jdk17 docker-optionfactory-ubuntu22
 docker-optionfactory-rocky9-jdk17: sync-jdk17 docker-optionfactory-rocky9
 
-#docker-optionfactory-%-jdk19: $(subst -jdk19,,$@)
-docker-optionfactory-debian11-jdk19: sync-jdk19 docker-optionfactory-debian11
-docker-optionfactory-ubuntu22-jdk19: sync-jdk19 docker-optionfactory-ubuntu22
-docker-optionfactory-rocky9-jdk19: sync-jdk19 docker-optionfactory-rocky9
-
 #docker-optionfactory-%-jdk21: $(subst -jdk21,,$@)
 docker-optionfactory-debian11-jdk21: sync-jdk21 docker-optionfactory-debian11
 docker-optionfactory-ubuntu22-jdk21: sync-jdk21 docker-optionfactory-ubuntu22
@@ -146,16 +139,6 @@ docker-optionfactory-debian11-jdk17-tomcat9: sync-tomcat9 docker-optionfactory-d
 docker-optionfactory-ubuntu22-jdk17-tomcat9: sync-tomcat9 docker-optionfactory-ubuntu22-jdk17
 docker-optionfactory-rocky9-jdk17-tomcat9: sync-tomcat9 docker-optionfactory-rocky9-jdk17
 
-#docker-optionfactory-%-jdk19-tomcat9: $(subst -tomcat9,,$@)
-docker-optionfactory-debian11-jdk19-tomcat9: sync-tomcat9 docker-optionfactory-debian11-jdk19
-docker-optionfactory-ubuntu22-jdk19-tomcat9: sync-tomcat9 docker-optionfactory-ubuntu22-jdk19
-docker-optionfactory-rocky9-jdk19-tomcat9: sync-tomcat9 docker-optionfactory-rocky9-jdk19
-
-#docker-optionfactory-%-jdk19-tomcat10: $(subst -tomcat9,,$@)
-docker-optionfactory-debian11-jdk19-tomcat10: sync-tomcat10 docker-optionfactory-debian11-jdk19
-docker-optionfactory-ubuntu22-jdk19-tomcat10: sync-tomcat10 docker-optionfactory-ubuntu22-jdk19
-docker-optionfactory-rocky9-jdk19-tomcat10: sync-tomcat10 docker-optionfactory-rocky9-jdk19
-
 #docker-optionfactory-%-jdk21-tomcat9: $(subst -tomcat9,,$@)
 docker-optionfactory-debian11-jdk21-tomcat9: sync-tomcat9 docker-optionfactory-debian11-jdk21
 docker-optionfactory-ubuntu22-jdk21-tomcat9: sync-tomcat9 docker-optionfactory-ubuntu22-jdk21
@@ -180,7 +163,7 @@ docker-optionfactory-%:
 	$(call irun,docker build ${DOCKER_BUILD_OPTIONS} --tag=optionfactory/$(name):${TAG_VERSION} optionfactory-$(name))
 	$(call irun,docker tag optionfactory/$(name):${TAG_VERSION} optionfactory/$(name):latest)
 
-sync: sync-base-images sync-tools sync-jdk11 sync-jdk17 sync-jdk19 sync-jdk21 sync-sonarqube9 sync-builder sync-tomcat9 sync-tomcat10 sync-keycloak2 sync-nginx120 sync-mariadb10 sync-postgres sync-barman2 sync-journal-remote sync-golang1
+sync: sync-base-images sync-tools sync-jdk11 sync-jdk17 sync-jdk21 sync-sonarqube9 sync-builder sync-tomcat9 sync-tomcat10 sync-keycloak2 sync-nginx120 sync-mariadb10 sync-postgres sync-barman2 sync-journal-remote sync-golang1
 
 sync-base-images:
 	$(call task,updating base images)
@@ -201,10 +184,6 @@ sync-jdk17: deps/jdk17
 	$(call task,syncing jdk 17)
 	$(call irun,echo optionfactory-*-jdk17/deps | xargs -n 1 rsync -az install-jdk.sh)
 	$(call irun,echo optionfactory-*-jdk17/deps | xargs -n 1 rsync -az deps/jdk-${JDK17_VERSION}+${JDK17_BUILD})
-sync-jdk19: deps/jdk19
-	$(call task,syncing jdk 19)
-	$(call irun,echo optionfactory-*-jdk19/deps | xargs -n 1 rsync -az install-jdk.sh)
-	$(call irun,echo optionfactory-*-jdk19/deps | xargs -n 1 rsync -az deps/jdk-${JDK19_VERSION}+${JDK19_BUILD})
 sync-jdk21: deps/jdk21
 	$(call task,syncing jdk 21)
 	$(call irun,echo optionfactory-*-jdk21/deps | xargs -n 1 rsync -az install-jdk.sh)
@@ -269,7 +248,6 @@ deps/gosu1: deps/gosu-${GOSU1_VERSION}
 deps/legopfa1: deps/legopfa-${LEGOPFA_VERSION}
 deps/jdk11: deps/jdk-${JDK11_VERSION}+${JDK11_BUILD}
 deps/jdk17: deps/jdk-${JDK17_VERSION}+${JDK17_BUILD}
-deps/jdk19: deps/jdk-${JDK19_VERSION}+${JDK19_BUILD}
 deps/jdk21: deps/jdk-${JDK21_VERSION}+${JDK21_BUILD}
 deps/maven3: deps/apache-maven-${MAVEN3_VERSION}
 deps/sonarqube9: deps/sonarqube-${SONARQUBE9_VERSION}
@@ -286,8 +264,6 @@ deps/jdk-${JDK11_VERSION}+${JDK11_BUILD}:
 	$(call irun,curl -# -j -k -L https://github.com/adoptium/temurin11-binaries/releases/download/jdk-${JDK11_VERSION}%2B${JDK11_BUILD}/OpenJDK11U-jdk_x64_linux_hotspot_${JDK11_VERSION}_${JDK11_BUILD}.tar.gz	| tar xz -C deps)
 deps/jdk-${JDK17_VERSION}+${JDK17_BUILD}:
 	$(call irun,curl -# -j -k -L https://github.com/adoptium/temurin17-binaries/releases/download/jdk-${JDK17_VERSION}%2B${JDK17_BUILD}/OpenJDK17U-jdk_x64_linux_hotspot_${JDK17_VERSION}_${JDK17_BUILD}.tar.gz	| tar xz -C deps)
-deps/jdk-${JDK19_VERSION}+${JDK19_BUILD}:
-	$(call irun,curl -# -j -k -L https://github.com/adoptium/temurin19-binaries/releases/download/jdk-${JDK19_VERSION}%2B${JDK19_BUILD}/OpenJDK19U-jdk_x64_linux_hotspot_${JDK19_VERSION}_${JDK19_BUILD}.tar.gz	| tar xz -C deps)
 deps/jdk-${JDK21_VERSION}+${JDK21_BUILD}:
 	$(call irun,curl -# -j -k -L https://github.com/adoptium/temurin21-binaries/releases/download/jdk-${JDK21_NIGHTLY_BUILD}-beta/OpenJDK-jdk_x64_linux_hotspot_${JDK21_NIGHTLY_BUILD}.tar.gz | tar xz -C deps)
 deps/apache-maven-${MAVEN3_VERSION}:
