@@ -14,9 +14,14 @@ case "${DISTRIB_LABEL}" in
         yum clean all
         rm -rf /var/cache/yum
     ;;
+    arch*)
+        pacman --noconfirm --sync --refresh core/libmicrohttpd 
+        yes | pacman --noconfirm --sync -cc
+        rm -rf /var/lib/pacman/sync/*
+    ;;
     *)
-    echo "distribution ${DISTRIB_LABEL} not supported"
-    exit 1
+        echo "distribution ${DISTRIB_LABEL} not supported"
+        exit 1
     ;;
 esac
 

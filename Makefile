@@ -9,21 +9,21 @@ JDK11_BUILD=7
 JDK17_VERSION=17.0.7
 JDK17_BUILD=7
 JDK21_VERSION=21
-JDK21_BUILD=18
-JDK21_NIGHTLY_BUILD=2023-05-19-14-20
+JDK21_BUILD=24
+JDK21_NIGHTLY_BUILD=2023-05-27-13-51
 
 SONARQUBE9_VERSION=9.9.0.65466
 
-TOMCAT9_VERSION=9.0.74
+TOMCAT9_VERSION=9.0.75
 TOMCAT9_ERROR_REPORT_VALVE_VERSION=2.0
-TOMCAT10_VERSION=10.1.8
+TOMCAT10_VERSION=10.1.9
 TOMCAT10_ERROR_REPORT_VALVE_VERSION=2.0
 GOSU1_VERSION=1.14
-GOLANG1_VERSION=1.20.3
+GOLANG1_VERSION=1.20.4
 LEGOPFA_VERSION=1.2
 KEYCLOAK2_VERSION=21.1.1
 KEYCLOAK_OPFA_MODULES_VERSION=3.6
-MAVEN3_VERSION=3.9.1
+MAVEN3_VERSION=3.9.2
 CADDY2_VERSION=2.6.4
 
 NGINX_REMOVE_SERVER_HEADER_MODULE_VERSION=1.0-1.22.1
@@ -69,6 +69,7 @@ docker-push-github:
 docker-optionfactory-debian11: sync-tools
 docker-optionfactory-ubuntu22: sync-tools
 docker-optionfactory-rocky9: sync-tools
+docker-optionfactory-archlinux23: sync-tools
 
 #docker-optionfactory-%-jdk11: $(subst -jdk11,,$@)
 docker-optionfactory-debian11-jdk11: sync-jdk11 docker-optionfactory-debian11
@@ -134,6 +135,7 @@ docker-optionfactory-rocky9-golang1: sync-golang1 docker-optionfactory-rocky9
 docker-optionfactory-debian11-journal-remote: sync-journal-remote docker-optionfactory-debian11
 docker-optionfactory-ubuntu22-journal-remote: sync-journal-remote docker-optionfactory-ubuntu22
 docker-optionfactory-rocky9-journal-remote: sync-journal-remote docker-optionfactory-rocky9
+docker-optionfactory-archlinux23-journal-remote: sync-journal-remote docker-optionfactory-archlinux23
 
 #docker-optionfactory-%-jdk11-tomcat9: $(subst -tomcat9,,$@)
 docker-optionfactory-debian11-jdk11-tomcat9: sync-tomcat9 docker-optionfactory-debian11-jdk11
@@ -176,12 +178,13 @@ sync-base-images:
 	$(call irun,docker pull debian:bullseye)
 	$(call irun,docker pull rockylinux/rockylinux:9)
 	$(call irun,docker pull ubuntu:22.04)
+	$(call irun,docker pull archlinux:latest)
 
 sync-tools: deps/gosu1 
 	$(call task,syncing gosu)
-	$(call irun,echo optionfactory-rocky9/deps optionfactory-debian11/deps optionfactory-ubuntu22/deps | xargs -n 1 rsync -az deps/gosu-${GOSU1_VERSION})
+	$(call irun,echo optionfactory-rocky9/deps optionfactory-debian11/deps optionfactory-ubuntu22/deps optionfactory-archlinux23/deps | xargs -n 1 rsync -az deps/gosu-${GOSU1_VERSION})
 	$(call task,syncing ps1)
-	$(call irun,echo optionfactory-rocky9/deps optionfactory-debian11/deps optionfactory-ubuntu22/deps | xargs -n 1 rsync -az install-ps1.sh)
+	$(call irun,echo optionfactory-rocky9/deps optionfactory-debian11/deps optionfactory-ubuntu22/deps optionfactory-archlinux23/deps | xargs -n 1 rsync -az install-ps1.sh)
 sync-jdk11: deps/jdk11
 	$(call task,syncing jdk 11)
 	$(call irun,echo optionfactory-*-jdk11/deps | xargs -n 1 rsync -az install-jdk.sh)
