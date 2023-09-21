@@ -1,16 +1,9 @@
 #we user squash here to remove unwanted layers, which is an experimental feature
 #{"experimental": true} > /etc/docker/daemon.json
 DOCKER_BUILD_OPTIONS=--no-cache=false --squash
-TAG_VERSION=52
+TAG_VERSION=53
 
 #software versions
-JDK11_VERSION=11.0.20.1
-JDK11_BUILD=1
-JDK17_VERSION=17.0.8
-JDK17_BUILD=7
-JDK21_VERSION=21
-JDK21_BUILD=25
-JDK21_NIGHTLY_BUILD=2023-06-08-06-27
 
 SONARQUBE9_VERSION=9.9.0.65466
 
@@ -19,14 +12,13 @@ TOMCAT9_ERROR_REPORT_VALVE_VERSION=2.0
 TOMCAT10_VERSION=10.1.13
 TOMCAT10_ERROR_REPORT_VALVE_VERSION=2.0
 GOSU1_VERSION=1.14
-GOLANG1_VERSION=1.20.7
 LEGOPFA_VERSION=1.2
 KEYCLOAK2_VERSION=21.1.1
 KEYCLOAK_OPFA_MODULES_VERSION=3.9
 MAVEN3_VERSION=3.9.4
 CADDY2_VERSION=2.7.4
 
-NGINX_REMOVE_SERVER_HEADER_MODULE_VERSION=1.0-1.22.1
+NGINX_REMOVE_SERVER_HEADER_MODULE_VERSION=1.24.0-1
 #/software versions
 
 
@@ -67,100 +59,75 @@ docker-push-github:
 
 
 docker-optionfactory-debian11: sync-tools
-docker-optionfactory-ubuntu22: sync-tools
+docker-optionfactory-debian12: sync-tools
+docker-optionfactory-debian13: sync-tools
 docker-optionfactory-rocky9: sync-tools
-docker-optionfactory-archlinux23: sync-tools
 
-#docker-optionfactory-%-jdk11: $(subst -jdk11,,$@)
-docker-optionfactory-debian11-jdk11: sync-jdk11 docker-optionfactory-debian11
-docker-optionfactory-ubuntu22-jdk11: sync-jdk11 docker-optionfactory-ubuntu22
-docker-optionfactory-rocky9-jdk11: sync-jdk11 docker-optionfactory-rocky9
 
 #docker-optionfactory-%-jdk17: $(subst -jdk17,,$@)
 docker-optionfactory-debian11-jdk17: sync-jdk17 docker-optionfactory-debian11
-docker-optionfactory-ubuntu22-jdk17: sync-jdk17 docker-optionfactory-ubuntu22
 docker-optionfactory-rocky9-jdk17: sync-jdk17 docker-optionfactory-rocky9
 
 #docker-optionfactory-%-jdk21: $(subst -jdk21,,$@)
 docker-optionfactory-debian11-jdk21: sync-jdk21 docker-optionfactory-debian11
-docker-optionfactory-ubuntu22-jdk21: sync-jdk21 docker-optionfactory-ubuntu22
+docker-optionfactory-debian12-jdk21: sync-jdk21 docker-optionfactory-debian12
 docker-optionfactory-rocky9-jdk21: sync-jdk21 docker-optionfactory-rocky9
 
 #docker-optionfactory-%-jdk17-sonarqube9: $(subst -jdk17-sonarqube9,,$@)
 docker-optionfactory-debian11-jdk17-sonarqube9: sync-sonarqube9 docker-optionfactory-debian11-jdk17
-docker-optionfactory-ubuntu22-jdk17-sonarqube9: sync-sonarqube9 docker-optionfactory-ubuntu22-jdk17
 docker-optionfactory-rocky9-jdk17-sonarqube9: sync-sonarqube9 docker-optionfactory-rocky9F-jdk17
-
-#docker-optionfactory-%-jdk11-builder: $(subst -jdk11-builder,,$@)
-docker-optionfactory-debian11-jdk11-builder: sync-builder docker-optionfactory-debian11-jdk11
-docker-optionfactory-ubuntu22-jdk11-builder: sync-builder docker-optionfactory-ubuntu22-jdk11
-docker-optionfactory-rocky9-jdk11-builder: sync-builder docker-optionfactory-rocky9-jdk11
 
 #docker-optionfactory-%-jdk17-builder: $(subst -jdk17-builder,,$@)
 docker-optionfactory-debian11-jdk17-builder: sync-builder docker-optionfactory-debian11-jdk17
-docker-optionfactory-ubuntu22-jdk17-builder: sync-builder docker-optionfactory-ubuntu22-jdk17
 docker-optionfactory-rocky9-jdk17-builder: sync-builder docker-optionfactory-rocky9-jdk17
 
 #docker-optionfactory-%-nginx120: $(subst -nginx120,,$@)
 docker-optionfactory-debian11-nginx120: sync-nginx120 docker-optionfactory-debian11
-docker-optionfactory-ubuntu22-nginx120: sync-nginx120 docker-optionfactory-ubuntu22
+docker-optionfactory-debian12-nginx120: sync-nginx120 docker-optionfactory-debian12
 docker-optionfactory-rocky9-nginx120: sync-nginx120 docker-optionfactory-rocky9
 
 #docker-optionfactory-%-caddy2: $(subst -caddy2,,$@)
 docker-optionfactory-debian11-caddy2: sync-caddy2 docker-optionfactory-debian11
-docker-optionfactory-ubuntu22-caddy2: sync-caddy2 docker-optionfactory-ubuntu22
+docker-optionfactory-debian12-caddy2: sync-caddy2 docker-optionfactory-debian12
 docker-optionfactory-rocky9-caddy2: sync-caddy2 docker-optionfactory-rocky9
 
 #docker-optionfactory-%-mariadb10: $(subst -mariadb10,,$@)
 docker-optionfactory-debian11-mariadb10: sync-mariadb10 docker-optionfactory-debian11
-docker-optionfactory-ubuntu22-mariadb10: sync-mariadb10 docker-optionfactory-ubuntu22
+docker-optionfactory-debian12-mariadb10: sync-mariadb10 docker-optionfactory-debian12
 docker-optionfactory-rocky9-mariadb10: sync-mariadb10 docker-optionfactory-rocky9
 
 #docker-optionfactory-%-postgres15: $(subst -postgres15,,$@)
 docker-optionfactory-debian11-postgres15: sync-postgres docker-optionfactory-debian11
-docker-optionfactory-ubuntu22-postgres15: sync-postgres docker-optionfactory-ubuntu22
+docker-optionfactory-debian12-postgres15: sync-postgres docker-optionfactory-debian12
 docker-optionfactory-rocky9-postgres15: sync-postgres docker-optionfactory-rocky9
 
-#docker-optionfactory-%-barman2: $(subst -barman2,,$@)
-docker-optionfactory-debian11-barman2: sync-barman2 docker-optionfactory-debian11
-docker-optionfactory-ubuntu22-barman2: sync-barman2 docker-optionfactory-ubuntu22
-docker-optionfactory-rocky9-barman2: sync-barman2 docker-optionfactory-rocky9
+#docker-optionfactory-%-postgres16: $(subst -postgres15,,$@)
+docker-optionfactory-debian12-postgres16: sync-postgres docker-optionfactory-debian12
 
-#docker-optionfactory-%-golang1: $(subst -golang1,,$@)
-docker-optionfactory-debian11-golang1: sync-golang1 docker-optionfactory-debian11
-docker-optionfactory-ubuntu22-golang1: sync-golang1 docker-optionfactory-ubuntu22
-docker-optionfactory-rocky9-golang1: sync-golang1 docker-optionfactory-rocky9
+#docker-optionfactory-%-barman2: $(subst -barman2,,$@)
+docker-optionfactory-debian12-barman2: sync-barman2 docker-optionfactory-debian11
 
 #docker-optionfactory-%-journal-remote: $(subst -journal-remote,,$@)
-docker-optionfactory-debian11-journal-remote: sync-journal-remote docker-optionfactory-debian11
-docker-optionfactory-ubuntu22-journal-remote: sync-journal-remote docker-optionfactory-ubuntu22
-docker-optionfactory-rocky9-journal-remote: sync-journal-remote docker-optionfactory-rocky9
-docker-optionfactory-archlinux23-journal-remote: sync-journal-remote docker-optionfactory-archlinux23
-
-#docker-optionfactory-%-jdk11-tomcat9: $(subst -tomcat9,,$@)
-docker-optionfactory-debian11-jdk11-tomcat9: sync-tomcat9 docker-optionfactory-debian11-jdk11
-docker-optionfactory-ubuntu22-jdk11-tomcat9: sync-tomcat9 docker-optionfactory-ubuntu22-jdk11
-docker-optionfactory-rocky9-jdk11-tomcat9: sync-tomcat9 docker-optionfactory-rocky9-jdk11
+docker-optionfactory-debian13-journal-remote: sync-journal-remote docker-optionfactory-debian11
 
 #docker-optionfactory-%-jdk17-tomcat9: $(subst -tomcat9,,$@)
 docker-optionfactory-debian11-jdk17-tomcat9: sync-tomcat9 docker-optionfactory-debian11-jdk17
-docker-optionfactory-ubuntu22-jdk17-tomcat9: sync-tomcat9 docker-optionfactory-ubuntu22-jdk17
 docker-optionfactory-rocky9-jdk17-tomcat9: sync-tomcat9 docker-optionfactory-rocky9-jdk17
 
 #docker-optionfactory-%-jdk21-tomcat9: $(subst -tomcat9,,$@)
 docker-optionfactory-debian11-jdk21-tomcat9: sync-tomcat9 docker-optionfactory-debian11-jdk21
-docker-optionfactory-ubuntu22-jdk21-tomcat9: sync-tomcat9 docker-optionfactory-ubuntu22-jdk21
+docker-optionfactory-debian12-jdk21-tomcat9: sync-tomcat9 docker-optionfactory-debian12-jdk21
 docker-optionfactory-rocky9-jdk21-tomcat9: sync-tomcat9 docker-optionfactory-rocky9-jdk21
+
 
 #docker-optionfactory-%-jdk21-tomcat10: $(subst -tomcat9,,$@)
 docker-optionfactory-debian11-jdk21-tomcat10: sync-tomcat10 docker-optionfactory-debian11-jdk21
-docker-optionfactory-ubuntu22-jdk21-tomcat10: sync-tomcat10 docker-optionfactory-ubuntu22-jdk21
+docker-optionfactory-debian12-jdk21-tomcat10: sync-tomcat10 docker-optionfactory-debian12-jdk21
 docker-optionfactory-rocky9-jdk21-tomcat10: sync-tomcat10 docker-optionfactory-rocky9-jdk21
 
 
 #docker-optionfactory-%-jdk17-keycloak2: $(subst -keycloak2,,$@)
 docker-optionfactory-debian11-jdk17-keycloak2: sync-keycloak2 docker-optionfactory-debian11-jdk17
-docker-optionfactory-ubuntu22-jdk17-keycloak2: sync-keycloak2 docker-optionfactory-ubuntu22-jdk17
 docker-optionfactory-rocky9-jdk17-keycloak2: sync-keycloak2 docker-optionfactory-rocky9-jdk17
 
 
@@ -171,32 +138,28 @@ docker-optionfactory-%:
 	$(call irun,docker build ${DOCKER_BUILD_OPTIONS} --tag=optionfactory/$(name):${TAG_VERSION} optionfactory-$(name))
 	$(call irun,docker tag optionfactory/$(name):${TAG_VERSION} optionfactory/$(name):latest)
 
-sync: sync-base-images sync-tools sync-jdk11 sync-jdk17 sync-jdk21 sync-sonarqube9 sync-builder sync-tomcat9 sync-tomcat10 sync-keycloak2 sync-nginx120 sync-mariadb10 sync-postgres sync-barman2 sync-journal-remote sync-golang1
+sync: sync-base-images sync-tools sync-jdk17 sync-jdk21 sync-sonarqube9 sync-builder sync-tomcat9 sync-tomcat10 sync-keycloak2 sync-nginx120 sync-mariadb10 sync-postgres sync-barman2 sync-journal-remote
 
 sync-base-images:
 	$(call task,updating base images)
 	$(call irun,docker pull debian:bullseye)
+	$(call irun,docker pull debian:bookworm)
+	$(call irun,docker pull debian:trixie)
 	$(call irun,docker pull rockylinux/rockylinux:9)
-	$(call irun,docker pull ubuntu:22.04)
-	$(call irun,docker pull archlinux:latest)
 
 sync-tools: deps/gosu1 
 	$(call task,syncing gosu)
-	$(call irun,echo optionfactory-rocky9/deps optionfactory-debian11/deps optionfactory-ubuntu22/deps optionfactory-archlinux23/deps | xargs -n 1 rsync -az deps/gosu-${GOSU1_VERSION})
+	$(call irun,echo optionfactory-rocky9/deps optionfactory-debian11/deps optionfactory-debian12/deps optionfactory-debian13/deps | xargs -n 1 rsync -az deps/gosu-${GOSU1_VERSION})
 	$(call task,syncing ps1)
-	$(call irun,echo optionfactory-rocky9/deps optionfactory-debian11/deps optionfactory-ubuntu22/deps optionfactory-archlinux23/deps | xargs -n 1 rsync -az install-ps1.sh)
-sync-jdk11: deps/jdk11
-	$(call task,syncing jdk 11)
-	$(call irun,echo optionfactory-*-jdk11/deps | xargs -n 1 rsync -az install-jdk.sh)
-	$(call irun,echo optionfactory-*-jdk11/deps | xargs -n 1 rsync -az deps/jdk-${JDK11_VERSION}+${JDK11_BUILD})
+	$(call irun,echo optionfactory-rocky9/deps optionfactory-debian11/deps optionfactory-debian12/deps optionfactory-debian13/deps | xargs -n 1 rsync -az install-ps1.sh)
 sync-jdk17: deps/jdk17
 	$(call task,syncing jdk 17)
 	$(call irun,echo optionfactory-*-jdk17/deps | xargs -n 1 rsync -az install-jdk.sh)
-	$(call irun,echo optionfactory-*-jdk17/deps | xargs -n 1 rsync -az deps/jdk-${JDK17_VERSION}+${JDK17_BUILD})
+	$(call irun,echo optionfactory-*-jdk17/deps | xargs -n 1 rsync -az deps/amazon-corretto-17.*)
 sync-jdk21: deps/jdk21
 	$(call task,syncing jdk 21)
 	$(call irun,echo optionfactory-*-jdk21/deps | xargs -n 1 rsync -az install-jdk.sh)
-	$(call irun,echo optionfactory-*-jdk21/deps | xargs -n 1 rsync -az deps/jdk-${JDK21_VERSION}+${JDK21_BUILD})
+	$(call irun,echo optionfactory-*-jdk21/deps | xargs -n 1 rsync -az deps/amazon-corretto-21.*)
 sync-sonarqube9: deps/sonarqube9
 	$(call task,syncing sonarqube 9)
 	$(call irun,echo optionfactory-*-jdk*-sonarqube9/deps | xargs -n 1 rsync -az install-sonarqube9.sh)
@@ -251,17 +214,10 @@ sync-journal-remote:
 	$(call task,syncing journal-remote)
 	$(call irun,echo optionfactory-*-journal-remote/deps | xargs -n 1 rsync -az install-journal-remote.sh)
 	$(call irun,echo optionfactory-*-journal-remote/deps | xargs -n 1 rsync -az init-journal-remote.sh)
-sync-golang1: deps/golang1
-	$(call task,syncing golang)
-	$(call irun,echo optionfactory-*-golang1/deps | xargs -n 1 rsync -az install-golang1.sh)
-	$(call irun,echo optionfactory-*-golang1/deps | xargs -n 1 rsync -az deps/golang-${GOLANG1_VERSION})
 
 
 deps/gosu1: deps/gosu-${GOSU1_VERSION}
 deps/legopfa1: deps/legopfa-${LEGOPFA_VERSION}
-deps/jdk11: deps/jdk-${JDK11_VERSION}+${JDK11_BUILD}
-deps/jdk17: deps/jdk-${JDK17_VERSION}+${JDK17_BUILD}
-deps/jdk21: deps/jdk-${JDK21_VERSION}+${JDK21_BUILD}
 deps/maven3: deps/apache-maven-${MAVEN3_VERSION}
 deps/sonarqube9: deps/sonarqube-${SONARQUBE9_VERSION}
 deps/tomcat9: deps/apache-tomcat-${TOMCAT9_VERSION} deps/tomcat9-logging-error-report-valve-${TOMCAT9_ERROR_REPORT_VALVE_VERSION}.jar
@@ -272,14 +228,11 @@ deps/caddy2: deps/caddy-${CADDY2_VERSION}
 deps/mariadb10:
 deps/postgres:
 deps/barman2:
-deps/golang1: deps/golang-${GOLANG1_VERSION}/bin/go
 
-deps/jdk-${JDK11_VERSION}+${JDK11_BUILD}:
-	$(call irun,curl -# -j -k -L https://github.com/adoptium/temurin11-binaries/releases/download/jdk-${JDK11_VERSION}%2B${JDK11_BUILD}/OpenJDK11U-jdk_x64_linux_hotspot_${JDK11_VERSION}_${JDK11_BUILD}.tar.gz	| tar xz -C deps)
-deps/jdk-${JDK17_VERSION}+${JDK17_BUILD}:
-	$(call irun,curl -# -j -k -L https://github.com/adoptium/temurin17-binaries/releases/download/jdk-${JDK17_VERSION}%2B${JDK17_BUILD}/OpenJDK17U-jdk_x64_linux_hotspot_${JDK17_VERSION}_${JDK17_BUILD}.tar.gz	| tar xz -C deps)
-deps/jdk-${JDK21_VERSION}+${JDK21_BUILD}:
-	$(call irun,curl -# -j -k -L https://github.com/adoptium/temurin21-binaries/releases/download/jdk-${JDK21_NIGHTLY_BUILD}-beta/OpenJDK-jdk_x64_linux_hotspot_${JDK21_NIGHTLY_BUILD}.tar.gz | tar xz -C deps)
+deps/jdk17:
+	$(call irun,curl -# -j -k -L https://corretto.aws/downloads/latest/amazon-corretto-17-x64-linux-jdk.tar.gz | tar xz -C deps)
+deps/jdk21:
+	$(call irun,curl -# -j -k -L https://corretto.aws/downloads/latest/amazon-corretto-21-x64-linux-jdk.tar.gz | tar xz -C deps)
 deps/apache-maven-${MAVEN3_VERSION}:
 	$(call irun,curl -# -j -k -L https://downloads.apache.org/maven/maven-3/${MAVEN3_VERSION}/binaries/apache-maven-${MAVEN3_VERSION}-bin.tar.gz | tar xz -C deps)
 deps/sonarqube-${SONARQUBE9_VERSION}:	
@@ -298,9 +251,6 @@ deps/gosu-${GOSU1_VERSION}:
 deps/legopfa-${LEGOPFA_VERSION}:	
 	$(call irun,curl -# -j -k -L https://github.com/optionfactory/legopfa/releases/download/${LEGOPFA_VERSION}/legopfa-${LEGOPFA_VERSION} -o deps/legopfa-${LEGOPFA_VERSION})
 	$(call irun,chmod +x deps/legopfa-${LEGOPFA_VERSION})
-deps/golang-${GOLANG1_VERSION}/bin/go:
-	$(call irun,mkdir -p deps/golang-${GOLANG1_VERSION})
-	$(call irun,curl -# -j -k -L https://golang.org/dl/go${GOLANG1_VERSION}.linux-amd64.tar.gz | tar xz -C deps/golang-${GOLANG1_VERSION} --strip-components=1)
 deps/keycloak-${KEYCLOAK2_VERSION}:
 	$(call irun,curl -# -j -k -L  https://github.com/keycloak/keycloak/releases/download/${KEYCLOAK2_VERSION}/keycloak-${KEYCLOAK2_VERSION}.tar.gz | tar xz -C deps)
 deps/optionfactory-keycloak-${KEYCLOAK_OPFA_MODULES_VERSION}:
@@ -312,7 +262,7 @@ deps/optionfactory-keycloak-${KEYCLOAK_OPFA_MODULES_VERSION}:
 	$(eval hv_version=$(shell curl https://repo1.maven.org/maven2/net/optionfactory/keycloak/optionfactory-keycloak/${KEYCLOAK_OPFA_MODULES_VERSION}/optionfactory-keycloak-${KEYCLOAK_OPFA_MODULES_VERSION}.pom | grep '<hibernatevalidator.version>' | grep -Po '(?<=>)[^<]+(?=<)'))	
 	$(call irun,curl -# -j -k -L "https://repo1.maven.org/maven2/org/hibernate/validator/hibernate-validator/${hv_version}/hibernate-validator-${hv_version}.jar" > "deps/optionfactory-keycloak-${KEYCLOAK_OPFA_MODULES_VERSION}/hibernate-validator-${hv_version}.jar")	
 deps/opfa_http_remove_server_header_module-${NGINX_REMOVE_SERVER_HEADER_MODULE_VERSION}.so:
-	$(call irun,curl -# -j -k -L  https://github.com/optionfactory/nginx-remove-server-header-module/releases/download/v1.0/opfa_http_remove_server_header_module-${NGINX_REMOVE_SERVER_HEADER_MODULE_VERSION}.so -o deps/opfa_http_remove_server_header_module-${NGINX_REMOVE_SERVER_HEADER_MODULE_VERSION}.so)
+	$(call irun,curl -# -j -k -L  https://github.com/optionfactory/nginx-remove-server-header-module/releases/download/v${NGINX_REMOVE_SERVER_HEADER_MODULE_VERSION}/opfa_http_remove_server_header_module-${NGINX_REMOVE_SERVER_HEADER_MODULE_VERSION}.so -o deps/opfa_http_remove_server_header_module-${NGINX_REMOVE_SERVER_HEADER_MODULE_VERSION}.so)
 deps/caddy-${CADDY2_VERSION}:
 	$(call irun,curl -# -j -k -L  "https://github.com/caddyserver/caddy/releases/download/v${CADDY2_VERSION}/caddy_${CADDY2_VERSION}_linux_amd64.tar.gz" | tar xz -C deps caddy && mv deps/caddy deps/caddy-${CADDY2_VERSION})
 

@@ -1,19 +1,19 @@
 #!/bin/bash -e
-echo "installing jdk (AdoptJDK)"
+echo "installing jdk (Amazon Corretto)"
 
 if [ ! -f /usr/sbin/update-alternatives ]; then
     ln -s /usr/sbin/update-alternatives  /usr/sbin/alternatives
 fi
 
 mkdir -p /usr/java
-cp -R /tmp/jdk-* /usr/java/
-jdkdir=$(readlink -f /usr/java/jdk-*)
+cp -R /tmp/amazon-corretto-* /usr/java/
+jdkdir=$(readlink -f /usr/java/amazon-corretto-*)
 jdkbindir=$(readlink -f ${jdkdir}/bin)
-jdkmajorversion=$(basename $jdkdir | sed 's/jdk-\([0-9]\+\)[.+].*/\1/')
+jdkmajorversion=$(basename $jdkdir | sed 's/amazon-corretto-\([0-9]\+\)[.+].*/\1/')
 
 chown -R root:root ${jdkdir}
 
-echo "installing alternatives (java) for AdoptJDK jdk (${jdkmajorversion})"
+echo "installing alternatives (java) for Amazon Corretto jdk (${jdkmajorversion})"
 
 slaves=""
 for el in $(ls $jdkbindir); do
