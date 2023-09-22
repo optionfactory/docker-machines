@@ -1,7 +1,7 @@
 #we user squash here to remove unwanted layers, which is an experimental feature
 #{"experimental": true} > /etc/docker/daemon.json
 DOCKER_BUILD_OPTIONS=--no-cache=false --squash
-TAG_VERSION=53
+TAG_VERSION=54
 
 #software versions
 
@@ -13,21 +13,22 @@ TOMCAT10_VERSION=10.1.13
 TOMCAT10_ERROR_REPORT_VALVE_VERSION=2.0
 GOSU1_VERSION=1.14
 LEGOPFA_VERSION=1.2
-KEYCLOAK2_VERSION=21.1.1
-KEYCLOAK_OPFA_MODULES_VERSION=3.9
+KEYCLOAK2_VERSION=22.0.3
+KEYCLOAK_OPFA_MODULES_VERSION=4.0
 MAVEN3_VERSION=3.9.4
 CADDY2_VERSION=2.7.4
 
 NGINX_REMOVE_SERVER_HEADER_MODULE_VERSION=1.24.0-1
 #/software versions
 
+SHELL=/bin/bash
 
 define task
 	@echo "\033[1;32m"$(1)"\033[0m"
 endef
 
 define irun 
-    @$(1) | sed 's/^/    /'
+    @set -o pipefail; $(1) | sed 's/^/    /'
 endef
 
 help:
@@ -129,6 +130,8 @@ docker-optionfactory-rocky9-jdk21-tomcat10: sync-tomcat10 docker-optionfactory-r
 #docker-optionfactory-%-jdk17-keycloak2: $(subst -keycloak2,,$@)
 docker-optionfactory-debian11-jdk17-keycloak2: sync-keycloak2 docker-optionfactory-debian11-jdk17
 docker-optionfactory-rocky9-jdk17-keycloak2: sync-keycloak2 docker-optionfactory-rocky9-jdk17
+
+#docker-optionfactory-%-jdk21-keycloak2: $(subst -keycloak2,,$@)
 
 
 
