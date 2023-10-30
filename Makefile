@@ -24,12 +24,13 @@ NGINX_REMOVE_SERVER_HEADER_MODULE_VERSION=1.24.0-1
 SHELL=/bin/bash
 
 define task
-	@echo "\033[1;32m"$(1)"\033[0m"
+	@echo -e "\033[1;32m"$(1)"\033[0m"
 endef
 
 define irun 
     @set -o pipefail; $(1) | sed 's/^/    /'
 endef
+
 
 help:
 	@echo usage: make [clean-deps] [clean] sync docker-images
