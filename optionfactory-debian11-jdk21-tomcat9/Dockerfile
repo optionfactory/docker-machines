@@ -4,7 +4,7 @@ LABEL org.opencontainers.image.source https://github.com/optionfactory/docker-ma
 
 COPY deps /tmp/
 
-RUN DISTRIB_LABEL=debian11 DISTRIB_ID=debian DISTRIB_RELEASE=11 DISTRIB_CODENAME=bullseye TOMCAT_MAJOR_VERSION=9 /tmp/install-tomcat.sh
+RUN DISTRIB_LABEL=debian11 DISTRIB_ID=debian DISTRIB_RELEASE=11 DISTRIB_CODENAME=bullseye TOMCAT_MAJOR_VERSION=9 JDK_MAJOR_VERSION=21 /tmp/install-tomcat.sh
 RUN cp /tmp/init-tomcat.sh /tomcat
 RUN rm -rf /tmp/*
 

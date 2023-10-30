@@ -19,6 +19,27 @@ cat <<-'EOF' > /opt/apache-tomcat/conf/logging.properties
 	java.util.logging.SimpleFormatter.format=[tomcat][%4$s][%3$s] %5$s%6$s%n
 EOF
 
+if [[ ${JDK_MAJOR_VERSION} -ge 21 ]] ; then
+cat <<'EOF' > /opt/apache-tomcat/conf/server.xml
+<?xml version='1.0' encoding='utf-8'?>
+<Server port="8005" shutdown="SHUTDOWN">
+  <Listener className="org.apache.catalina.startup.VersionLoggerListener" />
+  <Listener className="org.apache.catalina.core.JreMemoryLeakPreventionListener" />
+  <Listener className="org.apache.catalina.mbeans.GlobalResourcesLifecycleListener" />
+  <Listener className="org.apache.catalina.core.ThreadLocalLeakPreventionListener" />
+  <Listener className="net.optionfactory.tomcat9.asl.AbortOnDeploymentFailure" />
+  <Service name="Catalina">
+    <Executor className="org.apache.catalina.core.StandardVirtualThreadExecutor" name="vte" />
+    <Connector Server=" " URIEncoding="utf-8" port="8084" connectionTimeout="20000" protocol="HTTP/1.1" executor="vte"/>
+    <Engine name="Catalina" defaultHost="localhost">
+      <Host name="localhost" appBase="webapps" unpackWARs="true" autoDeploy="true" errorReportValveClass="net.optionfactory.tomcat9.lerv.LoggingErrorReportValve">
+        <Valve className="org.apache.catalina.valves.RemoteIpValve" protocolHeader="X-Forwarded-Proto" />
+      </Host>
+    </Engine>
+  </Service>
+</Server>
+EOF
+else
 cat <<'EOF' > /opt/apache-tomcat/conf/server.xml
 <?xml version='1.0' encoding='utf-8'?>
 <Server port="8005" shutdown="SHUTDOWN">
@@ -37,6 +58,8 @@ cat <<'EOF' > /opt/apache-tomcat/conf/server.xml
   </Service>
 </Server>
 EOF
+fi
+
 cat <<'EOF' > /opt/apache-tomcat/conf/context.xml
 <?xml version="1.0" encoding="UTF-8"?>
 <Context>
