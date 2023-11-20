@@ -1,21 +1,21 @@
 #we user squash here to remove unwanted layers, which is an experimental feature
 #{"experimental": true} > /etc/docker/daemon.json
 DOCKER_BUILD_OPTIONS=--no-cache=false --squash
-TAG_VERSION=55
+TAG_VERSION=56
 
 #software versions
 
 SONARQUBE9_VERSION=9.9.0.65466
 
-TOMCAT9_VERSION=9.0.82
+TOMCAT9_VERSION=9.0.83
 TOMCAT9_ERROR_REPORT_VALVE_VERSION=2.0
-TOMCAT10_VERSION=10.1.15
+TOMCAT10_VERSION=10.1.16
 TOMCAT10_ERROR_REPORT_VALVE_VERSION=2.0
 GOSU1_VERSION=1.14
 LEGOPFA_VERSION=1.2
 KEYCLOAK2_VERSION=22.0.5
 KEYCLOAK_OPFA_MODULES_VERSION=4.1
-MAVEN3_VERSION=3.9.4
+MAVEN3_VERSION=3.9.5
 CADDY2_VERSION=2.7.5
 
 NGINX_REMOVE_SERVER_HEADER_MODULE_VERSION=1.24.0-1
@@ -82,6 +82,9 @@ docker-optionfactory-rocky9-jdk17-sonarqube9: sync-sonarqube9 docker-optionfacto
 #docker-optionfactory-%-jdk17-builder: $(subst -jdk17-builder,,$@)
 docker-optionfactory-debian11-jdk17-builder: sync-builder docker-optionfactory-debian11-jdk17
 docker-optionfactory-rocky9-jdk17-builder: sync-builder docker-optionfactory-rocky9-jdk17
+
+#docker-optionfactory-%-jdk21-builder: $(subst -jdk21-builder,,$@)
+docker-optionfactory-debian12-jdk21-builder: sync-builder docker-optionfactory-debian11-jdk21
 
 #docker-optionfactory-%-nginx120: $(subst -nginx120,,$@)
 docker-optionfactory-debian11-nginx120: sync-nginx120 docker-optionfactory-debian11
