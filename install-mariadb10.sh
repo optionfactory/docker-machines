@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-MARIA_DB_VERSION=10.8
+MARIA_DB_VERSION=10.11
 
 groupadd --system --gid 20000 docker-machines
 useradd --system --create-home --gid docker-machines --uid 20003 mysql
