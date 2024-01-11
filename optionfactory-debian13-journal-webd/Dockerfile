@@ -6,4 +6,4 @@ COPY deps /tmp/
 RUN DISTRIB_LABEL=debian13 DISTRIB_ID=debian DISTRIB_RELEASE=13 DISTRIB_CODENAME=trixie /tmp/install-journal-webd.sh
 RUN rm -rf /tmp/*
 
-ENTRYPOINT ["/journal-webd", "/configuration.json"]
+ENTRYPOINT ["/journal-webd", "/journal-webd-conf/configuration.json"]

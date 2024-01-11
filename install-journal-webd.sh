@@ -21,25 +21,24 @@ case "${DISTRIB_LABEL}" in
     ;;
 esac
 
+mkdir -p /journal-webd-conf/
+mkdir -p /journal-webd-logs/
+
 cp /tmp/journal-webd-* /journal-webd
 chmod 755 /journal-webd
 
 
-cat <<-'EOF' > /configuration.json
+cat <<-'EOF' > /journal-webd-conf/configuration.json
 {
-	"journals_directory": "/journal-remote-logs/",
+	"journals_directory": "/journal-webd-logs/",
 	"proxy_mode": "none",
 	"allowed_hosts": [],
 	"allowed_units": [],
 	"web_socket_tokens": [],
 	"listener": {
 		"protocol": "http",
-		"address": ":8000",
-		"certificate": "",
-		"key": ""
+		"address": ":8000"
 	}
 }
 EOF
 
-mkdir -p /journal-remote-conf/
-mkdir -p /journal-remote-logs/
