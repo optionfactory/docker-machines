@@ -1,5 +1,6 @@
 #!/bin/bash -e
 
+echo "Installing journal-webd"
 
 case "${DISTRIB_LABEL}" in
     debian*|ubuntu*)
@@ -14,16 +15,31 @@ case "${DISTRIB_LABEL}" in
         yum clean all
         rm -rf /var/cache/yum
     ;;
-    arch*)
-        pacman --noconfirm --sync --refresh core/libmicrohttpd 
-        yes | pacman --noconfirm --sync -cc
-        rm -rf /var/lib/pacman/sync/*
-    ;;
     *)
         echo "distribution ${DISTRIB_LABEL} not supported"
         exit 1
     ;;
 esac
+
+cp /tmp/journal-webd-* /journal-webd
+chmod 755 /journal-webd
+
+
+cat <<-'EOF' > /configuration.json
+{
+	"journals_directory": "/journal-remote-logs/",
+	"proxy_mode": "none",
+	"allowed_hosts": [],
+	"allowed_units": [],
+	"web_socket_tokens": [],
+	"listener": {
+		"protocol": "http",
+		"address": ":8000",
+		"certificate": "",
+		"key": ""
+	}
+}
+EOF
 
 mkdir -p /journal-remote-conf/
 mkdir -p /journal-remote-logs/

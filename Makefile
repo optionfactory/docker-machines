@@ -1,22 +1,23 @@
 #we user squash here to remove unwanted layers, which is an experimental feature
 #{"experimental": true} > /etc/docker/daemon.json
 DOCKER_BUILD_OPTIONS=--no-cache=false --squash
-TAG_VERSION=58
+TAG_VERSION=59
 
 #software versions
 
-SONARQUBE9_VERSION=10.3.0.82913
+SONARQUBE9_VERSION=9.9.0.65466
 
-TOMCAT9_VERSION=9.0.84
+TOMCAT9_VERSION=9.0.85
 TOMCAT9_ERROR_REPORT_VALVE_VERSION=2.0
-TOMCAT10_VERSION=10.1.17
+TOMCAT10_VERSION=10.1.18
 TOMCAT10_ERROR_REPORT_VALVE_VERSION=2.0
 GOSU1_VERSION=1.14
 LEGOPFA_VERSION=1.2
-KEYCLOAK2_VERSION=23.0.3
+KEYCLOAK2_VERSION=23.0.4
 KEYCLOAK_OPFA_MODULES_VERSION=4.5
 MAVEN3_VERSION=3.9.6
 CADDY2_VERSION=2.7.6
+JOURNAL_WEBD_VERSION=1.0
 
 NGINX_REMOVE_SERVER_HEADER_MODULE_VERSION=1.24.0-1
 #/software versions
@@ -112,8 +113,10 @@ docker-optionfactory-debian12-postgres16: sync-postgres docker-optionfactory-deb
 #docker-optionfactory-%-barman2: $(subst -barman2,,$@)
 docker-optionfactory-debian12-barman2: sync-barman2 docker-optionfactory-debian11
 
-#docker-optionfactory-%-journal-remote: $(subst -journal-remote,,$@)
-docker-optionfactory-debian13-journal-remote: sync-journal-remote docker-optionfactory-debian11
+#docker-optionfactory-%-journal-webd: $(subst -journal-webd,,$@)
+docker-optionfactory-debian11-journal-webd: sync-journal-webd docker-optionfactory-debian11
+docker-optionfactory-debian12-journal-webd: sync-journal-webd docker-optionfactory-debian12
+docker-optionfactory-debian13-journal-webd: sync-journal-webd docker-optionfactory-debian13
 
 #docker-optionfactory-%-jdk17-tomcat9: $(subst -tomcat9,,$@)
 docker-optionfactory-debian11-jdk17-tomcat9: sync-tomcat9 docker-optionfactory-debian11-jdk17
@@ -145,7 +148,7 @@ docker-optionfactory-%:
 	$(call irun,docker build ${DOCKER_BUILD_OPTIONS} --tag=optionfactory/$(name):${TAG_VERSION} optionfactory-$(name))
 	$(call irun,docker tag optionfactory/$(name):${TAG_VERSION} optionfactory/$(name):latest)
 
-sync: sync-base-images sync-tools sync-jdk17 sync-jdk21 sync-sonarqube9 sync-builder sync-tomcat9 sync-tomcat10 sync-keycloak2 sync-nginx120 sync-mariadb10 sync-postgres sync-barman2 sync-journal-remote
+sync: sync-base-images sync-tools sync-jdk17 sync-jdk21 sync-sonarqube9 sync-builder sync-tomcat9 sync-tomcat10 sync-keycloak2 sync-nginx120 sync-mariadb10 sync-postgres sync-barman2 sync-journal-webd
 
 sync-base-images:
 	$(call task,updating base images)
@@ -217,10 +220,10 @@ sync-barman2: deps/barman2
 	$(call task,syncing barman2)
 	$(call irun,echo optionfactory-*-barman2/deps | xargs -n 1 rsync -az install-barman2.sh)
 	$(call irun,echo optionfactory-*-barman2/deps | xargs -n 1 rsync -az init-barman2.sh)
-sync-journal-remote:
-	$(call task,syncing journal-remote)
-	$(call irun,echo optionfactory-*-journal-remote/deps | xargs -n 1 rsync -az install-journal-remote.sh)
-	$(call irun,echo optionfactory-*-journal-remote/deps | xargs -n 1 rsync -az init-journal-remote.sh)
+sync-journal-webd: deps/journal-webd
+	$(call task,syncing journal-webd)
+	$(call irun,echo optionfactory-*-journal-webd/deps | xargs -n 1 rsync -az install-journal-webd.sh)
+	$(call irun,echo optionfactory-*-journal-webd/deps | xargs -n 1 rsync -az deps/journal-webd-${JOURNAL_WEBD_VERSION})
 
 
 deps/gosu1: deps/gosu-${GOSU1_VERSION}
@@ -235,6 +238,7 @@ deps/caddy2: deps/caddy-${CADDY2_VERSION}
 deps/mariadb10:
 deps/postgres:
 deps/barman2:
+deps/journal-webd: deps/journal-webd-${JOURNAL_WEBD_VERSION}
 
 deps/jdk17:
 	$(call irun,curl -# -j -k -L https://corretto.aws/downloads/latest/amazon-corretto-17-x64-linux-jdk.tar.gz | tar xz -C deps)
@@ -272,6 +276,8 @@ deps/opfa_http_remove_server_header_module-${NGINX_REMOVE_SERVER_HEADER_MODULE_V
 	$(call irun,curl -# -j -k -L  https://github.com/optionfactory/nginx-remove-server-header-module/releases/download/v${NGINX_REMOVE_SERVER_HEADER_MODULE_VERSION}/opfa_http_remove_server_header_module-${NGINX_REMOVE_SERVER_HEADER_MODULE_VERSION}.so -o deps/opfa_http_remove_server_header_module-${NGINX_REMOVE_SERVER_HEADER_MODULE_VERSION}.so)
 deps/caddy-${CADDY2_VERSION}:
 	$(call irun,curl -# -j -k -L  "https://github.com/caddyserver/caddy/releases/download/v${CADDY2_VERSION}/caddy_${CADDY2_VERSION}_linux_amd64.tar.gz" | tar xz -C deps caddy && mv deps/caddy deps/caddy-${CADDY2_VERSION})
+deps/journal-webd-${JOURNAL_WEBD_VERSION}:
+	$(call irun,curl -# -j -k -L  "https://github.com/optionfactory/journal-webd/releases/download/${JOURNAL_WEBD_VERSION}/journal-webd-${JOURNAL_WEBD_VERSION}" -o deps/journal-webd-${JOURNAL_WEBD_VERSION})
 
 clean: FORCE
 	$(call task,removing install scripts)
