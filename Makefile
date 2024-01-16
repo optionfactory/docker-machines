@@ -1,7 +1,7 @@
 #we user squash here to remove unwanted layers, which is an experimental feature
 #{"experimental": true} > /etc/docker/daemon.json
 DOCKER_BUILD_OPTIONS=--no-cache=false --squash
-TAG_VERSION=59
+TAG_VERSION=60
 
 #software versions
 
@@ -61,49 +61,43 @@ docker-push-github:
 	$(call irun,docker images --filter="reference=optionfactory/*:${TAG_VERSION}" --format='{{.Repository}}' | sort | uniq |  xargs -I'{}' docker push ghcr.io/{}:latest)
 
 
-docker-optionfactory-debian11: sync-tools
 docker-optionfactory-debian12: sync-tools
 docker-optionfactory-debian13: sync-tools
 docker-optionfactory-rocky9: sync-tools
 
 
 #docker-optionfactory-%-jdk17: $(subst -jdk17,,$@)
-docker-optionfactory-debian11-jdk17: sync-jdk17 docker-optionfactory-debian11
+docker-optionfactory-debian12-jdk17: sync-jdk17 docker-optionfactory-debian12
 docker-optionfactory-rocky9-jdk17: sync-jdk17 docker-optionfactory-rocky9
 
 #docker-optionfactory-%-jdk21: $(subst -jdk21,,$@)
-docker-optionfactory-debian11-jdk21: sync-jdk21 docker-optionfactory-debian11
 docker-optionfactory-debian12-jdk21: sync-jdk21 docker-optionfactory-debian12
 docker-optionfactory-rocky9-jdk21: sync-jdk21 docker-optionfactory-rocky9
 
 #docker-optionfactory-%-jdk17-sonarqube9: $(subst -jdk17-sonarqube9,,$@)
-docker-optionfactory-debian11-jdk17-sonarqube9: sync-sonarqube9 docker-optionfactory-debian11-jdk17
-docker-optionfactory-rocky9-jdk17-sonarqube9: sync-sonarqube9 docker-optionfactory-rocky9F-jdk17
+docker-optionfactory-debian12-jdk17-sonarqube9: sync-sonarqube9 docker-optionfactory-debian12-jdk17
+docker-optionfactory-rocky9-jdk17-sonarqube9: sync-sonarqube9 docker-optionfactory-rocky9-jdk17
 
 #docker-optionfactory-%-jdk17-builder: $(subst -jdk17-builder,,$@)
-docker-optionfactory-debian11-jdk17-builder: sync-builder docker-optionfactory-debian11-jdk17
+docker-optionfactory-debian12-jdk17-builder: sync-builder docker-optionfactory-debian12-jdk17
 docker-optionfactory-rocky9-jdk17-builder: sync-builder docker-optionfactory-rocky9-jdk17
 
 #docker-optionfactory-%-jdk21-builder: $(subst -jdk21-builder,,$@)
-docker-optionfactory-debian12-jdk21-builder: sync-builder docker-optionfactory-debian11-jdk21
+docker-optionfactory-debian12-jdk21-builder: sync-builder docker-optionfactory-debian12-jdk21
 
 #docker-optionfactory-%-nginx120: $(subst -nginx120,,$@)
-docker-optionfactory-debian11-nginx120: sync-nginx120 docker-optionfactory-debian11
 docker-optionfactory-debian12-nginx120: sync-nginx120 docker-optionfactory-debian12
 docker-optionfactory-rocky9-nginx120: sync-nginx120 docker-optionfactory-rocky9
 
 #docker-optionfactory-%-caddy2: $(subst -caddy2,,$@)
-docker-optionfactory-debian11-caddy2: sync-caddy2 docker-optionfactory-debian11
 docker-optionfactory-debian12-caddy2: sync-caddy2 docker-optionfactory-debian12
 docker-optionfactory-rocky9-caddy2: sync-caddy2 docker-optionfactory-rocky9
 
 #docker-optionfactory-%-mariadb10: $(subst -mariadb10,,$@)
-docker-optionfactory-debian11-mariadb10: sync-mariadb10 docker-optionfactory-debian11
 docker-optionfactory-debian12-mariadb10: sync-mariadb10 docker-optionfactory-debian12
 docker-optionfactory-rocky9-mariadb10: sync-mariadb10 docker-optionfactory-rocky9
 
 #docker-optionfactory-%-postgres15: $(subst -postgres15,,$@)
-docker-optionfactory-debian11-postgres15: sync-postgres docker-optionfactory-debian11
 docker-optionfactory-debian12-postgres15: sync-postgres docker-optionfactory-debian12
 docker-optionfactory-rocky9-postgres15: sync-postgres docker-optionfactory-rocky9
 
@@ -111,31 +105,28 @@ docker-optionfactory-rocky9-postgres15: sync-postgres docker-optionfactory-rocky
 docker-optionfactory-debian12-postgres16: sync-postgres docker-optionfactory-debian12
 
 #docker-optionfactory-%-barman2: $(subst -barman2,,$@)
-docker-optionfactory-debian12-barman2: sync-barman2 docker-optionfactory-debian11
+docker-optionfactory-debian12-barman2: sync-barman2 docker-optionfactory-debian12
 
 #docker-optionfactory-%-journal-webd: $(subst -journal-webd,,$@)
-docker-optionfactory-debian11-journal-webd: sync-journal-webd docker-optionfactory-debian11
 docker-optionfactory-debian12-journal-webd: sync-journal-webd docker-optionfactory-debian12
 docker-optionfactory-debian13-journal-webd: sync-journal-webd docker-optionfactory-debian13
 
 #docker-optionfactory-%-jdk17-tomcat9: $(subst -tomcat9,,$@)
-docker-optionfactory-debian11-jdk17-tomcat9: sync-tomcat9 docker-optionfactory-debian11-jdk17
+docker-optionfactory-debian12-jdk17-tomcat9: sync-tomcat9 docker-optionfactory-debian12-jdk17
 docker-optionfactory-rocky9-jdk17-tomcat9: sync-tomcat9 docker-optionfactory-rocky9-jdk17
 
 #docker-optionfactory-%-jdk21-tomcat9: $(subst -tomcat9,,$@)
-docker-optionfactory-debian11-jdk21-tomcat9: sync-tomcat9 docker-optionfactory-debian11-jdk21
 docker-optionfactory-debian12-jdk21-tomcat9: sync-tomcat9 docker-optionfactory-debian12-jdk21
 docker-optionfactory-rocky9-jdk21-tomcat9: sync-tomcat9 docker-optionfactory-rocky9-jdk21
 
 
 #docker-optionfactory-%-jdk21-tomcat10: $(subst -tomcat9,,$@)
-docker-optionfactory-debian11-jdk21-tomcat10: sync-tomcat10 docker-optionfactory-debian11-jdk21
 docker-optionfactory-debian12-jdk21-tomcat10: sync-tomcat10 docker-optionfactory-debian12-jdk21
 docker-optionfactory-rocky9-jdk21-tomcat10: sync-tomcat10 docker-optionfactory-rocky9-jdk21
 
 
 #docker-optionfactory-%-jdk17-keycloak2: $(subst -keycloak2,,$@)
-docker-optionfactory-debian11-jdk17-keycloak2: sync-keycloak2 docker-optionfactory-debian11-jdk17
+docker-optionfactory-debian12-jdk17-keycloak2: sync-keycloak2 docker-optionfactory-debian12-jdk17
 docker-optionfactory-rocky9-jdk17-keycloak2: sync-keycloak2 docker-optionfactory-rocky9-jdk17
 
 #docker-optionfactory-%-jdk21-keycloak2: $(subst -keycloak2,,$@)
@@ -159,9 +150,9 @@ sync-base-images:
 
 sync-tools: deps/gosu1 
 	$(call task,syncing gosu)
-	$(call irun,echo optionfactory-rocky9/deps optionfactory-debian11/deps optionfactory-debian12/deps optionfactory-debian13/deps | xargs -n 1 rsync -az deps/gosu-${GOSU1_VERSION})
+	$(call irun,echo optionfactory-rocky9/deps optionfactory-debian12/deps optionfactory-debian13/deps | xargs -n 1 rsync -az deps/gosu-${GOSU1_VERSION})
 	$(call task,syncing ps1)
-	$(call irun,echo optionfactory-rocky9/deps optionfactory-debian11/deps optionfactory-debian12/deps optionfactory-debian13/deps | xargs -n 1 rsync -az install-ps1.sh)
+	$(call irun,echo optionfactory-rocky9/deps optionfactory-debian12/deps optionfactory-debian13/deps | xargs -n 1 rsync -az install-ps1.sh)
 sync-jdk17: deps/jdk17
 	$(call task,syncing jdk 17)
 	$(call irun,echo optionfactory-*-jdk17/deps | xargs -n 1 rsync -az install-jdk.sh)
