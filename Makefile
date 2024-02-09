@@ -1,7 +1,7 @@
 #we user squash here to remove unwanted layers, which is an experimental feature
 #{"experimental": true} > /etc/docker/daemon.json
 DOCKER_BUILD_OPTIONS=--no-cache=false --squash
-TAG_VERSION=60
+TAG_VERSION=61
 
 #software versions
 
@@ -13,8 +13,8 @@ TOMCAT10_VERSION=10.1.18
 TOMCAT10_ERROR_REPORT_VALVE_VERSION=2.0
 GOSU1_VERSION=1.14
 LEGOPFA_VERSION=1.2
-KEYCLOAK2_VERSION=23.0.4
-KEYCLOAK_OPFA_MODULES_VERSION=4.6
+KEYCLOAK2_VERSION=23.0.6
+KEYCLOAK_OPFA_MODULES_VERSION=5.1
 MAVEN3_VERSION=3.9.6
 CADDY2_VERSION=2.7.6
 JOURNAL_WEBD_VERSION=1.1
