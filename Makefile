@@ -1,7 +1,7 @@
 #we user squash here to remove unwanted layers, which is an experimental feature
 #{"experimental": true} > /etc/docker/daemon.json
 DOCKER_BUILD_OPTIONS=--no-cache=false --squash
-TAG_VERSION=62
+TAG_VERSION=63
 
 #software versions
 
@@ -18,7 +18,7 @@ KEYCLOAK_OPFA_MODULES_VERSION=5.2
 MAVEN3_VERSION=3.9.6
 CADDY2_VERSION=2.7.6
 JOURNAL_WEBD_VERSION=1.1
-
+ETCD3_VERSION=3.5.12
 NGINX_REMOVE_SERVER_HEADER_MODULE_VERSION=1.24.0-1
 #/software versions
 
@@ -103,6 +103,9 @@ docker-optionfactory-rocky9-postgres15: sync-postgres docker-optionfactory-rocky
 
 #docker-optionfactory-%-postgres16: $(subst -postgres15,,$@)
 docker-optionfactory-debian12-postgres16: sync-postgres docker-optionfactory-debian12
+
+#docker-optionfactory-%-etcd3: $(subst -etcd3,,$@)
+docker-optionfactory-debian12-etcd3: sync-etcd3 docker-optionfactory-debian12
 
 #docker-optionfactory-%-barman2: $(subst -barman2,,$@)
 docker-optionfactory-debian12-barman2: sync-barman2 docker-optionfactory-debian12
@@ -207,6 +210,11 @@ sync-postgres: deps/postgres
 	$(call task,syncing postgres)
 	$(call irun,echo optionfactory-*-postgres*/deps | xargs -n 1 rsync -az install-postgres.sh)
 	$(call irun,echo optionfactory-*-postgres*/deps | xargs -n 1 rsync -az init-postgres.sh)
+sync-etcd3: deps/etcd3
+	$(call task,syncing etcd3)
+	$(call irun,echo optionfactory-*-etcd3/deps | xargs -n 1 rsync -az install-etcd3.sh)
+	$(call irun,echo optionfactory-*-etcd3/deps | xargs -n 1 rsync -az init-etcd3.sh)
+	$(call irun,echo optionfactory-*-etcd3/deps | xargs -n 1 rsync -az deps/etcd-v${ETCD3_VERSION}-linux-amd64)
 sync-barman2: deps/barman2
 	$(call task,syncing barman2)
 	$(call irun,echo optionfactory-*-barman2/deps | xargs -n 1 rsync -az install-barman2.sh)
@@ -228,6 +236,7 @@ deps/nginx_remove_server_header_module: deps/opfa_http_remove_server_header_modu
 deps/caddy2: deps/caddy-${CADDY2_VERSION}
 deps/mariadb10:
 deps/postgres:
+deps/etcd3: deps/ectd-v${ETCD3_VERSION}-linux-amd64
 deps/barman2:
 deps/journal-webd: deps/journal-webd-${JOURNAL_WEBD_VERSION}
 
@@ -267,6 +276,8 @@ deps/opfa_http_remove_server_header_module-${NGINX_REMOVE_SERVER_HEADER_MODULE_V
 	$(call irun,curl -# -j -k -L  https://github.com/optionfactory/nginx-remove-server-header-module/releases/download/v${NGINX_REMOVE_SERVER_HEADER_MODULE_VERSION}/opfa_http_remove_server_header_module-${NGINX_REMOVE_SERVER_HEADER_MODULE_VERSION}.so -o deps/opfa_http_remove_server_header_module-${NGINX_REMOVE_SERVER_HEADER_MODULE_VERSION}.so)
 deps/caddy-${CADDY2_VERSION}:
 	$(call irun,curl -# -j -k -L  "https://github.com/caddyserver/caddy/releases/download/v${CADDY2_VERSION}/caddy_${CADDY2_VERSION}_linux_amd64.tar.gz" | tar xz -C deps caddy && mv deps/caddy deps/caddy-${CADDY2_VERSION})
+deps/ectd-v${ETCD3_VERSION}-linux-amd64:
+	$(call irun,curl -# -j -k -L  "https://github.com/etcd-io/etcd/releases/download/v${ETCD3_VERSION}/etcd-v${ETCD3_VERSION}-linux-amd64.tar.gz" | tar xz -C deps)		
 deps/journal-webd-${JOURNAL_WEBD_VERSION}:
 	$(call irun,curl -# -j -k -L  "https://github.com/optionfactory/journal-webd/releases/download/${JOURNAL_WEBD_VERSION}/journal-webd-${JOURNAL_WEBD_VERSION}" -o deps/journal-webd-${JOURNAL_WEBD_VERSION})
 

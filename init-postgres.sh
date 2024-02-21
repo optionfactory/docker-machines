@@ -8,11 +8,21 @@ if [ -d /run/postgresql ]; then
     chown -R postgres:docker-machines /run/postgresql
 fi
 
+
+if [ -s /patroni.yml ]; then
+    echo "Patroni configuration detected. Starting patroni"
+    exec gosu postgres:docker-machines patroni /patroni.yml
+fi
+
+echo "Patroni configuration '/patroni.yml' missing. Runing as a standalone instance"
+
 if [ ! -s "/var/lib/postgresql/data/PG_VERSION" ]; then
     echo "initializing a new database"
     gosu postgres:docker-machines /usr/lib/postgresql/*/bin/initdb \
         /var/lib/postgresql/data \
-        --encoding 'UTF-8' --lc-collate='en_US.UTF-8' --lc-ctype='en_US.UTF-8' \
+        --encoding 'UTF-8' \
+        --lc-collate='en_US.UTF-8' \
+        --lc-ctype='en_US.UTF-8' \
         --allow-group-access \
         --no-instructions
     sed -ri "s/^#? *(shared_preload_libraries) .*/\1 = 'pg_stat_statements'/" /var/lib/postgresql/data/postgresql.conf
@@ -22,7 +32,10 @@ if [ ! -s "/var/lib/postgresql/data/PG_VERSION" ]; then
     sed -ri "s/^#? *(shared_buffers) .*/\1 = 256MB/" /var/lib/postgresql/data/postgresql.conf
     sed -ri "s/^#? *(log_destination) .*/\1 = 'stderr'/" /var/lib/postgresql/data/postgresql.conf
     sed -ri "s/^#? *(log_min_duration_statement) .*/\1 = 10000/" /var/lib/postgresql/data/postgresql.conf
-    gosu postgres:docker-machines /usr/lib/postgresql/*/bin/pg_ctl -s -D "/var/lib/postgresql/data" -o "-c listen_addresses='127.0.0.1'" -w start
+    gosu postgres:docker-machines /usr/lib/postgresql/*/bin/pg_ctl -s \
+        -D "/var/lib/postgresql/data" \
+        -o "-c listen_addresses='127.0.0.1'" \
+        -w start
     psql=( psql -v ON_ERROR_STOP=1 --username "postgres" --dbname "postgres" )
     for f in /sql-init.d/*; do
         case "$f" in
