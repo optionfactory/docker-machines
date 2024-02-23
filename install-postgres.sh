@@ -19,7 +19,7 @@ case "${DISTRIB_LABEL}" in
         #we need locales
         yum install -q -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-9-x86_64/pgdg-redhat-repo-latest.noarch.rpm
         yum install -q -y glibc-locale-source
-        yum install -q -y postgresql${PSQL_MAJOR_VERSION} postgresql${PSQL_MAJOR_VERSION}-server postgresql${PSQL_MAJOR_VERSION}-contrib patroni
+        yum install -q -y postgresql${PSQL_MAJOR_VERSION} postgresql${PSQL_MAJOR_VERSION}-server postgresql${PSQL_MAJOR_VERSION}-contrib
         yum clean all
         rm -rf /var/lib/pgsql
         rm -rf /var/cache/yum
