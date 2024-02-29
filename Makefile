@@ -1,20 +1,20 @@
 #we user squash here to remove unwanted layers, which is an experimental feature
 #{"experimental": true} > /etc/docker/daemon.json
 DOCKER_BUILD_OPTIONS=--no-cache=false --squash
-TAG_VERSION=63
+TAG_VERSION=64
 
 #software versions
 
 SONARQUBE9_VERSION=9.9.0.65466
 
-TOMCAT9_VERSION=9.0.85
+TOMCAT9_VERSION=9.0.86
 TOMCAT9_ERROR_REPORT_VALVE_VERSION=2.0
-TOMCAT10_VERSION=10.1.18
+TOMCAT10_VERSION=10.1.19
 TOMCAT10_ERROR_REPORT_VALVE_VERSION=2.0
 GOSU1_VERSION=1.14
 LEGOPFA_VERSION=1.2
-KEYCLOAK2_VERSION=23.0.6
-KEYCLOAK_OPFA_MODULES_VERSION=5.2
+KEYCLOAK2_VERSION=23.0.7
+KEYCLOAK_OPFA_MODULES_VERSION=5.3
 MAVEN3_VERSION=3.9.6
 CADDY2_VERSION=2.7.6
 JOURNAL_WEBD_VERSION=1.1
@@ -103,6 +103,7 @@ docker-optionfactory-rocky9-postgres15: sync-postgres docker-optionfactory-rocky
 
 #docker-optionfactory-%-postgres16: $(subst -postgres15,,$@)
 docker-optionfactory-debian12-postgres16: sync-postgres docker-optionfactory-debian12
+docker-optionfactory-rocky9-postgres16: sync-postgres docker-optionfactory-rocky9
 
 #docker-optionfactory-%-etcd3: $(subst -etcd3,,$@)
 docker-optionfactory-debian12-etcd3: sync-etcd3 docker-optionfactory-debian12
