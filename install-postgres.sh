@@ -1,7 +1,7 @@
 #!/bin/bash -e
 
-groupadd --system --gid 20000 docker-machines
-useradd --system --create-home --gid docker-machines --uid 20002 postgres
+groupadd --system --gid 950 docker-machines
+useradd --system --create-home --gid docker-machines --uid 950 postgres
 
 
 case "${DISTRIB_LABEL}" in

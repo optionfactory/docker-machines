@@ -2,8 +2,8 @@
 
 echo "Installing Caddy"
 
-groupadd --system --gid 20000 docker-machines
-useradd --system --create-home --gid docker-machines --uid 20009 caddy
+groupadd --system --gid 950 docker-machines
+useradd --system --create-home --gid docker-machines --uid 950 caddy
 
 
 case "${DISTRIB_LABEL}" in

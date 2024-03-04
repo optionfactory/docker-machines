@@ -4,8 +4,8 @@ echo "Installing builder"
 
 
 
-groupadd --system --gid 1000 builder
-useradd --system --create-home --gid builder --uid 1000 builder
+groupadd --system --gid 950 builder
+useradd --system --create-home --gid builder --uid 950 builder
 
 
 

@@ -1,8 +1,8 @@
 #!/bin/bash -e
 
-groupadd --system --gid 20000 docker-machines
-groupadd --system --gid 20005 barman
-useradd --system --create-home --gid docker-machines --uid 20005 barman
+groupadd --system --gid 950 docker-machines
+groupadd --system --gid 950 barman
+useradd --system --create-home --gid docker-machines --uid 950 barman
 
 case "${DISTRIB_LABEL}" in
     debian*|ubuntu*)

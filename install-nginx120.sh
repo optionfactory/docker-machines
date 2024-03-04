@@ -4,8 +4,8 @@ NGINX_VERSION=1.24.0
 
 echo "Installing nginx ${NGINX_VERSION}"
 
-groupadd --system --gid 20000 docker-machines
-useradd --system --create-home --gid docker-machines --uid 20004 nginx
+groupadd --system --gid 950 docker-machines
+useradd --system --create-home --gid docker-machines --uid 950 nginx
 
 PKG_RELEASE=1~${DISTRIB_CODENAME}
 

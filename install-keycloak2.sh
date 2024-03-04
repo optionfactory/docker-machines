@@ -40,8 +40,8 @@ spi-theme-welcome-theme=opfablank
 
 EOF
 
-groupadd --system --gid 20000 docker-machines
-useradd --system --create-home --gid docker-machines --uid 20001 keycloak
+groupadd --system --gid 950 docker-machines
+useradd --system --create-home --gid docker-machines --uid 950 keycloak
 chown -R keycloak:docker-machines /opt/keycloak
 
 /opt/keycloak/bin/kc.sh build 
