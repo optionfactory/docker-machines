@@ -1,7 +1,7 @@
 #we user squash here to remove unwanted layers, which is an experimental feature
 #{"experimental": true} > /etc/docker/daemon.json
 DOCKER_BUILD_OPTIONS=--no-cache=false --squash
-TAG_VERSION=70
+TAG_VERSION=71
 
 #software versions
 
@@ -13,7 +13,7 @@ TOMCAT10_VERSION=10.1.19
 TOMCAT10_ERROR_REPORT_VALVE_VERSION=2.0
 GOSU1_VERSION=1.14
 LEGOPFA_VERSION=1.2
-KEYCLOAK2_VERSION=23.0.7
+KEYCLOAK2_VERSION=24.0.1
 KEYCLOAK_OPFA_MODULES_VERSION=5.3
 MAVEN3_VERSION=3.9.6
 CADDY2_VERSION=2.7.6
@@ -134,6 +134,8 @@ docker-optionfactory-debian12-jdk17-keycloak2: sync-keycloak2 docker-optionfacto
 docker-optionfactory-rocky9-jdk17-keycloak2: sync-keycloak2 docker-optionfactory-rocky9-jdk17
 
 #docker-optionfactory-%-jdk21-keycloak2: $(subst -keycloak2,,$@)
+docker-optionfactory-debian12-jdk21-keycloak2: sync-keycloak2 docker-optionfactory-debian12-jdk21
+docker-optionfactory-rocky9-jdk21-keycloak2: sync-keycloak2 docker-optionfactory-rocky9-jdk21
 
 
 
