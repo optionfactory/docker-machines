@@ -1,8 +1,7 @@
 #!/bin/bash -e
 
-groupadd --system --gid 950 docker-machines
 groupadd --system --gid 950 barman
-useradd --system --create-home --gid docker-machines --uid 950 barman
+useradd --system --create-home --gid barman --uid 950 barman
 
 case "${DISTRIB_LABEL}" in
     debian*|ubuntu*)
@@ -54,4 +53,4 @@ EOF
 
 
 
-chown -R barman:docker-machines /var/lib/barman
+chown -R barman:barman /var/lib/barman

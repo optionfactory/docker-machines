@@ -1,6 +1,6 @@
 #!/bin/bash -e
 while :
 do
-    gosu barman:docker-machines barman cron
+    gosu barman:barman barman cron
     sleep 60
 done
