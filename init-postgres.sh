@@ -1,8 +1,7 @@
 #!/bin/bash -e
 
-mkdir -p /var/lib/postgresql/data
-chmod 700 /var/lib/postgresql/data
-chown -R postgres:docker-machines /var/lib/postgresql/data
+chown -R postgres:docker-machines /var/lib/postgresql/{data,conf}
+
 if [ -d /run/postgresql ]; then
     chmod g+s /run/postgresql
     chown -R postgres:docker-machines /run/postgresql
@@ -16,25 +15,21 @@ fi
 
 echo "Patroni configuration '/patroni.yml' missing. Runing as a standalone instance"
 
+
 if [ ! -s "/var/lib/postgresql/data/PG_VERSION" ]; then
     echo "initializing a new database"
     gosu postgres:docker-machines /usr/lib/postgresql/*/bin/initdb \
-        /var/lib/postgresql/data \
+        -D /var/lib/postgresql/data \
         --encoding 'UTF-8' \
         --lc-collate='en_US.UTF-8' \
         --lc-ctype='en_US.UTF-8' \
         --allow-group-access \
         --no-instructions
-    sed -ri "s/^#? *(shared_preload_libraries) .*/\1 = 'pg_stat_statements'/" /var/lib/postgresql/data/postgresql.conf
-    sed -ri "s/^#? *(logging_collector) .*/\1 = off/" /var/lib/postgresql/data/postgresql.conf
-    sed -ri "s/^#? *(log_line_prefix) .*/\1 = '[postgres][a:%a][u:%u][s:%c][x:%x] '/" /var/lib/postgresql/data/postgresql.conf
-    sed -ri "s/^#? *(listen_addresses) .*/\1 = '0.0.0.0'/" /var/lib/postgresql/data/postgresql.conf
-    sed -ri "s/^#? *(shared_buffers) .*/\1 = 256MB/" /var/lib/postgresql/data/postgresql.conf
-    sed -ri "s/^#? *(log_destination) .*/\1 = 'stderr'/" /var/lib/postgresql/data/postgresql.conf
-    sed -ri "s/^#? *(log_min_duration_statement) .*/\1 = 10000/" /var/lib/postgresql/data/postgresql.conf
+    rm /var/lib/postgresql/data/{postgresql.conf,pg_hba.conf,pg_ident.conf}
     gosu postgres:docker-machines /usr/lib/postgresql/*/bin/pg_ctl -s \
         -D "/var/lib/postgresql/data" \
         -o "-c listen_addresses='127.0.0.1'" \
+        -o "-c config_file=/var/lib/postgresql/conf/postgresql.conf" \
         -w start
     psql=( psql -v ON_ERROR_STOP=1 --username "postgres" --dbname "postgres" )
     for f in /sql-init.d/*; do
@@ -45,12 +40,15 @@ if [ ! -s "/var/lib/postgresql/data/PG_VERSION" ]; then
             *)        echo "$0: ignoring $f" ;;
         esac
     done
-
-    gosu postgres:docker-machines /usr/lib/postgresql/*/bin/pg_ctl -s -D "/var/lib/postgresql/data" -m fast -w stop
-    echo "host    all    all    0.0.0.0/0    md5" >> /var/lib/postgresql/data/pg_hba.conf
+    gosu postgres:docker-machines /usr/lib/postgresql/*/bin/pg_ctl -s \
+        -D "/var/lib/postgresql/data" \
+        -o "-c config_file=/var/lib/postgresql/conf/postgresql.conf" \
+        -m fast \
+        -w stop
     echo
     echo 'PostgreSQL init process complete; ready for start up.'
     echo
 fi
 
-exec gosu postgres:docker-machines /usr/lib/postgresql/*/bin/postgres -D /var/lib/postgresql/data
+exec gosu postgres:docker-machines /usr/lib/postgresql/*/bin/postgres -c config_file=/var/lib/postgresql/conf/postgresql.conf
+
