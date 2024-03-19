@@ -54,3 +54,4 @@ EOF
 
 
 chown -R barman:barman /var/lib/barman
+cp /build/init-barman2.sh /barman

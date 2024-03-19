@@ -7,10 +7,10 @@ useradd --system --create-home --gid docker-machines --uid 950 etcd
 
 
 mkdir -p /opt/etcd3/{bin,conf,data}
-cp -r /tmp/etcd-*-linux-amd64/etc* /opt/etcd3/bin/
+cp -r /build/etcd-*-linux-amd64/etc* /opt/etcd3/bin/
 
 
 chown -R etcd:docker-machines /opt/etcd3 
 
-cp /tmp/init-etcd3.sh /etcd
+cp /build/init-etcd3.sh /etcd
 chmod +x /etcd

@@ -2,8 +2,8 @@
 
 echo "Installing Keycloak"
 mkdir -p /opt/keycloak
-cp -R /tmp/keycloak*/* /opt/keycloak
-cp -R /tmp/optionfactory-keycloak-*/* /opt/keycloak/providers/
+cp -R /build/keycloak*/* /opt/keycloak
+cp -R /build/optionfactory-keycloak-*/* /opt/keycloak/providers/
 
 cat <<-'EOF' > /opt/keycloak/conf/keycloak.conf
 #[build options]
@@ -46,3 +46,5 @@ chown -R keycloak:docker-machines /opt/keycloak
 
 /opt/keycloak/bin/kc.sh build 
 /opt/keycloak/bin/kc.sh show-config
+
+cp /build/init-keycloak2.sh /keycloak

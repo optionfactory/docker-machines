@@ -25,7 +25,7 @@ esac
 
 
 mkdir -p /opt/caddy/{bin,conf,data}
-cp /tmp/caddy-* /opt/caddy/bin/caddy
+cp /build/caddy-* /opt/caddy/bin/caddy
 setcap cap_net_bind_service=+ep /opt/caddy/bin/caddy
 
 
@@ -50,3 +50,4 @@ EOF
 
 
 chown -R caddy:docker-machines /opt/caddy
+cp /build/init-caddy2.sh /caddy

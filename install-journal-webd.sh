@@ -24,7 +24,7 @@ esac
 mkdir -p /journal-webd-conf/
 mkdir -p /journal-webd-logs/
 
-cp /tmp/journal-webd-* /journal-webd
+cp /build/journal-webd-* /journal-webd
 chmod 755 /journal-webd
 
 

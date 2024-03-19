@@ -2,8 +2,8 @@
 
 echo "Installing tomcat ${TOMCAT_MAJOR_VERSION}"
 mkdir -p /opt/apache-tomcat/conf
-cp -R /tmp/apache-tomcat*/* /opt/apache-tomcat
-cp /tmp/tomcat*-logging-error-report-valve-2.0.jar /opt/apache-tomcat/lib/
+cp -R /build/apache-tomcat*/* /opt/apache-tomcat
+cp /build/tomcat*-logging-error-report-valve-2.0.jar /opt/apache-tomcat/lib/
 rm -rf /opt/apache-tomcat/webapps/*
 
 cat <<-'EOF' > /opt/apache-tomcat/bin/setenv.sh
@@ -52,3 +52,4 @@ EOF
 groupadd --system --gid 950 docker-machines
 useradd --system --create-home --gid docker-machines --uid 950 tomcat
 chown -R tomcat:docker-machines /opt/apache-tomcat
+cp /build/init-tomcat.sh /tomcat

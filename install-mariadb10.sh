@@ -83,3 +83,5 @@ cat <<-'EOF' > /sql-init.d/000.mariadb-first-time.sql
 	GRANT ALL ON *.* TO 'root'@'%' WITH GRANT OPTION ;
 	FLUSH PRIVILEGES ;
 EOF
+
+cp /build/init-mariadb10.sh /mariadb

@@ -85,3 +85,4 @@ host    all    all    0.0.0.0/0    md5
 EOF
 
 chown -R postgres:docker-machines /var/lib/postgresql/{data,conf} /var/run/postgresql
+cp /build/init-postgres.sh /postgres

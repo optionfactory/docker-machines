@@ -6,7 +6,7 @@ if [ ! -f /usr/sbin/update-alternatives ]; then
 fi
 
 mkdir -p /usr/java
-cp -R /tmp/amazon-corretto-* /usr/java/
+cp -R /build/amazon-corretto-* /usr/java/
 jdkdir=$(readlink -f /usr/java/amazon-corretto-*)
 jdkbindir=$(readlink -f ${jdkdir}/bin)
 jdkmajorversion=$(basename $jdkdir | sed 's/amazon-corretto-\([0-9]\+\)[.+].*/\1/')

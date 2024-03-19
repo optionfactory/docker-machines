@@ -105,9 +105,9 @@ rm -rf /etc/nginx/{conf.d,modules}
 mkdir -p /etc/nginx/{modules,certificates}/
 
 touch /etc/nginx/empty_body
-cp /tmp/opfa_http_remove_server_header_module-*.so /etc/nginx/modules/opfa_http_remove_server_header_module.so
-cp /tmp/legopfa-* /usr/bin/legopfa
-cp /tmp/init-nginx120.sh /nginx
+cp /build/opfa_http_remove_server_header_module-*.so /etc/nginx/modules/opfa_http_remove_server_header_module.so
+cp /build/legopfa-* /usr/bin/legopfa
+cp /build/init-nginx120.sh /nginx
 
 cat <<'EOF' > /legopfa-all
 #!/bin/bash -e

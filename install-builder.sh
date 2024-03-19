@@ -10,7 +10,7 @@ useradd --system --create-home --gid builder --uid 950 builder
 
 
 mkdir -p /opt/apache-maven
-cp -R /tmp/apache-maven*/* /opt/apache-maven
+cp -R /build/apache-maven*/* /opt/apache-maven
 ln -s /opt/apache-maven/bin/mvn /usr/sbin/mvn
 
 #
