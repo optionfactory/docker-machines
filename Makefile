@@ -3,7 +3,7 @@ TAG_VERSION=81
 
 #software versions
 
-SONARQUBE9_VERSION=9.9.0.65466
+SONARQUBE10_VERSION=10.4.1.88267
 
 TOMCAT9_VERSION=9.0.87
 TOMCAT9_ERROR_REPORT_VALVE_VERSION=2.0
@@ -72,9 +72,9 @@ docker-optionfactory-rocky9-jdk17: sync-jdk17 docker-optionfactory-rocky9
 docker-optionfactory-debian12-jdk21: sync-jdk21 docker-optionfactory-debian12
 docker-optionfactory-rocky9-jdk21: sync-jdk21 docker-optionfactory-rocky9
 
-#docker-optionfactory-%-jdk17-sonarqube9: $(subst -jdk17-sonarqube9,,$@)
-docker-optionfactory-debian12-jdk17-sonarqube9: sync-sonarqube9 docker-optionfactory-debian12-jdk17
-docker-optionfactory-rocky9-jdk17-sonarqube9: sync-sonarqube9 docker-optionfactory-rocky9-jdk17
+#docker-optionfactory-%-jdk17-sonarqube10: $(subst -jdk17-sonarqube10,,$@)
+docker-optionfactory-debian12-jdk17-sonarqube10: sync-sonarqube10 docker-optionfactory-debian12-jdk17
+docker-optionfactory-rocky9-jdk17-sonarqube10: sync-sonarqube10 docker-optionfactory-rocky9-jdk17
 
 #docker-optionfactory-%-jdk17-builder: $(subst -jdk17-builder,,$@)
 docker-optionfactory-debian12-jdk17-builder: sync-builder docker-optionfactory-debian12-jdk17
@@ -143,7 +143,7 @@ docker-optionfactory-%:
 	$(call irun,docker build ${DOCKER_BUILD_OPTIONS} --tag=optionfactory/$(name):${TAG_VERSION} optionfactory-$(name))
 	$(call irun,docker tag optionfactory/$(name):${TAG_VERSION} optionfactory/$(name):latest)
 
-sync: sync-base-images sync-tools sync-jdk17 sync-jdk21 sync-sonarqube9 sync-builder sync-tomcat9 sync-tomcat10 sync-keycloak2 sync-nginx120 sync-mariadb10 sync-postgres sync-barman2 sync-journal-webd
+sync: sync-base-images sync-tools sync-jdk17 sync-jdk21 sync-sonarqube10 sync-builder sync-tomcat9 sync-tomcat10 sync-keycloak2 sync-nginx120 sync-mariadb10 sync-postgres sync-barman2 sync-journal-webd
 
 sync-base-images:
 	$(call task,updating base images)
@@ -165,11 +165,10 @@ sync-jdk21: deps/jdk21
 	$(call task,syncing jdk 21)
 	$(call irun,echo optionfactory-*-jdk21/deps | xargs -n 1 rsync -az install-jdk.sh)
 	$(call irun,echo optionfactory-*-jdk21/deps | xargs -n 1 rsync -az deps/amazon-corretto-21.*)
-sync-sonarqube9: deps/sonarqube9
-	$(call task,syncing sonarqube 9)
-	$(call irun,echo optionfactory-*-jdk*-sonarqube9/deps | xargs -n 1 rsync -az install-sonarqube9.sh)
-	$(call irun,echo optionfactory-*-jdk*-sonarqube9/deps | xargs -n 1 rsync -az init-sonarqube9.sh)
-	$(call irun,echo optionfactory-*-jdk*-sonarqube9/deps | xargs -n 1 rsync -az deps/sonarqube-${SONARQUBE9_VERSION})
+sync-sonarqube10: deps/sonarqube10
+	$(call task,syncing sonarqube 10)
+	$(call irun,echo optionfactory-*-jdk*-sonarqube10/deps | xargs -n 1 rsync -az install-sonarqube10.sh)
+	$(call irun,echo optionfactory-*-jdk*-sonarqube10/deps | xargs -n 1 rsync -az deps/sonarqube-${SONARQUBE10_VERSION})
 sync-builder: deps/maven3
 	$(call task,syncing maven 3)
 	$(call irun,echo optionfactory-*-jdk*-builder/deps | xargs -n 1 rsync -az install-builder.sh)
@@ -229,7 +228,7 @@ sync-journal-webd: deps/journal-webd
 deps/gosu1: deps/gosu-${GOSU1_VERSION}
 deps/legopfa1: deps/legopfa-${LEGOPFA_VERSION}
 deps/maven3: deps/apache-maven-${MAVEN3_VERSION}
-deps/sonarqube9: deps/sonarqube-${SONARQUBE9_VERSION}
+deps/sonarqube10: deps/sonarqube-${SONARQUBE10_VERSION}
 deps/tomcat9: deps/apache-tomcat-${TOMCAT9_VERSION} deps/tomcat9-logging-error-report-valve-${TOMCAT9_ERROR_REPORT_VALVE_VERSION}.jar
 deps/tomcat10: deps/apache-tomcat-${TOMCAT10_VERSION} deps/tomcat10-logging-error-report-valve-${TOMCAT10_ERROR_REPORT_VALVE_VERSION}.jar
 deps/keycloak2: deps/keycloak-${KEYCLOAK2_VERSION} deps/optionfactory-keycloak-${KEYCLOAK_OPFA_MODULES_VERSION}
@@ -247,8 +246,8 @@ deps/jdk21:
 	$(call irun,curl -# -j -k -L https://corretto.aws/downloads/latest/amazon-corretto-21-x64-linux-jdk.tar.gz | tar xz -C deps)
 deps/apache-maven-${MAVEN3_VERSION}:
 	$(call irun,curl -# -j -k -L https://downloads.apache.org/maven/maven-3/${MAVEN3_VERSION}/binaries/apache-maven-${MAVEN3_VERSION}-bin.tar.gz | tar xz -C deps)
-deps/sonarqube-${SONARQUBE9_VERSION}:	
-	$(call irun,cd deps && curl -# -sSL -k https://binaries.sonarsource.com/Distribution/sonarqube/sonarqube-${SONARQUBE9_VERSION}.zip | jar xf /dev/stdin)
+deps/sonarqube-${SONARQUBE10_VERSION}:	
+	$(call irun,cd deps && curl -# -sSL -k https://binaries.sonarsource.com/Distribution/sonarqube/sonarqube-${SONARQUBE10_VERSION}.zip | jar xf /dev/stdin)
 deps/apache-tomcat-${TOMCAT9_VERSION}:
 	$(call irun,curl -# -sSL -k https://archive.apache.org/dist/tomcat/tomcat-9/v${TOMCAT9_VERSION}/bin/apache-tomcat-${TOMCAT9_VERSION}.tar.gz | tar xz -C deps)
 deps/tomcat9-logging-error-report-valve-${TOMCAT9_ERROR_REPORT_VALVE_VERSION}.jar:
