@@ -176,31 +176,26 @@ sync-builder: deps/maven3
 sync-tomcat9: deps/tomcat9
 	$(call task,syncing tomcat 9)
 	$(call irun,echo optionfactory-*-tomcat9/deps | xargs -n 1 rsync -az install-tomcat.sh)
-	$(call irun,echo optionfactory-*-tomcat9/deps | xargs -n 1 rsync -az init-tomcat.sh)
 	$(call irun,echo optionfactory-*-tomcat9/deps | xargs -n 1 rsync -az deps/apache-tomcat-${TOMCAT9_VERSION})
 	$(call irun,echo optionfactory-*-tomcat9/deps | xargs -n 1 rsync -az deps/tomcat9-logging-error-report-valve-${TOMCAT9_ERROR_REPORT_VALVE_VERSION}.jar)
 sync-tomcat10: deps/tomcat10
 	$(call task,syncing tomcat 10)
 	$(call irun,echo optionfactory-*-tomcat10/deps | xargs -n 1 rsync -az install-tomcat.sh)
-	$(call irun,echo optionfactory-*-tomcat10/deps | xargs -n 1 rsync -az init-tomcat.sh)
 	$(call irun,echo optionfactory-*-tomcat10/deps | xargs -n 1 rsync -az deps/apache-tomcat-${TOMCAT10_VERSION})
 	$(call irun,echo optionfactory-*-tomcat10/deps | xargs -n 1 rsync -az deps/tomcat10-logging-error-report-valve-${TOMCAT10_ERROR_REPORT_VALVE_VERSION}.jar)
 sync-keycloak2: deps/keycloak2
 	$(call task,syncing keycloak 2x)
 	$(call irun,echo optionfactory-*-keycloak2/deps | xargs -n 1 rsync -az install-keycloak2.sh)
-	$(call irun,echo optionfactory-*-keycloak2/deps | xargs -n 1 rsync -az init-keycloak2.sh)
 	$(call irun,echo optionfactory-*-keycloak2/deps | xargs -n 1 rsync -az deps/keycloak-${KEYCLOAK2_VERSION})
 	$(call irun,echo optionfactory-*-keycloak2/deps | xargs -n 1 rsync -az deps/optionfactory-keycloak-${KEYCLOAK_OPFA_MODULES_VERSION})
 sync-nginx120: deps/nginx_remove_server_header_module deps/legopfa1
 	$(call task,syncing nginx)
 	$(call irun,echo optionfactory-*-nginx120/deps | xargs -n 1 rsync -az install-nginx120.sh)
-	$(call irun,echo optionfactory-*-nginx120/deps | xargs -n 1 rsync -az init-nginx120.sh)
 	$(call irun,echo optionfactory-*-nginx120/deps | xargs -n 1 rsync -az deps/opfa_http_remove_server_header_module-${NGINX_REMOVE_SERVER_HEADER_MODULE_VERSION}.so)
 	$(call irun,echo optionfactory-*-nginx120/deps | xargs -n 1 rsync -az deps/legopfa-${LEGOPFA_VERSION})
 sync-caddy2: deps/caddy2
 	$(call task,syncing caddy 2)
 	$(call irun,echo optionfactory-*-caddy2/deps | xargs -n 1 rsync -az install-caddy2.sh)
-	$(call irun,echo optionfactory-*-caddy2/deps | xargs -n 1 rsync -az init-caddy2.sh)
 	$(call irun,echo optionfactory-*-caddy2/deps | xargs -n 1 rsync -az deps/caddy-${CADDY2_VERSION})
 sync-mariadb10: deps/mariadb10
 	$(call task,syncing mariadb 10)
@@ -213,12 +208,10 @@ sync-postgres: deps/postgres
 sync-etcd3: deps/etcd3
 	$(call task,syncing etcd3)
 	$(call irun,echo optionfactory-*-etcd3/deps | xargs -n 1 rsync -az install-etcd3.sh)
-	$(call irun,echo optionfactory-*-etcd3/deps | xargs -n 1 rsync -az init-etcd3.sh)
 	$(call irun,echo optionfactory-*-etcd3/deps | xargs -n 1 rsync -az deps/etcd-v${ETCD3_VERSION}-linux-amd64)
 sync-barman2: deps/barman2
 	$(call task,syncing barman2)
 	$(call irun,echo optionfactory-*-barman2/deps | xargs -n 1 rsync -az install-barman2.sh)
-	$(call irun,echo optionfactory-*-barman2/deps | xargs -n 1 rsync -az init-barman2.sh)
 sync-journal-webd: deps/journal-webd
 	$(call task,syncing journal-webd)
 	$(call irun,echo optionfactory-*-journal-webd/deps | xargs -n 1 rsync -az install-journal-webd.sh)

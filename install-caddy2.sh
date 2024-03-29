@@ -50,4 +50,11 @@ EOF
 
 
 chown -R caddy:docker-machines /opt/caddy
-cp /build/init-caddy2.sh /caddy
+
+cat <<'EOF' > /caddy
+#!/bin/bash -e
+
+XDG_DATA_HOME=/opt/caddy/data/ exec gosu caddy:docker-machines /opt/caddy/bin/caddy run --config /opt/caddy/conf/caddy.conf.json
+EOF
+
+chmod 750 /caddy

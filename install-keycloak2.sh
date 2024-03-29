@@ -47,4 +47,11 @@ chown -R keycloak:docker-machines /opt/keycloak
 /opt/keycloak/bin/kc.sh build 
 /opt/keycloak/bin/kc.sh show-config
 
-cp /build/init-keycloak2.sh /keycloak
+
+cat <<'EOF' > /keycloak
+#!/bin/bash -e
+chown -R keycloak:docker-machines /opt/keycloak
+exec gosu keycloak:docker-machines /opt/keycloak/bin/kc.sh start "$@"
+EOF
+
+chmod 750 /keycloak

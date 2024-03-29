@@ -12,5 +12,13 @@ cp -r /build/etcd-*-linux-amd64/etc* /opt/etcd3/bin/
 
 chown -R etcd:docker-machines /opt/etcd3 
 
-cp /build/init-etcd3.sh /etcd
-chmod +x /etcd
+cat <<'EOF' > /etcd
+#!/bin/bash -e
+chmod 770 /opt/etcd3/data
+chown -R etcd:docker-machines /opt/etcd3/data
+exec  gosu etcd:docker-machines /opt/etcd3/bin/etcd --data-dir /opt/etcd3/data "$@"
+EOF
+
+chmod 750 /etcd
+
+

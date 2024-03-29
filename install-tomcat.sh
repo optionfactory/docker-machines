@@ -52,4 +52,12 @@ EOF
 groupadd --system --gid 950 docker-machines
 useradd --system --create-home --gid docker-machines --uid 950 tomcat
 chown -R tomcat:docker-machines /opt/apache-tomcat
-cp /build/init-tomcat.sh /tomcat
+
+
+cat <<'EOF' > /tomcat
+#!/bin/bash -e
+chown -R tomcat:docker-machines /opt/apache-tomcat/webapps
+exec gosu tomcat:docker-machines /opt/apache-tomcat/bin/catalina.sh run
+EOF
+
+chmod 750 /tomcat

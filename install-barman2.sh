@@ -54,4 +54,14 @@ EOF
 
 
 chown -R barman:barman /var/lib/barman
-cp /build/init-barman2.sh /barman
+
+cat <<'EOF' > /barman
+#!/bin/bash -e
+while :
+do
+    gosu barman:barman barman cron
+    sleep 60
+done
+EOF
+
+chmod 750 /barman

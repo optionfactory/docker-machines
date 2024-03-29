@@ -107,11 +107,19 @@ mkdir -p /etc/nginx/{modules,certificates}/
 touch /etc/nginx/empty_body
 cp /build/opfa_http_remove_server_header_module-*.so /etc/nginx/modules/opfa_http_remove_server_header_module.so
 cp /build/legopfa-* /usr/bin/legopfa
-cp /build/init-nginx120.sh /nginx
 
 cat <<'EOF' > /legopfa-all
 #!/bin/bash -e
 find /etc/nginx/certificates/ -maxdepth 1 -name '*.json' -exec legopfa {} ";"
 EOF
 
-chmod +x /legopfa-all
+chmod 750 /legopfa-all
+
+
+cat <<'EOF' > /nginx
+#!/bin/bash -e
+/legopfa-all
+exec nginx -g "daemon off;"
+EOF
+
+chmod 750 /nginx
