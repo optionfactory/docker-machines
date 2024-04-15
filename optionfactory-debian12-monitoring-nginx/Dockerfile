@@ -1,8 +1,12 @@
-FROM optionfactory/rocky9:latest
+FROM optionfactory/debian12:latest
 LABEL maintainer="Roberto Ferranti <roberto@optionfactory.net>"
 LABEL org.opencontainers.image.source https://github.com/optionfactory/docker-machines
 
 RUN --mount=type=bind,source=deps,target=build \
-    DISTRIB_LABEL=rocky9 DISTRIB_ID=rocky DISTRIB_RELEASE=9 DISTRIB_CODENAME=9 \
-    /build/install-jdk.sh
+    DISTRIB_LABEL=debian12 DISTRIB_ID=debian DISTRIB_RELEASE=12 DISTRIB_CODENAME=bookworm \
+    /build/install-monitoring-nginx.sh
+
+
+ENTRYPOINT ["/monitoring-nginx"]
+
 

@@ -1,5 +1,5 @@
 DOCKER_BUILD_OPTIONS=--no-cache=false
-TAG_VERSION=81
+TAG_VERSION=90
 
 #software versions
 
@@ -16,8 +16,12 @@ KEYCLOAK_OPFA_MODULES_VERSION=6.2
 MAVEN3_VERSION=3.9.6
 CADDY2_VERSION=2.7.6
 JOURNAL_WEBD_VERSION=1.1
-ETCD3_VERSION=3.5.12
+ETCD3_VERSION=3.5.13
 NGINX_REMOVE_SERVER_HEADER_MODULE_VERSION=1.24.0-1
+
+CADVISOR_VERSION=0.49.1
+POSTGRES_EXPORTER_VERSION=0.15.0
+NGINX_EXPORTER_VERSION=1.1.0
 #/software versions
 
 SHELL=/bin/bash
@@ -33,7 +37,7 @@ endef
 
 help:
 	@echo usage: make [clean-deps] [clean] sync docker-images
-	@echo usage: make [clean-deps] [clean] docker-optionfactory-rocky9-mariadb10
+	@echo usage: make [clean-deps] [clean] docker-optionfactory-debian12-mariadb10
 	exit 1
 
 docker-images: sync-base-images $(addprefix docker-,$(wildcard optionfactory-*))
@@ -61,47 +65,38 @@ docker-push-github:
 
 docker-optionfactory-debian12: sync-tools
 docker-optionfactory-debian13: sync-tools
-docker-optionfactory-rocky9: sync-tools
 
 
 #docker-optionfactory-%-jdk17: $(subst -jdk17,,$@)
 docker-optionfactory-debian12-jdk17: sync-jdk17 docker-optionfactory-debian12
-docker-optionfactory-rocky9-jdk17: sync-jdk17 docker-optionfactory-rocky9
 
 #docker-optionfactory-%-jdk21: $(subst -jdk21,,$@)
 docker-optionfactory-debian12-jdk21: sync-jdk21 docker-optionfactory-debian12
-docker-optionfactory-rocky9-jdk21: sync-jdk21 docker-optionfactory-rocky9
 
 #docker-optionfactory-%-jdk17-sonarqube10: $(subst -jdk17-sonarqube10,,$@)
 docker-optionfactory-debian12-jdk17-sonarqube10: sync-sonarqube10 docker-optionfactory-debian12-jdk17
-docker-optionfactory-rocky9-jdk17-sonarqube10: sync-sonarqube10 docker-optionfactory-rocky9-jdk17
 
 #docker-optionfactory-%-jdk17-builder: $(subst -jdk17-builder,,$@)
 docker-optionfactory-debian12-jdk17-builder: sync-builder docker-optionfactory-debian12-jdk17
-docker-optionfactory-rocky9-jdk17-builder: sync-builder docker-optionfactory-rocky9-jdk17
 
 #docker-optionfactory-%-jdk21-builder: $(subst -jdk21-builder,,$@)
 docker-optionfactory-debian12-jdk21-builder: sync-builder docker-optionfactory-debian12-jdk21
 
 #docker-optionfactory-%-nginx120: $(subst -nginx120,,$@)
 docker-optionfactory-debian12-nginx120: sync-nginx120 docker-optionfactory-debian12
-docker-optionfactory-rocky9-nginx120: sync-nginx120 docker-optionfactory-rocky9
 
 #docker-optionfactory-%-caddy2: $(subst -caddy2,,$@)
 docker-optionfactory-debian12-caddy2: sync-caddy2 docker-optionfactory-debian12
-docker-optionfactory-rocky9-caddy2: sync-caddy2 docker-optionfactory-rocky9
+
 
 #docker-optionfactory-%-mariadb10: $(subst -mariadb10,,$@)
 docker-optionfactory-debian12-mariadb10: sync-mariadb10 docker-optionfactory-debian12
-docker-optionfactory-rocky9-mariadb10: sync-mariadb10 docker-optionfactory-rocky9
 
 #docker-optionfactory-%-postgres15: $(subst -postgres15,,$@)
 docker-optionfactory-debian12-postgres15: sync-postgres docker-optionfactory-debian12
-docker-optionfactory-rocky9-postgres15: sync-postgres docker-optionfactory-rocky9
 
 #docker-optionfactory-%-postgres16: $(subst -postgres15,,$@)
 docker-optionfactory-debian12-postgres16: sync-postgres docker-optionfactory-debian12
-docker-optionfactory-rocky9-postgres16: sync-postgres docker-optionfactory-rocky9
 
 #docker-optionfactory-%-etcd3: $(subst -etcd3,,$@)
 docker-optionfactory-debian12-etcd3: sync-etcd3 docker-optionfactory-debian12
@@ -115,25 +110,29 @@ docker-optionfactory-debian13-journal-webd: sync-journal-webd docker-optionfacto
 
 #docker-optionfactory-%-jdk17-tomcat9: $(subst -tomcat9,,$@)
 docker-optionfactory-debian12-jdk17-tomcat9: sync-tomcat9 docker-optionfactory-debian12-jdk17
-docker-optionfactory-rocky9-jdk17-tomcat9: sync-tomcat9 docker-optionfactory-rocky9-jdk17
 
 #docker-optionfactory-%-jdk21-tomcat9: $(subst -tomcat9,,$@)
 docker-optionfactory-debian12-jdk21-tomcat9: sync-tomcat9 docker-optionfactory-debian12-jdk21
-docker-optionfactory-rocky9-jdk21-tomcat9: sync-tomcat9 docker-optionfactory-rocky9-jdk21
 
 
 #docker-optionfactory-%-jdk21-tomcat10: $(subst -tomcat9,,$@)
 docker-optionfactory-debian12-jdk21-tomcat10: sync-tomcat10 docker-optionfactory-debian12-jdk21
-docker-optionfactory-rocky9-jdk21-tomcat10: sync-tomcat10 docker-optionfactory-rocky9-jdk21
 
 
 #docker-optionfactory-%-jdk17-keycloak2: $(subst -keycloak2,,$@)
 docker-optionfactory-debian12-jdk17-keycloak2: sync-keycloak2 docker-optionfactory-debian12-jdk17
-docker-optionfactory-rocky9-jdk17-keycloak2: sync-keycloak2 docker-optionfactory-rocky9-jdk17
 
 #docker-optionfactory-%-jdk21-keycloak2: $(subst -keycloak2,,$@)
 docker-optionfactory-debian12-jdk21-keycloak2: sync-keycloak2 docker-optionfactory-debian12-jdk21
-docker-optionfactory-rocky9-jdk21-keycloak2: sync-keycloak2 docker-optionfactory-rocky9-jdk21
+
+#docker-optionfactory-%-monitoring-cadvisor: $(subst -monitoring-cadvisor,,$@)
+docker-optionfactory-debian12-monitoring-cadvisor: sync-monitoring-cadvisor docker-optionfactory-debian12
+
+#docker-optionfactory-%-monitoring-postgres: $(subst -monitoring-postgres,,$@)
+docker-optionfactory-debian12-monitoring-postgres: sync-monitoring-postgres docker-optionfactory-debian12
+
+#docker-optionfactory-%-monitoring-nginx: $(subst -monitoring-nginx,,$@)
+docker-optionfactory-debian12-monitoring-nginx: sync-monitoring-nginx docker-optionfactory-debian12
 
 
 
@@ -143,19 +142,18 @@ docker-optionfactory-%:
 	$(call irun,docker build ${DOCKER_BUILD_OPTIONS} --tag=optionfactory/$(name):${TAG_VERSION} optionfactory-$(name))
 	$(call irun,docker tag optionfactory/$(name):${TAG_VERSION} optionfactory/$(name):latest)
 
-sync: sync-base-images sync-tools sync-jdk17 sync-jdk21 sync-sonarqube10 sync-builder sync-tomcat9 sync-tomcat10 sync-keycloak2 sync-nginx120 sync-mariadb10 sync-postgres sync-barman2 sync-journal-webd
+sync: sync-base-images sync-tools sync-jdk17 sync-jdk21 sync-sonarqube10 sync-builder sync-tomcat9 sync-tomcat10 sync-keycloak2 sync-nginx120 sync-mariadb10 sync-postgres sync-barman2 sync-journal-webd sync-monitoring-cadvisor  sync-monitoring-postgres sync-monitoring-nginx
 
 sync-base-images:
 	$(call task,updating base images)
 	$(call irun,docker pull debian:bookworm)
 	$(call irun,docker pull debian:trixie)
-	$(call irun,docker pull rockylinux/rockylinux:9)
 
 sync-tools: deps/gosu1 
 	$(call task,syncing gosu)
-	$(call irun,echo optionfactory-rocky9/deps optionfactory-debian12/deps optionfactory-debian13/deps | xargs -n 1 rsync -az deps/gosu-${GOSU1_VERSION})
+	$(call irun,echo optionfactory-debian12/deps optionfactory-debian13/deps | xargs -n 1 rsync -az deps/gosu-${GOSU1_VERSION})
 	$(call task,syncing ps1)
-	$(call irun,echo optionfactory-rocky9/deps optionfactory-debian12/deps optionfactory-debian13/deps | xargs -n 1 rsync -az install-ps1.sh)
+	$(call irun,echo optionfactory-debian12/deps optionfactory-debian13/deps | xargs -n 1 rsync -az install-ps1.sh)
 sync-jdk17: deps/jdk17
 	$(call task,syncing jdk 17)
 	$(call irun,echo optionfactory-*-jdk17/deps | xargs -n 1 rsync -az install-jdk.sh)
@@ -215,6 +213,18 @@ sync-journal-webd: deps/journal-webd
 	$(call task,syncing journal-webd)
 	$(call irun,echo optionfactory-*-journal-webd/deps | xargs -n 1 rsync -az install-journal-webd.sh)
 	$(call irun,echo optionfactory-*-journal-webd/deps | xargs -n 1 rsync -az deps/journal-webd-${JOURNAL_WEBD_VERSION})
+sync-monitoring-cadvisor: deps/cadvisor
+	$(call task,syncing cadvisor)
+	$(call irun,echo optionfactory-*-cadvisor/deps | xargs -n 1 rsync -az install-monitoring-cadvisor.sh)
+	$(call irun,echo optionfactory-*-cadvisor/deps | xargs -n 1 rsync -az deps/cadvisor-v${CADVISOR_VERSION}-linux-amd64)
+sync-monitoring-postgres: deps/postgres-exporter
+	$(call task,syncing monitoring-postgres)
+	$(call irun,echo optionfactory-*-monitoring-postgres/deps | xargs -n 1 rsync -az install-monitoring-postgres.sh)
+	$(call irun,echo optionfactory-*-monitoring-postgres/deps | xargs -n 1 rsync -az deps/postgres-exporter-${POSTGRES_EXPORTER_VERSION}-linux-amd64)
+sync-monitoring-nginx: deps/nginx-exporter
+	$(call task,syncing monitoring-nginx)
+	$(call irun,echo optionfactory-*-monitoring-nginx/deps | xargs -n 1 rsync -az install-monitoring-nginx.sh)
+	$(call irun,echo optionfactory-*-monitoring-nginx/deps | xargs -n 1 rsync -az deps/nginx-exporter-${NGINX_EXPORTER_VERSION}-linux-amd64)
 
 
 deps/gosu1: deps/gosu-${GOSU1_VERSION}
@@ -231,6 +241,10 @@ deps/postgres:
 deps/etcd3: deps/ectd-v${ETCD3_VERSION}-linux-amd64
 deps/barman2:
 deps/journal-webd: deps/journal-webd-${JOURNAL_WEBD_VERSION}
+deps/cadvisor: deps/cadvisor-v${CADVISOR_VERSION}-linux-amd64
+deps/postgres-exporter: deps/postgres-exporter-${POSTGRES_EXPORTER_VERSION}-linux-amd64
+deps/nginx-exporter: deps/nginx-exporter-${NGINX_EXPORTER_VERSION}-linux-amd64
+
 
 deps/jdk17:
 	$(call irun,curl -# -j -k -L https://corretto.aws/downloads/latest/amazon-corretto-17-x64-linux-jdk.tar.gz | tar xz -C deps)
@@ -272,6 +286,12 @@ deps/ectd-v${ETCD3_VERSION}-linux-amd64:
 	$(call irun,curl -# -j -k -L  "https://github.com/etcd-io/etcd/releases/download/v${ETCD3_VERSION}/etcd-v${ETCD3_VERSION}-linux-amd64.tar.gz" | tar xz -C deps)		
 deps/journal-webd-${JOURNAL_WEBD_VERSION}:
 	$(call irun,curl -# -j -k -L  "https://github.com/optionfactory/journal-webd/releases/download/${JOURNAL_WEBD_VERSION}/journal-webd-${JOURNAL_WEBD_VERSION}" -o deps/journal-webd-${JOURNAL_WEBD_VERSION})
+deps/cadvisor-v${CADVISOR_VERSION}-linux-amd64:
+	$(call irun,curl -# -j -k -L  "https://github.com/google/cadvisor/releases/download/v${CADVISOR_VERSION}/cadvisor-v${CADVISOR_VERSION}-linux-amd64" -o deps/cadvisor-v${CADVISOR_VERSION}-linux-amd64)
+deps/postgres-exporter-${POSTGRES_EXPORTER_VERSION}-linux-amd64:
+	$(call irun,curl -# -j -k -L  "https://github.com/prometheus-community/postgres_exporter/releases/download/v${POSTGRES_EXPORTER_VERSION}/postgres_exporter-${POSTGRES_EXPORTER_VERSION}.linux-amd64.tar.gz" | tar xz --transform='s/.*/postgres-exporter-${POSTGRES_EXPORTER_VERSION}-linux-amd64/g' -C deps postgres_exporter-${POSTGRES_EXPORTER_VERSION}.linux-amd64/postgres_exporter)
+deps/nginx-exporter-${NGINX_EXPORTER_VERSION}-linux-amd64:
+	$(call irun,curl -# -j -k -L  "https://github.com/nginxinc/nginx-prometheus-exporter/releases/download/v${NGINX_EXPORTER_VERSION}/nginx-prometheus-exporter_${NGINX_EXPORTER_VERSION}_linux_amd64.tar.gz" | tar xz --transform='s/.*/nginx-exporter-${NGINX_EXPORTER_VERSION}-linux-amd64/g' -C deps nginx-prometheus-exporter)
 
 clean: FORCE
 	$(call task,removing install scripts)
