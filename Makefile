@@ -22,6 +22,7 @@ NGINX_REMOVE_SERVER_HEADER_MODULE_VERSION=1.24.0-1
 CADVISOR_VERSION=0.49.1
 POSTGRES_EXPORTER_VERSION=0.15.0
 NGINX_EXPORTER_VERSION=1.1.0
+NODE_EXPORTER_VERSION=1.7.0
 #/software versions
 
 SHELL=/bin/bash
@@ -134,6 +135,8 @@ docker-optionfactory-debian12-monitoring-postgres: sync-monitoring-postgres dock
 #docker-optionfactory-%-monitoring-nginx: $(subst -monitoring-nginx,,$@)
 docker-optionfactory-debian12-monitoring-nginx: sync-monitoring-nginx docker-optionfactory-debian12
 
+#docker-optionfactory-%-monitoring-host: $(subst -monitoring-host,,$@)
+docker-optionfactory-debian12-monitoring-host: sync-monitoring-host docker-optionfactory-debian12
 
 
 docker-optionfactory-%:
@@ -225,6 +228,10 @@ sync-monitoring-nginx: deps/nginx-exporter
 	$(call task,syncing monitoring-nginx)
 	$(call irun,echo optionfactory-*-monitoring-nginx/deps | xargs -n 1 rsync -az install-monitoring-nginx.sh)
 	$(call irun,echo optionfactory-*-monitoring-nginx/deps | xargs -n 1 rsync -az deps/nginx-exporter-${NGINX_EXPORTER_VERSION}-linux-amd64)
+sync-monitoring-host: deps/node-exporter
+	$(call task,syncing monitoring-nginx)
+	$(call irun,echo optionfactory-*-monitoring-host/deps | xargs -n 1 rsync -az install-monitoring-host.sh)
+	$(call irun,echo optionfactory-*-monitoring-host/deps | xargs -n 1 rsync -az deps/node-exporter-${NODE_EXPORTER_VERSION}-linux-amd64)
 
 
 deps/gosu1: deps/gosu-${GOSU1_VERSION}
@@ -244,6 +251,7 @@ deps/journal-webd: deps/journal-webd-${JOURNAL_WEBD_VERSION}
 deps/cadvisor: deps/cadvisor-v${CADVISOR_VERSION}-linux-amd64
 deps/postgres-exporter: deps/postgres-exporter-${POSTGRES_EXPORTER_VERSION}-linux-amd64
 deps/nginx-exporter: deps/nginx-exporter-${NGINX_EXPORTER_VERSION}-linux-amd64
+deps/node-exporter: deps/node-exporter-${NODE_EXPORTER_VERSION}-linux-amd64
 
 
 deps/jdk17:
@@ -292,6 +300,8 @@ deps/postgres-exporter-${POSTGRES_EXPORTER_VERSION}-linux-amd64:
 	$(call irun,curl -# -j -k -L  "https://github.com/prometheus-community/postgres_exporter/releases/download/v${POSTGRES_EXPORTER_VERSION}/postgres_exporter-${POSTGRES_EXPORTER_VERSION}.linux-amd64.tar.gz" | tar xz --transform='s/.*/postgres-exporter-${POSTGRES_EXPORTER_VERSION}-linux-amd64/g' -C deps postgres_exporter-${POSTGRES_EXPORTER_VERSION}.linux-amd64/postgres_exporter)
 deps/nginx-exporter-${NGINX_EXPORTER_VERSION}-linux-amd64:
 	$(call irun,curl -# -j -k -L  "https://github.com/nginxinc/nginx-prometheus-exporter/releases/download/v${NGINX_EXPORTER_VERSION}/nginx-prometheus-exporter_${NGINX_EXPORTER_VERSION}_linux_amd64.tar.gz" | tar xz --transform='s/.*/nginx-exporter-${NGINX_EXPORTER_VERSION}-linux-amd64/g' -C deps nginx-prometheus-exporter)
+deps/node-exporter-${NODE_EXPORTER_VERSION}-linux-amd64:
+	$(call irun,curl -# -j -k -L  "https://github.com/prometheus/node_exporter/releases/download/v${NODE_EXPORTER_VERSION}/node_exporter-${NODE_EXPORTER_VERSION}.linux-amd64.tar.gz" | tar xz --transform='s/.*/node-exporter-${NODE_EXPORTER_VERSION}-linux-amd64/g' -C deps node_exporter-${NODE_EXPORTER_VERSION}.linux-amd64/node_exporter)
 
 clean: FORCE
 	$(call task,removing install scripts)
