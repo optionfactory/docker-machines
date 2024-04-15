@@ -147,7 +147,6 @@ sync: sync-base-images sync-tools sync-jdk17 sync-jdk21 sync-sonarqube10 sync-bu
 
 sync-base-images:
 	$(call task,updating base images)
-	$(call irun,docker pull debian:bullseye)
 	$(call irun,docker pull debian:bookworm)
 	$(call irun,docker pull debian:trixie)
 	$(call irun,docker pull rockylinux/rockylinux:9)

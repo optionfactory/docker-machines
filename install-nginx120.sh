@@ -115,7 +115,6 @@ EOF
 
 chmod 750 /legopfa-all
 
-
 cat <<'EOF' > /nginx
 #!/bin/bash -e
 /legopfa-all
