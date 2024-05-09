@@ -1,17 +1,17 @@
 DOCKER_BUILD_OPTIONS=--no-cache=false
-TAG_VERSION=90
+TAG_VERSION=91
 
 #software versions
 
-SONARQUBE10_VERSION=10.4.1.88267
+SONARQUBE10_VERSION=10.5.1.90531
 
-TOMCAT9_VERSION=9.0.87
+TOMCAT9_VERSION=9.0.89
 TOMCAT9_ERROR_REPORT_VALVE_VERSION=2.0
-TOMCAT10_VERSION=10.1.20
+TOMCAT10_VERSION=10.1.23
 TOMCAT10_ERROR_REPORT_VALVE_VERSION=2.0
-GOSU1_VERSION=1.14
+GOSU1_VERSION=1.17
 LEGOPFA_VERSION=1.2
-KEYCLOAK2_VERSION=24.0.2
+KEYCLOAK2_VERSION=24.0.3
 KEYCLOAK_OPFA_MODULES_VERSION=6.2
 MAVEN3_VERSION=3.9.6
 CADDY2_VERSION=2.7.6
@@ -19,10 +19,13 @@ JOURNAL_WEBD_VERSION=1.1
 ETCD3_VERSION=3.5.13
 NGINX_REMOVE_SERVER_HEADER_MODULE_VERSION=1.24.0-1
 
+PROMETHEUS_VERSION=2.52.0
+ALERTMANAGER_VERSION=0.27.0
+GRAFANA_VERSION=10.4.2
 CADVISOR_VERSION=0.49.1
 POSTGRES_EXPORTER_VERSION=0.15.0
 NGINX_EXPORTER_VERSION=1.1.0
-NODE_EXPORTER_VERSION=1.7.0
+NODE_EXPORTER_VERSION=1.8.0
 #/software versions
 
 SHELL=/bin/bash
@@ -126,6 +129,16 @@ docker-optionfactory-debian12-jdk17-keycloak2: sync-keycloak2 docker-optionfacto
 #docker-optionfactory-%-jdk21-keycloak2: $(subst -keycloak2,,$@)
 docker-optionfactory-debian12-jdk21-keycloak2: sync-keycloak2 docker-optionfactory-debian12-jdk21
 
+#docker-optionfactory-%-monitoring-prometheus: $(subst -monitoring-prometheus,,$@)
+docker-optionfactory-debian12-monitoring-prometheus: sync-monitoring-prometheus docker-optionfactory-debian12
+
+#docker-optionfactory-%-monitoring-alertmanager: $(subst -monitoring-alertmanager,,$@)
+docker-optionfactory-debian12-monitoring-alertmanager: sync-monitoring-alertmanager docker-optionfactory-debian12
+
+#docker-optionfactory-%-monitoring-grafana: $(subst -monitoring-alertmanager,,$@)
+docker-optionfactory-debian12-monitoring-grafana: sync-monitoring-grafana docker-optionfactory-debian12
+
+
 #docker-optionfactory-%-monitoring-cadvisor: $(subst -monitoring-cadvisor,,$@)
 docker-optionfactory-debian12-monitoring-cadvisor: sync-monitoring-cadvisor docker-optionfactory-debian12
 
@@ -145,8 +158,6 @@ docker-optionfactory-%:
 	$(call irun,docker build ${DOCKER_BUILD_OPTIONS} --tag=optionfactory/$(name):${TAG_VERSION} optionfactory-$(name))
 	$(call irun,docker tag optionfactory/$(name):${TAG_VERSION} optionfactory/$(name):latest)
 
-sync: sync-base-images sync-tools sync-jdk17 sync-jdk21 sync-sonarqube10 sync-builder sync-tomcat9 sync-tomcat10 sync-keycloak2 sync-nginx120 sync-mariadb10 sync-postgres sync-barman2 sync-journal-webd sync-monitoring-cadvisor  sync-monitoring-postgres sync-monitoring-nginx
-
 sync-base-images:
 	$(call task,updating base images)
 	$(call irun,docker pull debian:bookworm)
@@ -157,6 +168,8 @@ sync-tools: deps/gosu1
 	$(call irun,echo optionfactory-debian12/deps optionfactory-debian13/deps | xargs -n 1 rsync -az deps/gosu-${GOSU1_VERSION})
 	$(call task,syncing ps1)
 	$(call irun,echo optionfactory-debian12/deps optionfactory-debian13/deps | xargs -n 1 rsync -az install-ps1.sh)
+	$(call task,syncing base image)
+	$(call irun,echo optionfactory-debian12/deps optionfactory-debian13/deps | xargs -n 1 rsync -az install-base-image.sh)
 sync-jdk17: deps/jdk17
 	$(call task,syncing jdk 17)
 	$(call irun,echo optionfactory-*-jdk17/deps | xargs -n 1 rsync -az install-jdk.sh)
@@ -216,6 +229,18 @@ sync-journal-webd: deps/journal-webd
 	$(call task,syncing journal-webd)
 	$(call irun,echo optionfactory-*-journal-webd/deps | xargs -n 1 rsync -az install-journal-webd.sh)
 	$(call irun,echo optionfactory-*-journal-webd/deps | xargs -n 1 rsync -az deps/journal-webd-${JOURNAL_WEBD_VERSION})
+sync-monitoring-prometheus: deps/prometheus
+	$(call task,syncing prometheus)
+	$(call irun,echo optionfactory-*-prometheus/deps | xargs -n 1 rsync -az install-monitoring-prometheus.sh)
+	$(call irun,echo optionfactory-*-prometheus/deps | xargs -n 1 rsync -az deps/prometheus-${PROMETHEUS_VERSION}.linux-amd64)
+sync-monitoring-alertmanager: deps/alertmanager
+	$(call task,syncing alertmanager)
+	$(call irun,echo optionfactory-*-alertmanager/deps | xargs -n 1 rsync -az install-monitoring-alertmanager.sh)
+	$(call irun,echo optionfactory-*-alertmanager/deps | xargs -n 1 rsync -az deps/alertmanager-${ALERTMANAGER_VERSION}.linux-amd64)
+sync-monitoring-grafana: deps/grafana
+	$(call task,syncing grafana)
+	$(call irun,echo optionfactory-*-grafana/deps | xargs -n 1 rsync -az install-monitoring-grafana.sh)
+	$(call irun,echo optionfactory-*-grafana/deps | xargs -n 1 rsync -az deps/grafana-v${GRAFANA_VERSION})
 sync-monitoring-cadvisor: deps/cadvisor
 	$(call task,syncing cadvisor)
 	$(call irun,echo optionfactory-*-cadvisor/deps | xargs -n 1 rsync -az install-monitoring-cadvisor.sh)
@@ -248,6 +273,9 @@ deps/postgres:
 deps/etcd3: deps/ectd-v${ETCD3_VERSION}-linux-amd64
 deps/barman2:
 deps/journal-webd: deps/journal-webd-${JOURNAL_WEBD_VERSION}
+deps/prometheus: deps/prometheus-${PROMETHEUS_VERSION}.linux-amd64
+deps/alertmanager: deps/alertmanager-${ALERTMANAGER_VERSION}.linux-amd64
+deps/grafana: deps/grafana-v${GRAFANA_VERSION}
 deps/cadvisor: deps/cadvisor-v${CADVISOR_VERSION}-linux-amd64
 deps/postgres-exporter: deps/postgres-exporter-${POSTGRES_EXPORTER_VERSION}-linux-amd64
 deps/nginx-exporter: deps/nginx-exporter-${NGINX_EXPORTER_VERSION}-linux-amd64
@@ -296,6 +324,12 @@ deps/journal-webd-${JOURNAL_WEBD_VERSION}:
 	$(call irun,curl -# -j -k -L  "https://github.com/optionfactory/journal-webd/releases/download/${JOURNAL_WEBD_VERSION}/journal-webd-${JOURNAL_WEBD_VERSION}" -o deps/journal-webd-${JOURNAL_WEBD_VERSION})
 deps/cadvisor-v${CADVISOR_VERSION}-linux-amd64:
 	$(call irun,curl -# -j -k -L  "https://github.com/google/cadvisor/releases/download/v${CADVISOR_VERSION}/cadvisor-v${CADVISOR_VERSION}-linux-amd64" -o deps/cadvisor-v${CADVISOR_VERSION}-linux-amd64)
+deps/prometheus-${PROMETHEUS_VERSION}.linux-amd64:
+	$(call irun,curl -# -j -k -L  "https://github.com/prometheus/prometheus/releases/download/v${PROMETHEUS_VERSION}/prometheus-${PROMETHEUS_VERSION}.linux-amd64.tar.gz" | tar xz -C deps)
+deps/alertmanager-${ALERTMANAGER_VERSION}.linux-amd64:
+	$(call irun,curl -# -j -k -L  "https://github.com/prometheus/alertmanager/releases/download/v${ALERTMANAGER_VERSION}/alertmanager-${ALERTMANAGER_VERSION}.linux-amd64.tar.gz" | tar xz -C deps)
+deps/grafana-v${GRAFANA_VERSION}:
+	$(call irun,curl -# -j -k -L  "https://dl.grafana.com/oss/release/grafana-${GRAFANA_VERSION}.linux-amd64.tar.gz" | tar xz -C deps)
 deps/postgres-exporter-${POSTGRES_EXPORTER_VERSION}-linux-amd64:
 	$(call irun,curl -# -j -k -L  "https://github.com/prometheus-community/postgres_exporter/releases/download/v${POSTGRES_EXPORTER_VERSION}/postgres_exporter-${POSTGRES_EXPORTER_VERSION}.linux-amd64.tar.gz" | tar xz --transform='s/.*/postgres-exporter-${POSTGRES_EXPORTER_VERSION}-linux-amd64/g' -C deps postgres_exporter-${POSTGRES_EXPORTER_VERSION}.linux-amd64/postgres_exporter)
 deps/nginx-exporter-${NGINX_EXPORTER_VERSION}-linux-amd64:
@@ -321,4 +355,4 @@ cleanup-docker-images:
 #then make imagines this target to have been updated whenever its rule is run.
 #This implies that all targets depending on this one will always have their recipe run.
 FORCE:
-.PHONY: sync deps docker-images clean clean-deps
+.PHONY: docker-images clean clean-deps
