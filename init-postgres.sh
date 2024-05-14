@@ -8,12 +8,12 @@ if [ -d /run/postgresql ]; then
 fi
 
 
-if [ -s /patroni.yml ]; then
+if [ -s /var/lib/postgresql/conf/patroni.yml ]; then
     echo "Patroni configuration detected. Starting patroni"
-    exec gosu postgres:docker-machines patroni /patroni.yml
+    exec gosu postgres:docker-machines patroni /var/lib/postgresql/conf/patroni.yml
 fi
 
-echo "Patroni configuration '/patroni.yml' missing. Runing as a standalone instance"
+echo "Patroni configuration '/var/lib/postgresql/conf/patroni.yml' missing. Runing as a standalone instance"
 
 
 if [ ! -s "/var/lib/postgresql/data/PG_VERSION" ]; then

@@ -1,5 +1,5 @@
 DOCKER_BUILD_OPTIONS=--no-cache=false
-TAG_VERSION=91
+TAG_VERSION=92
 
 #software versions
 
