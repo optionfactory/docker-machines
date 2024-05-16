@@ -22,6 +22,7 @@ NGINX_REMOVE_SERVER_HEADER_MODULE_VERSION=1.24.0-1
 PROMETHEUS_VERSION=2.52.0
 ALERTMANAGER_VERSION=0.27.0
 GRAFANA_VERSION=10.4.2
+JAEGER_VERSION=1.57.0
 CADVISOR_VERSION=0.49.1
 POSTGRES_EXPORTER_VERSION=0.15.0
 NGINX_EXPORTER_VERSION=1.1.0
@@ -138,6 +139,8 @@ docker-optionfactory-debian12-monitoring-alertmanager: sync-monitoring-alertmana
 #docker-optionfactory-%-monitoring-grafana: $(subst -monitoring-alertmanager,,$@)
 docker-optionfactory-debian12-monitoring-grafana: sync-monitoring-grafana docker-optionfactory-debian12
 
+#docker-optionfactory-%-monitoring-jaeger: $(subst -monitoring-jaeger,,$@)
+docker-optionfactory-debian12-monitoring-jaeger: sync-monitoring-jaeger docker-optionfactory-debian12
 
 #docker-optionfactory-%-monitoring-cadvisor: $(subst -monitoring-cadvisor,,$@)
 docker-optionfactory-debian12-monitoring-cadvisor: sync-monitoring-cadvisor docker-optionfactory-debian12
@@ -241,6 +244,10 @@ sync-monitoring-grafana: deps/grafana
 	$(call task,syncing grafana)
 	$(call irun,echo optionfactory-*-grafana/deps | xargs -n 1 rsync -az install-monitoring-grafana.sh)
 	$(call irun,echo optionfactory-*-grafana/deps | xargs -n 1 rsync -az deps/grafana-v${GRAFANA_VERSION})
+sync-monitoring-jaeger: deps/jaeger
+	$(call task,syncing jaeger)
+	$(call irun,echo optionfactory-*-jaeger/deps | xargs -n 1 rsync -az install-monitoring-jaeger.sh)
+	$(call irun,echo optionfactory-*-jaeger/deps | xargs -n 1 rsync -az deps/jaeger-${JAEGER_VERSION}-linux-amd64)
 sync-monitoring-cadvisor: deps/cadvisor
 	$(call task,syncing cadvisor)
 	$(call irun,echo optionfactory-*-cadvisor/deps | xargs -n 1 rsync -az install-monitoring-cadvisor.sh)
@@ -276,6 +283,7 @@ deps/journal-webd: deps/journal-webd-${JOURNAL_WEBD_VERSION}
 deps/prometheus: deps/prometheus-${PROMETHEUS_VERSION}.linux-amd64
 deps/alertmanager: deps/alertmanager-${ALERTMANAGER_VERSION}.linux-amd64
 deps/grafana: deps/grafana-v${GRAFANA_VERSION}
+deps/jaeger: deps/jaeger-${JAEGER_VERSION}-linux-amd64
 deps/cadvisor: deps/cadvisor-v${CADVISOR_VERSION}-linux-amd64
 deps/postgres-exporter: deps/postgres-exporter-${POSTGRES_EXPORTER_VERSION}-linux-amd64
 deps/nginx-exporter: deps/nginx-exporter-${NGINX_EXPORTER_VERSION}-linux-amd64
@@ -330,6 +338,8 @@ deps/alertmanager-${ALERTMANAGER_VERSION}.linux-amd64:
 	$(call irun,curl -# -j -k -L  "https://github.com/prometheus/alertmanager/releases/download/v${ALERTMANAGER_VERSION}/alertmanager-${ALERTMANAGER_VERSION}.linux-amd64.tar.gz" | tar xz -C deps)
 deps/grafana-v${GRAFANA_VERSION}:
 	$(call irun,curl -# -j -k -L  "https://dl.grafana.com/oss/release/grafana-${GRAFANA_VERSION}.linux-amd64.tar.gz" | tar xz -C deps)
+deps/jaeger-${JAEGER_VERSION}-linux-amd64:
+	$(call irun,curl -# -j -k -L  "https://github.com/jaegertracing/jaeger/releases/download/v${JAEGER_VERSION}/jaeger-${JAEGER_VERSION}-linux-amd64.tar.gz" | tar xz -C deps)
 deps/postgres-exporter-${POSTGRES_EXPORTER_VERSION}-linux-amd64:
 	$(call irun,curl -# -j -k -L  "https://github.com/prometheus-community/postgres_exporter/releases/download/v${POSTGRES_EXPORTER_VERSION}/postgres_exporter-${POSTGRES_EXPORTER_VERSION}.linux-amd64.tar.gz" | tar xz --transform='s/.*/postgres-exporter-${POSTGRES_EXPORTER_VERSION}-linux-amd64/g' -C deps postgres_exporter-${POSTGRES_EXPORTER_VERSION}.linux-amd64/postgres_exporter)
 deps/nginx-exporter-${NGINX_EXPORTER_VERSION}-linux-amd64:
