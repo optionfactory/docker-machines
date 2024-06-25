@@ -100,7 +100,7 @@ docker-optionfactory-debian12-mariadb10: sync-mariadb10 docker-optionfactory-deb
 #docker-optionfactory-%-postgres15: $(subst -postgres15,,$@)
 docker-optionfactory-debian12-postgres15: sync-postgres docker-optionfactory-debian12
 
-#docker-optionfactory-%-postgres16: $(subst -postgres15,,$@)
+#docker-optionfactory-%-postgres16: $(subst -postgres16,,$@)
 docker-optionfactory-debian12-postgres16: sync-postgres docker-optionfactory-debian12
 
 #docker-optionfactory-%-etcd3: $(subst -etcd3,,$@)
