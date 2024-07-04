@@ -1,32 +1,31 @@
 DOCKER_BUILD_OPTIONS=--no-cache=false
-TAG_VERSION=93
+TAG_VERSION=94
 
 #software versions
 
-SONARQUBE10_VERSION=10.5.1.90531
+SONARQUBE10_VERSION=10.6.0.92116
 
-TOMCAT9_VERSION=9.0.89
+TOMCAT9_VERSION=9.0.90
 TOMCAT9_ERROR_REPORT_VALVE_VERSION=2.0
-TOMCAT10_VERSION=10.1.24
+TOMCAT10_VERSION=10.1.25
 TOMCAT10_ERROR_REPORT_VALVE_VERSION=2.0
 GOSU1_VERSION=1.17
 LEGOPFA_VERSION=1.2
-KEYCLOAK2_VERSION=24.0.4
-KEYCLOAK_OPFA_MODULES_VERSION=6.3
-MAVEN3_VERSION=3.9.6
-CADDY2_VERSION=2.7.6
+KEYCLOAK2_VERSION=25.0.1
+KEYCLOAK_OPFA_MODULES_VERSION=6.4
+MAVEN3_VERSION=3.9.8
+CADDY2_VERSION=2.8.4
 JOURNAL_WEBD_VERSION=1.1
-ETCD3_VERSION=3.5.13
-NGINX_REMOVE_SERVER_HEADER_MODULE_VERSION=1.24.0-1
+ETCD3_VERSION=3.5.14
+NGINX_REMOVE_SERVER_HEADER_MODULE_VERSION=1.26.1-1
 
-PROMETHEUS_VERSION=2.52.0
+PROMETHEUS_VERSION=2.53.0
 ALERTMANAGER_VERSION=0.27.0
-GRAFANA_VERSION=10.4.2
-JAEGER_VERSION=1.57.0
+GRAFANA_VERSION=10.4.5
 CADVISOR_VERSION=0.49.1
 POSTGRES_EXPORTER_VERSION=0.15.0
-NGINX_EXPORTER_VERSION=1.1.0
-NODE_EXPORTER_VERSION=1.8.0
+NGINX_EXPORTER_VERSION=1.2.0
+NODE_EXPORTER_VERSION=1.8.1
 #/software versions
 
 SHELL=/bin/bash
@@ -81,9 +80,6 @@ docker-optionfactory-debian12-jdk21: sync-jdk21 docker-optionfactory-debian12
 #docker-optionfactory-%-jdk17-sonarqube10: $(subst -jdk17-sonarqube10,,$@)
 docker-optionfactory-debian12-jdk17-sonarqube10: sync-sonarqube10 docker-optionfactory-debian12-jdk17
 
-#docker-optionfactory-%-jdk17-builder: $(subst -jdk17-builder,,$@)
-docker-optionfactory-debian12-jdk17-builder: sync-builder docker-optionfactory-debian12-jdk17
-
 #docker-optionfactory-%-jdk21-builder: $(subst -jdk21-builder,,$@)
 docker-optionfactory-debian12-jdk21-builder: sync-builder docker-optionfactory-debian12-jdk21
 
@@ -113,9 +109,6 @@ docker-optionfactory-debian12-barman2: sync-barman2 docker-optionfactory-debian1
 docker-optionfactory-debian12-journal-webd: sync-journal-webd docker-optionfactory-debian12
 docker-optionfactory-debian13-journal-webd: sync-journal-webd docker-optionfactory-debian13
 
-#docker-optionfactory-%-jdk17-tomcat9: $(subst -tomcat9,,$@)
-docker-optionfactory-debian12-jdk17-tomcat9: sync-tomcat9 docker-optionfactory-debian12-jdk17
-
 #docker-optionfactory-%-jdk21-tomcat9: $(subst -tomcat9,,$@)
 docker-optionfactory-debian12-jdk21-tomcat9: sync-tomcat9 docker-optionfactory-debian12-jdk21
 
@@ -123,9 +116,6 @@ docker-optionfactory-debian12-jdk21-tomcat9: sync-tomcat9 docker-optionfactory-d
 #docker-optionfactory-%-jdk21-tomcat10: $(subst -tomcat9,,$@)
 docker-optionfactory-debian12-jdk21-tomcat10: sync-tomcat10 docker-optionfactory-debian12-jdk21
 
-
-#docker-optionfactory-%-jdk17-keycloak2: $(subst -keycloak2,,$@)
-docker-optionfactory-debian12-jdk17-keycloak2: sync-keycloak2 docker-optionfactory-debian12-jdk17
 
 #docker-optionfactory-%-jdk21-keycloak2: $(subst -keycloak2,,$@)
 docker-optionfactory-debian12-jdk21-keycloak2: sync-keycloak2 docker-optionfactory-debian12-jdk21
@@ -138,9 +128,6 @@ docker-optionfactory-debian12-monitoring-alertmanager: sync-monitoring-alertmana
 
 #docker-optionfactory-%-monitoring-grafana: $(subst -monitoring-alertmanager,,$@)
 docker-optionfactory-debian12-monitoring-grafana: sync-monitoring-grafana docker-optionfactory-debian12
-
-#docker-optionfactory-%-monitoring-jaeger: $(subst -monitoring-jaeger,,$@)
-docker-optionfactory-debian12-monitoring-jaeger: sync-monitoring-jaeger docker-optionfactory-debian12
 
 #docker-optionfactory-%-monitoring-cadvisor: $(subst -monitoring-cadvisor,,$@)
 docker-optionfactory-debian12-monitoring-cadvisor: sync-monitoring-cadvisor docker-optionfactory-debian12
@@ -244,10 +231,6 @@ sync-monitoring-grafana: deps/grafana
 	$(call task,syncing grafana)
 	$(call irun,echo optionfactory-*-grafana/deps | xargs -n 1 rsync -az install-monitoring-grafana.sh)
 	$(call irun,echo optionfactory-*-grafana/deps | xargs -n 1 rsync -az deps/grafana-v${GRAFANA_VERSION})
-sync-monitoring-jaeger: deps/jaeger
-	$(call task,syncing jaeger)
-	$(call irun,echo optionfactory-*-jaeger/deps | xargs -n 1 rsync -az install-monitoring-jaeger.sh)
-	$(call irun,echo optionfactory-*-jaeger/deps | xargs -n 1 rsync -az deps/jaeger-${JAEGER_VERSION}-linux-amd64)
 sync-monitoring-cadvisor: deps/cadvisor
 	$(call task,syncing cadvisor)
 	$(call irun,echo optionfactory-*-cadvisor/deps | xargs -n 1 rsync -az install-monitoring-cadvisor.sh)
@@ -283,7 +266,6 @@ deps/journal-webd: deps/journal-webd-${JOURNAL_WEBD_VERSION}
 deps/prometheus: deps/prometheus-${PROMETHEUS_VERSION}.linux-amd64
 deps/alertmanager: deps/alertmanager-${ALERTMANAGER_VERSION}.linux-amd64
 deps/grafana: deps/grafana-v${GRAFANA_VERSION}
-deps/jaeger: deps/jaeger-${JAEGER_VERSION}-linux-amd64
 deps/cadvisor: deps/cadvisor-v${CADVISOR_VERSION}-linux-amd64
 deps/postgres-exporter: deps/postgres-exporter-${POSTGRES_EXPORTER_VERSION}-linux-amd64
 deps/nginx-exporter: deps/nginx-exporter-${NGINX_EXPORTER_VERSION}-linux-amd64
@@ -338,8 +320,6 @@ deps/alertmanager-${ALERTMANAGER_VERSION}.linux-amd64:
 	$(call irun,curl -# -j -k -L  "https://github.com/prometheus/alertmanager/releases/download/v${ALERTMANAGER_VERSION}/alertmanager-${ALERTMANAGER_VERSION}.linux-amd64.tar.gz" | tar xz -C deps)
 deps/grafana-v${GRAFANA_VERSION}:
 	$(call irun,curl -# -j -k -L  "https://dl.grafana.com/oss/release/grafana-${GRAFANA_VERSION}.linux-amd64.tar.gz" | tar xz -C deps)
-deps/jaeger-${JAEGER_VERSION}-linux-amd64:
-	$(call irun,curl -# -j -k -L  "https://github.com/jaegertracing/jaeger/releases/download/v${JAEGER_VERSION}/jaeger-${JAEGER_VERSION}-linux-amd64.tar.gz" | tar xz -C deps)
 deps/postgres-exporter-${POSTGRES_EXPORTER_VERSION}-linux-amd64:
 	$(call irun,curl -# -j -k -L  "https://github.com/prometheus-community/postgres_exporter/releases/download/v${POSTGRES_EXPORTER_VERSION}/postgres_exporter-${POSTGRES_EXPORTER_VERSION}.linux-amd64.tar.gz" | tar xz --transform='s/.*/postgres-exporter-${POSTGRES_EXPORTER_VERSION}-linux-amd64/g' -C deps postgres_exporter-${POSTGRES_EXPORTER_VERSION}.linux-amd64/postgres_exporter)
 deps/nginx-exporter-${NGINX_EXPORTER_VERSION}-linux-amd64:

@@ -1,44 +1,21 @@
 #!/bin/bash -e
 
-NGINX_VERSION=1.24.0
+NGINX_VERSION=1.26.1
 
 echo "Installing nginx ${NGINX_VERSION}"
 
 groupadd --system --gid 950 docker-machines
 useradd --system --create-home --gid docker-machines --uid 950 nginx
 
-PKG_RELEASE=1~${DISTRIB_CODENAME}
+PKG_RELEASE=2~${DISTRIB_CODENAME}
 
-case "${DISTRIB_LABEL}" in
-    debian*|ubuntu*)
-        DEBIAN_FRONTEND=noninteractive apt-get -y -q update
-        DEBIAN_FRONTEND=noninteractive apt-get -y -q install curl
-        curl -# -L https://nginx.org/keys/nginx_signing.key > /etc/apt/trusted.gpg.d/nginx.asc
-        echo "deb https://nginx.org/packages/${DISTRIB_ID}/ ${DISTRIB_CODENAME} nginx" >> /etc/apt/sources.list.d/nginx.list
-        DEBIAN_FRONTEND=noninteractive apt-get -y -q update
-        DEBIAN_FRONTEND=noninteractive apt-get -y -q install --no-install-recommends --no-install-suggests nginx=${NGINX_VERSION}-${PKG_RELEASE} gettext-base
-        rm -rf /var/lib/apt/lists/* /etc/apt/sources.list.d/nginx.list
-    ;;
-    rocky9)
-        cat << EOF > /etc/yum.repos.d/nginx.repo
-[nginx-stable]
-name=nginx stable repo
-baseurl=http://nginx.org/packages/rhel/9/x86_64/
-gpgcheck=1
-enabled=1
-gpgkey=https://nginx.org/keys/nginx_signing.key
-module_hotfixes=true
-EOF
-        yum install -q -y nginx
-        echo cleaning up
-        yum clean all
-        rm -rf /var/cache/yum
-    ;;
-    *)
-    echo "distribution ${DISTRIB_LABEL} not supported"
-    exit 1
-    ;;
-esac
+DEBIAN_FRONTEND=noninteractive apt-get -y -q update
+DEBIAN_FRONTEND=noninteractive apt-get -y -q install curl
+curl -# -L https://nginx.org/keys/nginx_signing.key > /etc/apt/trusted.gpg.d/nginx.asc
+echo "deb https://nginx.org/packages/${DISTRIB_ID}/ ${DISTRIB_CODENAME} nginx" >> /etc/apt/sources.list.d/nginx.list
+DEBIAN_FRONTEND=noninteractive apt-get -y -q update
+DEBIAN_FRONTEND=noninteractive apt-get -y -q install --no-install-recommends --no-install-suggests nginx=${NGINX_VERSION}-${PKG_RELEASE} gettext-base
+rm -rf /var/lib/apt/lists/* /etc/apt/sources.list.d/nginx.list
 
 cat <<'EOF' > /etc/nginx/nginx.conf
 
