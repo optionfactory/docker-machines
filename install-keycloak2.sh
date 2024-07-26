@@ -4,7 +4,7 @@ echo "Installing Keycloak"
 mkdir -p /opt/keycloak
 cp -R /build/keycloak*/* /opt/keycloak
 cp -R /build/optionfactory-keycloak-*/* /opt/keycloak/providers/
-
+cp -R /opt/keycloak/lib/lib/deployment/jakarta.validation.jakarta.validation-api-*.jar /opt/keycloak/providers/
 cat <<-'EOF' > /opt/keycloak/conf/keycloak.conf
 #[build options]
 cache=local
@@ -12,8 +12,8 @@ db=postgres
 transaction-xa-enabled=true
 #features=
 http-relative-path=/
-health-enabled=false
-metrics-enabled=false
+health-enabled=true
+metrics-enabled=true
 
 #[runtime options]
 db-url=jdbc:postgresql://172.17.0.1/keycloak
