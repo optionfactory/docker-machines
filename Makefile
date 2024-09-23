@@ -26,6 +26,7 @@ CADVISOR_VERSION=0.50.0
 POSTGRES_EXPORTER_VERSION=0.15.0
 NGINX_EXPORTER_VERSION=1.3.0
 NODE_EXPORTER_VERSION=1.8.2
+TEMPO_VERSION=2.6.0
 #/software versions
 
 SHELL=/bin/bash
@@ -139,6 +140,10 @@ docker-optionfactory-debian12-monitoring-nginx: sync-monitoring-nginx docker-opt
 #docker-optionfactory-%-monitoring-host: $(subst -monitoring-host,,$@)
 docker-optionfactory-debian12-monitoring-host: sync-monitoring-host docker-optionfactory-debian12
 
+#docker-optionfactory-%-monitoring-tempo: $(subst -monitoring-tempo,,$@)
+docker-optionfactory-debian12-monitoring-tempo: sync-monitoring-tempo docker-optionfactory-debian12
+
+
 docker-optionfactory-%:
 	$(call task,building $@)
 	$(eval name=$(subst docker-optionfactory-,,$@))
@@ -241,9 +246,13 @@ sync-monitoring-nginx: deps/nginx-exporter
 	$(call irun,echo optionfactory-*-monitoring-nginx/deps | xargs -n 1 rsync -az install-monitoring-nginx.sh)
 	$(call irun,echo optionfactory-*-monitoring-nginx/deps | xargs -n 1 rsync -az deps/nginx-exporter-${NGINX_EXPORTER_VERSION}-linux-amd64)
 sync-monitoring-host: deps/node-exporter
-	$(call task,syncing monitoring-nginx)
+	$(call task,syncing monitoring-host)
 	$(call irun,echo optionfactory-*-monitoring-host/deps | xargs -n 1 rsync -az install-monitoring-host.sh)
 	$(call irun,echo optionfactory-*-monitoring-host/deps | xargs -n 1 rsync -az deps/node-exporter-${NODE_EXPORTER_VERSION}-linux-amd64)
+sync-monitoring-tempo: deps/tempo
+	$(call task,syncing monitoring-tempo)
+	$(call irun,echo optionfactory-*-monitoring-tempo/deps | xargs -n 1 rsync -az install-monitoring-tempo.sh)
+	$(call irun,echo optionfactory-*-monitoring-tempo/deps | xargs -n 1 rsync -az deps/tempo-${TEMPO_VERSION}-linux-amd64)
 
 
 deps/gosu1: deps/gosu-${GOSU1_VERSION}
@@ -267,6 +276,7 @@ deps/cadvisor: deps/cadvisor-v${CADVISOR_VERSION}-linux-amd64
 deps/postgres-exporter: deps/postgres-exporter-${POSTGRES_EXPORTER_VERSION}-linux-amd64
 deps/nginx-exporter: deps/nginx-exporter-${NGINX_EXPORTER_VERSION}-linux-amd64
 deps/node-exporter: deps/node-exporter-${NODE_EXPORTER_VERSION}-linux-amd64
+deps/tempo: deps/tempo-${TEMPO_VERSION}-linux-amd64
 
 
 deps/jdk17:
@@ -323,6 +333,8 @@ deps/nginx-exporter-${NGINX_EXPORTER_VERSION}-linux-amd64:
 	$(call irun,curl -# -j -k -L  "https://github.com/nginxinc/nginx-prometheus-exporter/releases/download/v${NGINX_EXPORTER_VERSION}/nginx-prometheus-exporter_${NGINX_EXPORTER_VERSION}_linux_amd64.tar.gz" | tar xz --transform='s/.*/nginx-exporter-${NGINX_EXPORTER_VERSION}-linux-amd64/g' -C deps nginx-prometheus-exporter)
 deps/node-exporter-${NODE_EXPORTER_VERSION}-linux-amd64:
 	$(call irun,curl -# -j -k -L  "https://github.com/prometheus/node_exporter/releases/download/v${NODE_EXPORTER_VERSION}/node_exporter-${NODE_EXPORTER_VERSION}.linux-amd64.tar.gz" | tar xz --transform='s/.*/node-exporter-${NODE_EXPORTER_VERSION}-linux-amd64/g' -C deps node_exporter-${NODE_EXPORTER_VERSION}.linux-amd64/node_exporter)
+deps/tempo-${TEMPO_VERSION}-linux-amd64:
+	$(call irun,curl -# -j -k -L  "https://github.com/grafana/tempo/releases/download/v${TEMPO_VERSION}/tempo_${TEMPO_VERSION}_linux_amd64.tar.gz" | tar xz -C deps --one-top-level=tempo-${TEMPO_VERSION}-linux-amd64)
 
 clean: FORCE
 	$(call task,removing install scripts)
