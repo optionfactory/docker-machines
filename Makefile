@@ -1,22 +1,22 @@
 DOCKER_BUILD_OPTIONS=--no-cache=false
-TAG_VERSION=97
+TAG_VERSION=98
 
 #software versions
 
 SONARQUBE10_VERSION=10.6.0.92116
 
-TOMCAT9_VERSION=9.0.94
+TOMCAT9_VERSION=9.0.95
 TOMCAT9_ERROR_REPORT_VALVE_VERSION=2.0
-TOMCAT10_VERSION=10.1.29
+TOMCAT10_VERSION=10.1.30
 TOMCAT10_ERROR_REPORT_VALVE_VERSION=2.0
 GOSU1_VERSION=1.17
 LEGOPFA_VERSION=1.3
-KEYCLOAK2_VERSION=25.0.5
-KEYCLOAK_OPFA_MODULES_VERSION=6.10
+KEYCLOAK2_VERSION=25.0.6
+KEYCLOAK_OPFA_MODULES_VERSION=6.11
 MAVEN3_VERSION=3.9.9
 CADDY2_VERSION=2.8.4
 JOURNAL_WEBD_VERSION=1.1
-ETCD3_VERSION=3.5.15
+ETCD3_VERSION=3.5.16
 NGINX_REMOVE_SERVER_HEADER_MODULE_VERSION=1.26.1-1
 
 PROMETHEUS_VERSION=2.53.2
@@ -112,10 +112,8 @@ docker-optionfactory-debian13-journal-webd: sync-journal-webd docker-optionfacto
 #docker-optionfactory-%-jdk21-tomcat9: $(subst -tomcat9,,$@)
 docker-optionfactory-debian12-jdk21-tomcat9: sync-tomcat9 docker-optionfactory-debian12-jdk21
 
-
 #docker-optionfactory-%-jdk21-tomcat10: $(subst -tomcat9,,$@)
 docker-optionfactory-debian12-jdk21-tomcat10: sync-tomcat10 docker-optionfactory-debian12-jdk21
-
 
 #docker-optionfactory-%-jdk21-keycloak2: $(subst -keycloak2,,$@)
 docker-optionfactory-debian12-jdk21-keycloak2: sync-keycloak2 docker-optionfactory-debian12-jdk21
@@ -140,7 +138,6 @@ docker-optionfactory-debian12-monitoring-nginx: sync-monitoring-nginx docker-opt
 
 #docker-optionfactory-%-monitoring-host: $(subst -monitoring-host,,$@)
 docker-optionfactory-debian12-monitoring-host: sync-monitoring-host docker-optionfactory-debian12
-
 
 docker-optionfactory-%:
 	$(call task,building $@)

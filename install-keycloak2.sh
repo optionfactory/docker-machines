@@ -21,13 +21,11 @@ db-username=postgres
 db-password=
 
 log=console
-log-console-color=false
 log-console-format=[%d{yyyy-MM-dd HH:mm:ss,SSSz}][%-5p][%c{3.}] (%t) %s%e%n
 
+#proxy-headers=xforwarded
 http-port=8080
-proxy=edge
 hostname-strict=false
-
 
 #[email-sender-provider:opfa-cid-embedding]
 #spi-email-sender-provider=opfa-cid-embedding
