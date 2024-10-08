@@ -1,9 +1,9 @@
 DOCKER_BUILD_OPTIONS=--no-cache=false
-TAG_VERSION=98
+TAG_VERSION=99
 
 #software versions
 
-SONARQUBE10_VERSION=10.6.0.92116
+SONARQUBE10_VERSION=10.7.0.96327
 
 TOMCAT9_VERSION=9.0.95
 TOMCAT9_ERROR_REPORT_VALVE_VERSION=2.0
@@ -11,8 +11,8 @@ TOMCAT10_VERSION=10.1.30
 TOMCAT10_ERROR_REPORT_VALVE_VERSION=2.0
 GOSU1_VERSION=1.17
 LEGOPFA_VERSION=1.3
-KEYCLOAK2_VERSION=25.0.6
-KEYCLOAK_OPFA_MODULES_VERSION=6.11
+KEYCLOAK2_VERSION=26.0.0
+KEYCLOAK_OPFA_MODULES_VERSION=6.12
 MAVEN3_VERSION=3.9.9
 CADDY2_VERSION=2.8.4
 JOURNAL_WEBD_VERSION=1.1
@@ -21,7 +21,7 @@ NGINX_REMOVE_SERVER_HEADER_MODULE_VERSION=1.26.1-1
 
 PROMETHEUS_VERSION=2.53.2
 ALERTMANAGER_VERSION=0.27.0
-GRAFANA_VERSION=10.4.7
+GRAFANA_VERSION=10.4.10
 CADVISOR_VERSION=0.50.0
 POSTGRES_EXPORTER_VERSION=0.15.0
 NGINX_EXPORTER_VERSION=1.3.0
@@ -99,6 +99,9 @@ docker-optionfactory-debian12-postgres15: sync-postgres docker-optionfactory-deb
 
 #docker-optionfactory-%-postgres16: $(subst -postgres16,,$@)
 docker-optionfactory-debian12-postgres16: sync-postgres docker-optionfactory-debian12
+
+#docker-optionfactory-%-postgres16: $(subst -postgres17,,$@)
+docker-optionfactory-debian12-postgres17: sync-postgres docker-optionfactory-debian12
 
 #docker-optionfactory-%-etcd3: $(subst -etcd3,,$@)
 docker-optionfactory-debian12-etcd3: sync-etcd3 docker-optionfactory-debian12
