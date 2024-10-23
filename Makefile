@@ -9,6 +9,8 @@ TOMCAT9_VERSION=9.0.96
 TOMCAT9_ERROR_REPORT_VALVE_VERSION=2.0
 TOMCAT10_VERSION=10.1.31
 TOMCAT10_ERROR_REPORT_VALVE_VERSION=2.0
+TOMCAT11_VERSION=11.0.0
+TOMCAT11_ERROR_REPORT_VALVE_VERSION=2.0
 GOSU1_VERSION=1.17
 LEGOPFA_VERSION=1.3
 KEYCLOAK2_VERSION=26.0.1
@@ -116,8 +118,11 @@ docker-optionfactory-debian13-journal-webd: sync-journal-webd docker-optionfacto
 #docker-optionfactory-%-jdk21-tomcat9: $(subst -tomcat9,,$@)
 docker-optionfactory-debian12-jdk21-tomcat9: sync-tomcat9 docker-optionfactory-debian12-jdk21
 
-#docker-optionfactory-%-jdk21-tomcat10: $(subst -tomcat9,,$@)
+#docker-optionfactory-%-jdk21-tomcat10: $(subst -tomcat10,,$@)
 docker-optionfactory-debian12-jdk21-tomcat10: sync-tomcat10 docker-optionfactory-debian12-jdk21
+
+#docker-optionfactory-%-jdk21-tomcat10: $(subst -tomcat11,,$@)
+docker-optionfactory-debian12-jdk21-tomcat11: sync-tomcat11 docker-optionfactory-debian12-jdk21
 
 #docker-optionfactory-%-jdk21-keycloak2: $(subst -keycloak2,,$@)
 docker-optionfactory-debian12-jdk21-keycloak2: sync-keycloak2 docker-optionfactory-debian12-jdk21
@@ -191,6 +196,11 @@ sync-tomcat10: deps/tomcat10
 	$(call irun,echo optionfactory-*-tomcat10/deps | xargs -n 1 rsync -az install-tomcat.sh)
 	$(call irun,echo optionfactory-*-tomcat10/deps | xargs -n 1 rsync -az deps/apache-tomcat-${TOMCAT10_VERSION})
 	$(call irun,echo optionfactory-*-tomcat10/deps | xargs -n 1 rsync -az deps/tomcat10-logging-error-report-valve-${TOMCAT10_ERROR_REPORT_VALVE_VERSION}.jar)
+sync-tomcat11: deps/tomcat11
+	$(call task,syncing tomcat 11)
+	$(call irun,echo optionfactory-*-tomcat11/deps | xargs -n 1 rsync -az install-tomcat.sh)
+	$(call irun,echo optionfactory-*-tomcat11/deps | xargs -n 1 rsync -az deps/apache-tomcat-${TOMCAT11_VERSION})
+	$(call irun,echo optionfactory-*-tomcat11/deps | xargs -n 1 rsync -az deps/tomcat11-logging-error-report-valve-${TOMCAT11_ERROR_REPORT_VALVE_VERSION}.jar)
 sync-keycloak2: deps/keycloak2
 	$(call task,syncing keycloak 2x)
 	$(call irun,echo optionfactory-*-keycloak2/deps | xargs -n 1 rsync -az install-keycloak2.sh)
@@ -264,6 +274,7 @@ deps/maven3: deps/apache-maven-${MAVEN3_VERSION}
 deps/sonarqube10: deps/sonarqube-${SONARQUBE10_VERSION}
 deps/tomcat9: deps/apache-tomcat-${TOMCAT9_VERSION} deps/tomcat9-logging-error-report-valve-${TOMCAT9_ERROR_REPORT_VALVE_VERSION}.jar
 deps/tomcat10: deps/apache-tomcat-${TOMCAT10_VERSION} deps/tomcat10-logging-error-report-valve-${TOMCAT10_ERROR_REPORT_VALVE_VERSION}.jar
+deps/tomcat11: deps/apache-tomcat-${TOMCAT11_VERSION} deps/tomcat11-logging-error-report-valve-${TOMCAT11_ERROR_REPORT_VALVE_VERSION}.jar
 deps/keycloak2: deps/keycloak-${KEYCLOAK2_VERSION} deps/optionfactory-keycloak-${KEYCLOAK_OPFA_MODULES_VERSION}
 deps/nginx_remove_server_header_module: deps/opfa_http_remove_server_header_module-${NGINX_REMOVE_SERVER_HEADER_MODULE_VERSION}.so
 deps/caddy2: deps/caddy-${CADDY2_VERSION}
@@ -298,6 +309,10 @@ deps/apache-tomcat-${TOMCAT10_VERSION}:
 	$(call irun,curl -# -sSL -k https://archive.apache.org/dist/tomcat/tomcat-10/v${TOMCAT10_VERSION}/bin/apache-tomcat-${TOMCAT10_VERSION}.tar.gz | tar xz -C deps)
 deps/tomcat10-logging-error-report-valve-${TOMCAT10_ERROR_REPORT_VALVE_VERSION}.jar:
 	$(call irun,curl -# -j -k -L  https://repo1.maven.org/maven2/net/optionfactory/tomcat9-logging-error-report-valve/${TOMCAT10_ERROR_REPORT_VALVE_VERSION}/tomcat9-logging-error-report-valve-${TOMCAT9_ERROR_REPORT_VALVE_VERSION}.jar -o deps/tomcat10-logging-error-report-valve-${TOMCAT9_ERROR_REPORT_VALVE_VERSION}.jar)
+deps/apache-tomcat-${TOMCAT11_VERSION}:
+	$(call irun,curl -# -sSL -k https://archive.apache.org/dist/tomcat/tomcat-11/v${TOMCAT11_VERSION}/bin/apache-tomcat-${TOMCAT11_VERSION}.tar.gz | tar xz -C deps)
+deps/tomcat11-logging-error-report-valve-${TOMCAT11_ERROR_REPORT_VALVE_VERSION}.jar:
+	$(call irun,curl -# -j -k -L  https://repo1.maven.org/maven2/net/optionfactory/tomcat9-logging-error-report-valve/${TOMCAT11_ERROR_REPORT_VALVE_VERSION}/tomcat9-logging-error-report-valve-${TOMCAT11_ERROR_REPORT_VALVE_VERSION}.jar -o deps/tomcat11-logging-error-report-valve-${TOMCAT11_ERROR_REPORT_VALVE_VERSION}.jar)
 deps/gosu-${GOSU1_VERSION}:
 	$(call irun,curl -# -sSL -k https://github.com/tianon/gosu/releases/download/${GOSU1_VERSION}/gosu-amd64 -o deps/gosu-${GOSU1_VERSION})
 	$(call irun,chmod +x deps/gosu-${GOSU1_VERSION})
