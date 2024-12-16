@@ -1,28 +1,28 @@
 DOCKER_BUILD_OPTIONS=--no-cache=false
-TAG_VERSION=102
+TAG_VERSION=103
 
 #software versions
 
-SONARQUBE10_VERSION=10.7.0.96327
+SONARQUBE10_VERSION=24.12.0.100206
 
-TOMCAT9_VERSION=9.0.97
+TOMCAT9_VERSION=9.0.98
 TOMCAT9_ERROR_REPORT_VALVE_VERSION=2.0
-TOMCAT10_VERSION=10.1.33
+TOMCAT10_VERSION=10.1.34
 TOMCAT10_ERROR_REPORT_VALVE_VERSION=2.0
-TOMCAT11_VERSION=11.0.1
+TOMCAT11_VERSION=11.0.2
 TOMCAT11_ERROR_REPORT_VALVE_VERSION=2.0
 GOSU1_VERSION=1.17
 LEGOPFA_VERSION=1.3
 KEYCLOAK2_VERSION=26.0.7
-KEYCLOAK_OPFA_MODULES_VERSION=6.17
+KEYCLOAK_OPFA_MODULES_VERSION=6.18
 MAVEN3_VERSION=3.9.9
 CADDY2_VERSION=2.8.4
 JOURNAL_WEBD_VERSION=1.1
-ETCD3_VERSION=3.5.16
+ETCD3_VERSION=3.5.17
 NGINX_REMOVE_SERVER_HEADER_MODULE_VERSION=1.26.1-1
 
 
-GRAFANA_VERSION=11.3.0
+GRAFANA_VERSION=11.4.0
 TEMPO_VERSION=2.6.1
 PROMETHEUS_VERSION=2.53.3
 ALERTMANAGER_VERSION=0.27.0
@@ -293,6 +293,7 @@ deps/nginx-exporter: deps/nginx-exporter-${NGINX_EXPORTER_VERSION}-linux-amd64
 deps/node-exporter: deps/node-exporter-${NODE_EXPORTER_VERSION}-linux-amd64
 deps/tempo: deps/tempo-${TEMPO_VERSION}-linux-amd64
 
+#bsdtar -xvf-
 
 deps/jdk17:
 	$(call irun,curl -# -j -k -L https://corretto.aws/downloads/latest/amazon-corretto-17-x64-linux-jdk.tar.gz | tar xz -C deps)
@@ -300,8 +301,8 @@ deps/jdk21:
 	$(call irun,curl -# -j -k -L https://corretto.aws/downloads/latest/amazon-corretto-21-x64-linux-jdk.tar.gz | tar xz -C deps)
 deps/apache-maven-${MAVEN3_VERSION}:
 	$(call irun,curl -# -j -k -L https://downloads.apache.org/maven/maven-3/${MAVEN3_VERSION}/binaries/apache-maven-${MAVEN3_VERSION}-bin.tar.gz | tar xz -C deps)
-deps/sonarqube-${SONARQUBE10_VERSION}:	
-	$(call irun,cd deps && curl -# -sSL -k https://binaries.sonarsource.com/Distribution/sonarqube/sonarqube-${SONARQUBE10_VERSION}.zip | jar xf /dev/stdin)
+deps/sonarqube-${SONARQUBE10_VERSION}:
+	$(call irun,cd deps && curl -# -sSL -k https://binaries.sonarsource.com/Distribution/sonarqube/sonarqube-${SONARQUBE10_VERSION}.zip -o tmp.sonar.${SONARQUBE10_VERSION}.zip && jar xf tmp.sonar.${SONARQUBE10_VERSION}.zip; rm tmp.sonar.${SONARQUBE10_VERSION}.zip)
 deps/apache-tomcat-${TOMCAT9_VERSION}:
 	$(call irun,curl -# -sSL -k https://archive.apache.org/dist/tomcat/tomcat-9/v${TOMCAT9_VERSION}/bin/apache-tomcat-${TOMCAT9_VERSION}.tar.gz | tar xz -C deps)
 deps/tomcat9-logging-error-report-valve-${TOMCAT9_ERROR_REPORT_VALVE_VERSION}.jar:
