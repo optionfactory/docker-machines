@@ -7,8 +7,8 @@ chmod 750 /opt/prometheus/{bin,conf,data,consoles,console-libs}
 
 cp /build/prometheus-*/prometheus /opt/prometheus/bin/prometheus
 cp /build/prometheus-*/promtool /opt/prometheus/bin/promtool
-cp -r /build/prometheus-*/consoles/* /opt/prometheus/consoles
-cp -r /build/prometheus-*/console_libraries/* /opt/prometheus/console-libs
+mkdir -p /opt/prometheus/consoles
+mkdir -p /opt/prometheus/console-libs
 
 cat <<'EOF' > /opt/prometheus/conf/prometheus.yml
 global:
