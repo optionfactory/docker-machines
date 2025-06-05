@@ -1,35 +1,35 @@
 DOCKER_BUILD_OPTIONS=--no-cache=false
-TAG_VERSION=108
+TAG_VERSION=109
 
 #software versions
 
-SONARQUBE10_VERSION=25.4.0.105899
+SONARQUBE10_VERSION=25.5.0.107428
 
-TOMCAT9_VERSION=9.0.104
+TOMCAT9_VERSION=9.0.105
 TOMCAT9_ERROR_REPORT_VALVE_VERSION=2.0
-TOMCAT10_VERSION=10.1.40
+TOMCAT10_VERSION=10.1.41
 TOMCAT10_ERROR_REPORT_VALVE_VERSION=2.0
-TOMCAT11_VERSION=11.0.6
+TOMCAT11_VERSION=11.0.7
 TOMCAT11_ERROR_REPORT_VALVE_VERSION=2.0
 GOSU1_VERSION=1.17
 LEGOPFA_VERSION=1.3
-KEYCLOAK2_VERSION=26.2.1
+KEYCLOAK2_VERSION=26.2.4
 KEYCLOAK_OPFA_MODULES_VERSION=7.1
 MAVEN3_VERSION=3.9.9
-CADDY2_VERSION=2.9.1
+CADDY2_VERSION=2.10.0
 JOURNAL_WEBD_VERSION=1.1
-ETCD3_VERSION=3.5.21
+ETCD3_VERSION=3.6.0
 NGINX_REMOVE_SERVER_HEADER_MODULE_VERSION=1.26.1-1
 
 
-GRAFANA_VERSION=11.6.0
+GRAFANA_VERSION=12.0.1
 TEMPO_VERSION=2.7.2
-PROMETHEUS_VERSION=3.2.1
+PROMETHEUS_VERSION=3.4.0
 ALERTMANAGER_VERSION=0.28.1
 NODE_EXPORTER_VERSION=1.9.1
 CADVISOR_VERSION=0.52.1
 POSTGRES_EXPORTER_VERSION=0.17.1
-NGINX_EXPORTER_VERSION=1.4.1
+NGINX_EXPORTER_VERSION=1.4.2
 #/software versions
 
 SHELL=/bin/bash
@@ -74,15 +74,11 @@ docker-push-github:
 docker-optionfactory-debian12: sync-tools
 docker-optionfactory-debian13: sync-tools
 
-
-#docker-optionfactory-%-jdk17: $(subst -jdk17,,$@)
-docker-optionfactory-debian12-jdk17: sync-jdk17 docker-optionfactory-debian12
-
 #docker-optionfactory-%-jdk21: $(subst -jdk21,,$@)
 docker-optionfactory-debian12-jdk21: sync-jdk21 docker-optionfactory-debian12
 
-#docker-optionfactory-%-jdk17-sonarqube10: $(subst -jdk17-sonarqube10,,$@)
-docker-optionfactory-debian12-jdk17-sonarqube10: sync-sonarqube10 docker-optionfactory-debian12-jdk17
+#docker-optionfactory-%-jdk21-sonarqube10: $(subst -jdk21-sonarqube10,,$@)
+docker-optionfactory-debian12-jdk21-sonarqube10: sync-sonarqube10 docker-optionfactory-debian12-jdk21
 
 #docker-optionfactory-%-jdk21-builder: $(subst -jdk21-builder,,$@)
 docker-optionfactory-debian12-jdk21-builder: sync-builder docker-optionfactory-debian12-jdk21
@@ -171,10 +167,6 @@ sync-tools: deps/gosu1
 	$(call irun,echo optionfactory-debian12/deps optionfactory-debian13/deps | xargs -n 1 rsync -az install-ps1.sh)
 	$(call task,syncing base image)
 	$(call irun,echo optionfactory-debian12/deps optionfactory-debian13/deps | xargs -n 1 rsync -az install-base-image.sh)
-sync-jdk17: deps/jdk17
-	$(call task,syncing jdk 17)
-	$(call irun,echo optionfactory-*-jdk17/deps | xargs -n 1 rsync -az install-jdk.sh)
-	$(call irun,echo optionfactory-*-jdk17/deps | xargs -n 1 rsync -az deps/amazon-corretto-17.*)
 sync-jdk21: deps/jdk21
 	$(call task,syncing jdk 21)
 	$(call irun,echo optionfactory-*-jdk21/deps | xargs -n 1 rsync -az install-jdk.sh)
@@ -295,8 +287,6 @@ deps/tempo: deps/tempo-${TEMPO_VERSION}-linux-amd64
 
 #bsdtar -xvf-
 
-deps/jdk17:
-	$(call irun,curl -# -j -k -L https://corretto.aws/downloads/latest/amazon-corretto-17-x64-linux-jdk.tar.gz | tar xz -C deps)
 deps/jdk21:
 	$(call irun,curl -# -j -k -L https://corretto.aws/downloads/latest/amazon-corretto-21-x64-linux-jdk.tar.gz | tar xz -C deps)
 deps/apache-maven-${MAVEN3_VERSION}:
