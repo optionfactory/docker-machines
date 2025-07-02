@@ -1,20 +1,18 @@
 #!/bin/bash -e
 
-NGINX_VERSION=1.28.0
+NGINX_VERSION=1.28.0-1~${DISTRIB_CODENAME}
 
 echo "Installing nginx ${NGINX_VERSION}"
 
 groupadd --system --gid 950 docker-machines
 useradd --system --create-home --gid docker-machines --uid 950 nginx
 
-PKG_RELEASE=2~${DISTRIB_CODENAME}
-
 DEBIAN_FRONTEND=noninteractive apt-get -y -q update
 DEBIAN_FRONTEND=noninteractive apt-get -y -q install curl
 curl -# -L https://nginx.org/keys/nginx_signing.key > /etc/apt/trusted.gpg.d/nginx.asc
 echo "deb https://nginx.org/packages/${DISTRIB_ID}/ ${DISTRIB_CODENAME} nginx" >> /etc/apt/sources.list.d/nginx.list
 DEBIAN_FRONTEND=noninteractive apt-get -y -q update
-DEBIAN_FRONTEND=noninteractive apt-get -y -q install --no-install-recommends --no-install-suggests nginx=${NGINX_VERSION}-${PKG_RELEASE} gettext-base
+DEBIAN_FRONTEND=noninteractive apt-get -y -q install --no-install-recommends --no-install-suggests nginx=${NGINX_VERSION} gettext-base
 rm -rf /var/lib/apt/lists/* /etc/apt/sources.list.d/nginx.list
 
 cat <<'EOF' > /etc/nginx/nginx.conf
