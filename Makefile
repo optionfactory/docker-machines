@@ -1,5 +1,5 @@
 DOCKER_BUILD_OPTIONS=--no-cache=false
-TAG_VERSION=112
+TAG_VERSION=113
 
 #software versions
 
@@ -13,33 +13,35 @@ TOMCAT11_VERSION=11.0.9
 TOMCAT11_ERROR_REPORT_VALVE_VERSION=2.0
 GOSU1_VERSION=1.17
 LEGOPFA_VERSION=1.3
-KEYCLOAK2_VERSION=26.3.1
-KEYCLOAK_OPFA_MODULES_VERSION=8.0
-MAVEN3_VERSION=3.9.10
+KEYCLOAK2_VERSION=26.3.2
+KEYCLOAK_OPFA_MODULES_VERSION=8.1
+MAVEN3_VERSION=3.9.11
 CADDY2_VERSION=2.10.0
 JOURNAL_WEBD_VERSION=1.1
-ETCD3_VERSION=3.6.1
+ETCD3_VERSION=3.6.4
+NGINX_MAJOR_VERSION=1.28
 NGINX_REMOVE_SERVER_HEADER_MODULE_VERSION=1.28.0-1
+MARIA_DB_VERSION=10.11
 
-
-GRAFANA_VERSION=12.0.2
+GRAFANA_VERSION=12.1.0
 TEMPO_VERSION=2.8.1
-PROMETHEUS_VERSION=3.4.2
+PROMETHEUS_VERSION=3.5.0
 ALERTMANAGER_VERSION=0.28.1
 NODE_EXPORTER_VERSION=1.9.1
 CADVISOR_VERSION=0.53.0
 POSTGRES_EXPORTER_VERSION=0.17.1
+
 NGINX_EXPORTER_VERSION=1.4.2
 #/software versions
 
-SHELL=/bin/bash
+SHELL=/bin/bash -o pipefail
 
 define task
 	@echo -e "\033[1;32m"$(1)"\033[0m"
 endef
 
 define irun 
-    @set -o pipefail; $(1) | sed 's/^/    /'
+   @$(1) | sed 's/^/    /'
 endef
 
 
@@ -85,22 +87,26 @@ docker-optionfactory-debian12-jdk21-builder: sync-builder docker-optionfactory-d
 
 #docker-optionfactory-%-nginx120: $(subst -nginx120,,$@)
 docker-optionfactory-debian12-nginx120: sync-nginx120 docker-optionfactory-debian12
+docker-optionfactory-debian12-nginx120: BUILD_ARGS+=--build-arg NGINX_MAJOR_VERSION=$(NGINX_MAJOR_VERSION)
 
 #docker-optionfactory-%-caddy2: $(subst -caddy2,,$@)
 docker-optionfactory-debian12-caddy2: sync-caddy2 docker-optionfactory-debian12
 
-
 #docker-optionfactory-%-mariadb10: $(subst -mariadb10,,$@)
 docker-optionfactory-debian12-mariadb10: sync-mariadb10 docker-optionfactory-debian12
+docker-optionfactory-debian12-mariadb10: BUILD_ARGS+=--build-arg MARIA_DB_VERSION=$(MARIA_DB_VERSION)
 
 #docker-optionfactory-%-postgres15: $(subst -postgres15,,$@)
 docker-optionfactory-debian12-postgres15: sync-postgres docker-optionfactory-debian12
+docker-optionfactory-debian12-postgres15: BUILD_ARGS+=--build-arg PSQL_MAJOR_VERSION=15
 
 #docker-optionfactory-%-postgres16: $(subst -postgres16,,$@)
 docker-optionfactory-debian12-postgres16: sync-postgres docker-optionfactory-debian12
+docker-optionfactory-debian12-postgres16: BUILD_ARGS+=--build-arg PSQL_MAJOR_VERSION=16
 
 #docker-optionfactory-%-postgres16: $(subst -postgres17,,$@)
 docker-optionfactory-debian12-postgres17: sync-postgres docker-optionfactory-debian12
+docker-optionfactory-debian12-postgres17: BUILD_ARGS+=--build-arg PSQL_MAJOR_VERSION=17
 
 #docker-optionfactory-%-etcd3: $(subst -etcd3,,$@)
 docker-optionfactory-debian12-etcd3: sync-etcd3 docker-optionfactory-debian12
@@ -114,12 +120,15 @@ docker-optionfactory-debian13-journal-webd: sync-journal-webd docker-optionfacto
 
 #docker-optionfactory-%-jdk21-tomcat9: $(subst -tomcat9,,$@)
 docker-optionfactory-debian12-jdk21-tomcat9: sync-tomcat9 docker-optionfactory-debian12-jdk21
+docker-optionfactory-debian12-jdk21-tomcat9: BUILD_ARGS+=--build-arg TOMCAT_MAJOR_VERSION=9
 
 #docker-optionfactory-%-jdk21-tomcat10: $(subst -tomcat10,,$@)
 docker-optionfactory-debian12-jdk21-tomcat10: sync-tomcat10 docker-optionfactory-debian12-jdk21
+docker-optionfactory-debian12-jdk21-tomcat10: BUILD_ARGS+=--build-arg TOMCAT_MAJOR_VERSION=10
 
 #docker-optionfactory-%-jdk21-tomcat10: $(subst -tomcat11,,$@)
 docker-optionfactory-debian12-jdk21-tomcat11: sync-tomcat11 docker-optionfactory-debian12-jdk21
+docker-optionfactory-debian12-jdk21-tomcat11: BUILD_ARGS+=--build-arg TOMCAT_MAJOR_VERSION=11
 
 #docker-optionfactory-%-jdk21-keycloak2: $(subst -keycloak2,,$@)
 docker-optionfactory-debian12-jdk21-keycloak2: sync-keycloak2 docker-optionfactory-debian12-jdk21
@@ -152,7 +161,7 @@ docker-optionfactory-debian12-monitoring-tempo: sync-monitoring-tempo docker-opt
 docker-optionfactory-%:
 	$(call task,building $@)
 	$(eval name=$(subst docker-optionfactory-,,$@))
-	$(call irun,docker build ${DOCKER_BUILD_OPTIONS} --tag=optionfactory/$(name):${TAG_VERSION} optionfactory-$(name))
+	$(call irun,docker build ${DOCKER_BUILD_OPTIONS} $(BUILD_ARGS) --tag=optionfactory/$(name):${TAG_VERSION} optionfactory-$(name))
 	$(call irun,docker tag optionfactory/$(name):${TAG_VERSION} optionfactory/$(name):latest)
 
 sync-base-images:

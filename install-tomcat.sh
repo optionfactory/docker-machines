@@ -1,6 +1,7 @@
 #!/bin/bash -e
 
 echo "Installing tomcat ${TOMCAT_MAJOR_VERSION}"
+
 mkdir -p /opt/apache-tomcat/conf
 cp -R /build/apache-tomcat*/* /opt/apache-tomcat
 cp /build/tomcat*-logging-error-report-valve-2.0.jar /opt/apache-tomcat/lib/
