@@ -1,15 +1,15 @@
-DOCKER_BUILD_OPTIONS=--no-cache=false
+DOCKER_BUILD_OPTIONS=--no-cache=false --progress=auto
 TAG_VERSION=200
 
 #software versions
 
 SONARQUBE10_VERSION=25.6.0.109173
 
-TOMCAT9_VERSION=9.0.107
+TOMCAT9_VERSION=9.0.108
 TOMCAT9_ERROR_REPORT_VALVE_VERSION=2.0
-TOMCAT10_VERSION=10.1.43
+TOMCAT10_VERSION=10.1.44
 TOMCAT10_ERROR_REPORT_VALVE_VERSION=2.0
-TOMCAT11_VERSION=11.0.9
+TOMCAT11_VERSION=11.0.10
 TOMCAT11_ERROR_REPORT_VALVE_VERSION=2.0
 GOSU1_VERSION=1.17
 LEGOPFA_VERSION=1.3
@@ -21,10 +21,9 @@ JOURNAL_WEBD_VERSION=1.1
 ETCD3_VERSION=3.6.4
 NGINX_MAJOR_VERSION=1.28
 NGINX_REMOVE_SERVER_HEADER_MODULE_VERSION=1.28.0-1
-MARIA_DB_VERSION=10.11
 
 GRAFANA_VERSION=12.1.0
-TEMPO_VERSION=2.8.1
+TEMPO_VERSION=2.8.2
 PROMETHEUS_VERSION=3.5.0
 ALERTMANAGER_VERSION=0.28.1
 NODE_EXPORTER_VERSION=1.9.1
@@ -74,17 +73,24 @@ docker-push-github:
 
 
 docker-optionfactory-debian13: sync-tools
+docker-optionfactory-debian12: sync-tools
 
 #docker-optionfactory-%-jdk21: $(subst -jdk21,,$@)
 docker-optionfactory-debian13-jdk21: sync-jdk21 docker-optionfactory-debian13
+docker-optionfactory-debian13-jdk25: sync-jdk25 docker-optionfactory-debian13
 
 #docker-optionfactory-%-jdk21-sonarqube10: $(subst -jdk21-sonarqube10,,$@)
 docker-optionfactory-debian13-jdk21-sonarqube10: sync-sonarqube10 docker-optionfactory-debian13-jdk21
+docker-optionfactory-debian13-jdk25-sonarqube10: sync-sonarqube10 docker-optionfactory-debian13-jdk25
 
 #docker-optionfactory-%-jdk21-builder: $(subst -jdk21-builder,,$@)
 docker-optionfactory-debian13-jdk21-builder: sync-builder docker-optionfactory-debian13-jdk21
+docker-optionfactory-debian13-jdk25-builder: sync-builder docker-optionfactory-debian13-jdk25
 
 #docker-optionfactory-%-nginx120: $(subst -nginx120,,$@)
+docker-optionfactory-debian12-nginx120: sync-nginx120 docker-optionfactory-debian12
+docker-optionfactory-debian12-nginx120: BUILD_ARGS+=--build-arg NGINX_MAJOR_VERSION=$(NGINX_MAJOR_VERSION)
+
 docker-optionfactory-debian13-nginx120: sync-nginx120 docker-optionfactory-debian13
 docker-optionfactory-debian13-nginx120: BUILD_ARGS+=--build-arg NGINX_MAJOR_VERSION=$(NGINX_MAJOR_VERSION)
 
@@ -92,8 +98,9 @@ docker-optionfactory-debian13-nginx120: BUILD_ARGS+=--build-arg NGINX_MAJOR_VERS
 docker-optionfactory-debian13-caddy2: sync-caddy2 docker-optionfactory-debian13
 
 #docker-optionfactory-%-mariadb10: $(subst -mariadb10,,$@)
-docker-optionfactory-debian13-mariadb10: sync-mariadb10 docker-optionfactory-debian13
-docker-optionfactory-debian13-mariadb10: BUILD_ARGS+=--build-arg MARIA_DB_VERSION=$(MARIA_DB_VERSION)
+docker-optionfactory-debian12-mariadb12: sync-mariadb12 docker-optionfactory-debian12
+docker-optionfactory-debian13-mariadb12: sync-mariadb12 docker-optionfactory-debian13
+
 
 #docker-optionfactory-%-postgres15: $(subst -postgres15,,$@)
 docker-optionfactory-debian13-postgres15: sync-postgres docker-optionfactory-debian13
@@ -103,7 +110,7 @@ docker-optionfactory-debian13-postgres15: BUILD_ARGS+=--build-arg PSQL_MAJOR_VER
 docker-optionfactory-debian13-postgres16: sync-postgres docker-optionfactory-debian13
 docker-optionfactory-debian13-postgres16: BUILD_ARGS+=--build-arg PSQL_MAJOR_VERSION=16
 
-#docker-optionfactory-%-postgres16: $(subst -postgres17,,$@)
+#docker-optionfactory-%-postgres17: $(subst -postgres17,,$@)
 docker-optionfactory-debian13-postgres17: sync-postgres docker-optionfactory-debian13
 docker-optionfactory-debian13-postgres17: BUILD_ARGS+=--build-arg PSQL_MAJOR_VERSION=17
 
@@ -120,16 +127,27 @@ docker-optionfactory-debian13-journal-webd: sync-journal-webd docker-optionfacto
 docker-optionfactory-debian13-jdk21-tomcat9: sync-tomcat9 docker-optionfactory-debian13-jdk21
 docker-optionfactory-debian13-jdk21-tomcat9: BUILD_ARGS+=--build-arg TOMCAT_MAJOR_VERSION=9
 
+docker-optionfactory-debian13-jdk25-tomcat9: sync-tomcat9 docker-optionfactory-debian13-jdk25
+docker-optionfactory-debian13-jdk25-tomcat9: BUILD_ARGS+=--build-arg TOMCAT_MAJOR_VERSION=9
+
 #docker-optionfactory-%-jdk21-tomcat10: $(subst -tomcat10,,$@)
 docker-optionfactory-debian13-jdk21-tomcat10: sync-tomcat10 docker-optionfactory-debian13-jdk21
 docker-optionfactory-debian13-jdk21-tomcat10: BUILD_ARGS+=--build-arg TOMCAT_MAJOR_VERSION=10
+
+docker-optionfactory-debian13-jdk25-tomcat10: sync-tomcat10 docker-optionfactory-debian13-jdk25
+docker-optionfactory-debian13-jdk25-tomcat10: BUILD_ARGS+=--build-arg TOMCAT_MAJOR_VERSION=10
+
 
 #docker-optionfactory-%-jdk21-tomcat10: $(subst -tomcat11,,$@)
 docker-optionfactory-debian13-jdk21-tomcat11: sync-tomcat11 docker-optionfactory-debian13-jdk21
 docker-optionfactory-debian13-jdk21-tomcat11: BUILD_ARGS+=--build-arg TOMCAT_MAJOR_VERSION=11
 
+docker-optionfactory-debian13-jdk25-tomcat11: sync-tomcat11 docker-optionfactory-debian13-jdk25
+docker-optionfactory-debian13-jdk25-tomcat11: BUILD_ARGS+=--build-arg TOMCAT_MAJOR_VERSION=11
+
 #docker-optionfactory-%-jdk21-keycloak2: $(subst -keycloak2,,$@)
 docker-optionfactory-debian13-jdk21-keycloak2: sync-keycloak2 docker-optionfactory-debian13-jdk21
+docker-optionfactory-debian13-jdk25-keycloak2: sync-keycloak2 docker-optionfactory-debian13-jdk25
 
 #docker-optionfactory-%-monitoring-prometheus: $(subst -monitoring-prometheus,,$@)
 docker-optionfactory-debian13-monitoring-prometheus: sync-monitoring-prometheus docker-optionfactory-debian13
@@ -159,8 +177,7 @@ docker-optionfactory-debian13-monitoring-tempo: sync-monitoring-tempo docker-opt
 docker-optionfactory-%:
 	$(call task,building $@)
 	$(eval name=$(subst docker-optionfactory-,,$@))
-	$(call irun,docker build ${DOCKER_BUILD_OPTIONS} $(BUILD_ARGS) --tag=optionfactory/$(name):${TAG_VERSION} optionfactory-$(name))
-	$(call irun,docker tag optionfactory/$(name):${TAG_VERSION} optionfactory/$(name):latest)
+	$(call irun,docker build ${DOCKER_BUILD_OPTIONS} $(BUILD_ARGS) --tag=optionfactory/$(name):${TAG_VERSION} --tag=optionfactory/$(name):latest optionfactory-$(name))
 
 sync-base-images:
 	$(call task,updating base images)
@@ -169,18 +186,22 @@ sync-base-images:
 
 sync-tools: deps/gosu1 
 	$(call task,syncing gosu)
-	$(call irun,echo optionfactory-debian13/deps | xargs -n 1 rsync -az deps/gosu-${GOSU1_VERSION})
+	$(call irun,echo optionfactory-debian12/deps optionfactory-debian13/deps | xargs -n 1 rsync -az deps/gosu-${GOSU1_VERSION})
 	$(call task,syncing ps1)
-	$(call irun,echo optionfactory-debian13/deps | xargs -n 1 rsync -az install-ps1.sh)
+	$(call irun,echo optionfactory-debian12/deps optionfactory-debian13/deps | xargs -n 1 rsync -az install-ps1.sh)
 	$(call task,syncing base image)
-	$(call irun,echo optionfactory-debian13/deps | xargs -n 1 rsync -az install-base-image.sh)
+	$(call irun,echo optionfactory-debian12/deps optionfactory-debian13/deps | xargs -n 1 rsync -az install-base-image.sh)
 sync-jdk21: deps/jdk21
 	$(call task,syncing jdk 21)
 	$(call irun,echo optionfactory-*-jdk21/deps | xargs -n 1 rsync -az install-jdk.sh)
 	$(call irun,echo optionfactory-*-jdk21/deps | xargs -n 1 rsync -az deps/amazon-corretto-21.*)
+sync-jdk25: deps/jdk25
+	$(call task,syncing jdk 25)
+	$(call irun,echo optionfactory-*-jdk25/deps | xargs -n 1 rsync -az install-jdk.sh)
+	$(call irun,echo optionfactory-*-jdk25/deps | xargs -n 1 rsync -az deps/amazon-corretto-25.*)
 sync-sonarqube10: deps/sonarqube10
 	$(call task,syncing sonarqube 10)
-	$(call irun,echo optionfactory-*-jdk*-sonarqube10/deps | xargs -n 1 rsync -az install-sonarqube10.sh)
+	$(call irun,echo optionfactory-*-jdk*-sonarqube10/deps | xargs -n 1 rsync -az install-sonarqube.sh)
 	$(call irun,echo optionfactory-*-jdk*-sonarqube10/deps | xargs -n 1 rsync -az deps/sonarqube-${SONARQUBE10_VERSION})
 sync-builder: deps/maven3
 	$(call task,syncing maven 3)
@@ -203,33 +224,33 @@ sync-tomcat11: deps/tomcat11
 	$(call irun,echo optionfactory-*-tomcat11/deps | xargs -n 1 rsync -az deps/tomcat11-logging-error-report-valve-${TOMCAT11_ERROR_REPORT_VALVE_VERSION}.jar)
 sync-keycloak2: deps/keycloak2
 	$(call task,syncing keycloak 2x)
-	$(call irun,echo optionfactory-*-keycloak2/deps | xargs -n 1 rsync -az install-keycloak2.sh)
+	$(call irun,echo optionfactory-*-keycloak2/deps | xargs -n 1 rsync -az install-keycloak.sh)
 	$(call irun,echo optionfactory-*-keycloak2/deps | xargs -n 1 rsync -az deps/keycloak-${KEYCLOAK2_VERSION})
 	$(call irun,echo optionfactory-*-keycloak2/deps | xargs -n 1 rsync -az deps/optionfactory-keycloak-${KEYCLOAK_OPFA_MODULES_VERSION})
 sync-nginx120: deps/nginx_remove_server_header_module deps/legopfa1
 	$(call task,syncing nginx)
-	$(call irun,echo optionfactory-*-nginx120/deps | xargs -n 1 rsync -az install-nginx120.sh)
+	$(call irun,echo optionfactory-*-nginx120/deps | xargs -n 1 rsync -az install-nginx.sh)
 	$(call irun,echo optionfactory-*-nginx120/deps | xargs -n 1 rsync -az deps/opfa_http_remove_server_header_module-${NGINX_REMOVE_SERVER_HEADER_MODULE_VERSION}.so)
 	$(call irun,echo optionfactory-*-nginx120/deps | xargs -n 1 rsync -az deps/legopfa-${LEGOPFA_VERSION})
 sync-caddy2: deps/caddy2
 	$(call task,syncing caddy 2)
-	$(call irun,echo optionfactory-*-caddy2/deps | xargs -n 1 rsync -az install-caddy2.sh)
+	$(call irun,echo optionfactory-*-caddy2/deps | xargs -n 1 rsync -az install-caddy.sh)
 	$(call irun,echo optionfactory-*-caddy2/deps | xargs -n 1 rsync -az deps/caddy-${CADDY2_VERSION})
-sync-mariadb10: deps/mariadb10
+sync-mariadb12: deps/mariadb12
 	$(call task,syncing mariadb 10)
-	$(call irun,echo optionfactory-*-mariadb10/deps | xargs -n 1 rsync -az install-mariadb10.sh)
-	$(call irun,echo optionfactory-*-mariadb10/deps | xargs -n 1 rsync -az init-mariadb10.sh)
+	$(call irun,echo optionfactory-*-mariadb12/deps | xargs -n 1 rsync -az install-mariadb.sh)
+	$(call irun,echo optionfactory-*-mariadb12/deps | xargs -n 1 rsync -az init-mariadb.sh)
 sync-postgres: deps/postgres
 	$(call task,syncing postgres)
 	$(call irun,echo optionfactory-*-postgres*/deps | xargs -n 1 rsync -az install-postgres.sh)
 	$(call irun,echo optionfactory-*-postgres*/deps | xargs -n 1 rsync -az init-postgres.sh)
 sync-etcd3: deps/etcd3
 	$(call task,syncing etcd3)
-	$(call irun,echo optionfactory-*-etcd3/deps | xargs -n 1 rsync -az install-etcd3.sh)
+	$(call irun,echo optionfactory-*-etcd3/deps | xargs -n 1 rsync -az install-etcd.sh)
 	$(call irun,echo optionfactory-*-etcd3/deps | xargs -n 1 rsync -az deps/etcd-v${ETCD3_VERSION}-linux-amd64)
 sync-barman2: deps/barman2
 	$(call task,syncing barman2)
-	$(call irun,echo optionfactory-*-barman2/deps | xargs -n 1 rsync -az install-barman2.sh)
+	$(call irun,echo optionfactory-*-barman2/deps | xargs -n 1 rsync -az install-barman.sh)
 sync-journal-webd: deps/journal-webd
 	$(call task,syncing journal-webd)
 	$(call irun,echo optionfactory-*-journal-webd/deps | xargs -n 1 rsync -az install-journal-webd.sh)
@@ -278,7 +299,7 @@ deps/tomcat11: deps/apache-tomcat-${TOMCAT11_VERSION} deps/tomcat11-logging-erro
 deps/keycloak2: deps/keycloak-${KEYCLOAK2_VERSION} deps/optionfactory-keycloak-${KEYCLOAK_OPFA_MODULES_VERSION}
 deps/nginx_remove_server_header_module: deps/opfa_http_remove_server_header_module-${NGINX_REMOVE_SERVER_HEADER_MODULE_VERSION}.so
 deps/caddy2: deps/caddy-${CADDY2_VERSION}
-deps/mariadb10:
+deps/mariadb12:
 deps/postgres:
 deps/etcd3: deps/ectd-v${ETCD3_VERSION}-linux-amd64
 deps/barman2:
@@ -296,6 +317,8 @@ deps/tempo: deps/tempo-${TEMPO_VERSION}-linux-amd64
 
 deps/jdk21:
 	$(call irun,curl -# -j -k -L https://corretto.aws/downloads/latest/amazon-corretto-21-x64-linux-jdk.tar.gz | tar xz -C deps)
+deps/jdk25:
+	$(call irun,curl -# -j -k -L https://corretto.aws/downloads/latest/amazon-corretto-25-x64-linux-jdk.tar.gz | tar xz -C deps)
 deps/apache-maven-${MAVEN3_VERSION}:
 	$(call irun,curl -# -j -k -L https://downloads.apache.org/maven/maven-3/${MAVEN3_VERSION}/binaries/apache-maven-${MAVEN3_VERSION}-bin.tar.gz | tar xz -C deps)
 deps/sonarqube-${SONARQUBE10_VERSION}:

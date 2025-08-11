@@ -12,6 +12,8 @@ DEBIAN_FRONTEND=noninteractive apt-get -y -q update
 DEBIAN_FRONTEND=noninteractive apt-get install -y -q postgresql-common 
 sed -ri 's/^# *(create_main_cluster) .*$/\1 = false/' /etc/postgresql-common/createcluster.conf
 DEBIAN_FRONTEND=noninteractive apt-get install -y -q postgresql-${PSQL_MAJOR_VERSION} postgresql-contrib-${PSQL_MAJOR_VERSION} postgresql-${PSQL_MAJOR_VERSION}-postgis-3 postgresql-${PSQL_MAJOR_VERSION}-pgvector patroni
+rm -rf /var/lib/apt/lists/*
+
 
 localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8
 

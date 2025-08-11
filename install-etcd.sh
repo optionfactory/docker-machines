@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-echo "Installing etcd3"
+echo "Installing etcd"
 
 groupadd --system --gid 950 docker-machines
 useradd --system --create-home --gid docker-machines --uid 950 etcd

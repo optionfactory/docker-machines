@@ -5,24 +5,11 @@ echo "Installing Caddy"
 groupadd --system --gid 950 docker-machines
 useradd --system --create-home --gid docker-machines --uid 950 caddy
 
-
-case "${DISTRIB_LABEL}" in
-    debian*|ubuntu*)
-        DEBIAN_FRONTEND=noninteractive apt-get -y -q update
-        DEBIAN_FRONTEND=noninteractive apt-get -y -q install libcap2-bin
-        DEBIAN_FRONTEND=noninteractive apt-get -y -q autoclean
-        DEBIAN_FRONTEND=noninteractive apt-get -y -q autoremove
-        rm -rf /var/lib/apt/lists/* /etc/apt/sources.list.d/*
-    ;;
-    rocky9)
-    ;;
-    *)
-    echo "distribution ${DISTRIB_LABEL} not supported"
-    exit 1
-    ;;
-esac
-
-
+DEBIAN_FRONTEND=noninteractive apt-get -y -q update
+DEBIAN_FRONTEND=noninteractive apt-get -y -q install libcap2-bin
+DEBIAN_FRONTEND=noninteractive apt-get -y -q autoclean
+DEBIAN_FRONTEND=noninteractive apt-get -y -q autoremove
+rm -rf /var/lib/apt/lists/* /etc/apt/sources.list.d/*
 
 mkdir -p /opt/caddy/{bin,conf,data}
 cp /build/caddy-* /opt/caddy/bin/caddy
