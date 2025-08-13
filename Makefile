@@ -93,19 +93,14 @@ docker-optionfactory-debian13-jdk21-builder: sync-builder docker-optionfactory-d
 docker-optionfactory-debian13-jdk25-builder: sync-builder docker-optionfactory-debian13-jdk25
 
 #docker-optionfactory-%-nginx120: $(subst -nginx120,,$@)
-docker-optionfactory-debian12-nginx120: sync-nginx120 docker-optionfactory-debian12
-docker-optionfactory-debian12-nginx120: BUILD_ARGS+=--build-arg NGINX_MAJOR_VERSION=$(NGINX_MAJOR_VERSION)
-
 docker-optionfactory-debian13-nginx120: sync-nginx120 docker-optionfactory-debian13
 docker-optionfactory-debian13-nginx120: BUILD_ARGS+=--build-arg NGINX_MAJOR_VERSION=$(NGINX_MAJOR_VERSION)
 
 #docker-optionfactory-%-caddy2: $(subst -caddy2,,$@)
 docker-optionfactory-debian13-caddy2: sync-caddy2 docker-optionfactory-debian13
 
-#docker-optionfactory-%-mariadb10: $(subst -mariadb10,,$@)
-docker-optionfactory-debian12-mariadb12: sync-mariadb12 docker-optionfactory-debian12
+#docker-optionfactory-%-mariadb12: $(subst -mariadb10,,$@)
 docker-optionfactory-debian13-mariadb12: sync-mariadb12 docker-optionfactory-debian13
-
 
 #docker-optionfactory-%-postgres15: $(subst -postgres15,,$@)
 docker-optionfactory-debian13-postgres15: sync-postgres docker-optionfactory-debian13
@@ -152,7 +147,6 @@ docker-optionfactory-debian13-jdk25-tomcat11: BUILD_ARGS+=--build-arg TOMCAT_MAJ
 
 #docker-optionfactory-%-jdk21-keycloak2: $(subst -keycloak2,,$@)
 docker-optionfactory-debian13-jdk21-keycloak2: sync-keycloak2 docker-optionfactory-debian13-jdk21
-docker-optionfactory-debian13-jdk25-keycloak2: sync-keycloak2 docker-optionfactory-debian13-jdk25
 
 #docker-optionfactory-%-monitoring-prometheus: $(subst -monitoring-prometheus,,$@)
 docker-optionfactory-debian13-monitoring-prometheus: sync-monitoring-prometheus docker-optionfactory-debian13
@@ -192,7 +186,6 @@ sync-base-images:
 sync-medic:
 	$(call task,syncing medic)
 	$(call irun,echo optionfactory-*-medic/deps | xargs -n 1 rsync -az install-medic.sh)
-
 
 sync-tools: deps/gosu1 
 	$(call task,syncing gosu)
