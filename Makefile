@@ -75,6 +75,11 @@ docker-push-github:
 docker-optionfactory-debian13: sync-tools
 docker-optionfactory-debian12: sync-tools
 
+
+#docker-optionfactory-%-medic: $(subst -jdk21,,$@)
+docker-optionfactory-debian13-medic: sync-medic docker-optionfactory-debian13
+
+
 #docker-optionfactory-%-jdk21: $(subst -jdk21,,$@)
 docker-optionfactory-debian13-jdk21: sync-jdk21 docker-optionfactory-debian13
 docker-optionfactory-debian13-jdk25: sync-jdk25 docker-optionfactory-debian13
@@ -183,6 +188,11 @@ sync-base-images:
 	$(call task,updating base images)
 	$(call irun,docker pull debian:bookworm)
 	$(call irun,docker pull debian:trixie)
+
+sync-medic:
+	$(call task,syncing medic)
+	$(call irun,echo optionfactory-*-medic/deps | xargs -n 1 rsync -az install-medic.sh)
+
 
 sync-tools: deps/gosu1 
 	$(call task,syncing gosu)
