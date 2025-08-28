@@ -8,8 +8,7 @@ DEBIAN_FRONTEND=noninteractive apt-get -y -q update
 DEBIAN_FRONTEND=noninteractive apt-get -y -q install curl
 
 curl -# -L https://nginx.org/keys/nginx_signing.key > /etc/apt/trusted.gpg.d/nginx.asc
-echo "deb https://nginx.org/packages/${DISTRIB_ID}/ bookworm nginx" >> /etc/apt/sources.list.d/nginx.list
-#FIXME: echo "deb https://nginx.org/packages/${DISTRIB_ID}/ ${DISTRIB_CODENAME} nginx" >> /etc/apt/sources.list.d/nginx.list
+echo "deb https://nginx.org/packages/${DISTRIB_ID}/ ${DISTRIB_CODENAME} nginx" >> /etc/apt/sources.list.d/nginx.list
 
 DEBIAN_FRONTEND=noninteractive apt-get -y -q update
 DEBIAN_FRONTEND=noninteractive apt-get -y -q install --no-install-recommends --no-install-suggests nginx=${NGINX_MAJOR_VERSION}.* gettext-base

@@ -12,12 +12,14 @@ DEBIAN_FRONTEND=noninteractive apt-get -y -q install \
     iputils-ping \
     iputils-arping \
     iputils-tracepath \
+    iputils-clockdiff \
     iperf \
     iproute2 \
     ipset \
     iptables \
     iptraf-ng \
     jq \
+    ldap-utils \
     mtr \
     netcat-openbsd \
     net-tools \

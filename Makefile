@@ -1,9 +1,9 @@
 DOCKER_BUILD_OPTIONS=--no-cache=false --progress=auto
-TAG_VERSION=200
+TAG_VERSION=201
 
 #software versions
 
-SONARQUBE10_VERSION=25.6.0.109173
+SONARQUBE10_VERSION=25.8.0.112029
 
 TOMCAT9_VERSION=9.0.108
 TOMCAT9_ERROR_REPORT_VALVE_VERSION=2.0
@@ -13,16 +13,16 @@ TOMCAT11_VERSION=11.0.10
 TOMCAT11_ERROR_REPORT_VALVE_VERSION=2.0
 GOSU1_VERSION=1.17
 LEGOPFA_VERSION=1.3
-KEYCLOAK2_VERSION=26.3.2
-KEYCLOAK_OPFA_MODULES_VERSION=8.1
+KEYCLOAK2_VERSION=26.3.3
+KEYCLOAK_OPFA_MODULES_VERSION=8.4
 MAVEN3_VERSION=3.9.11
-CADDY2_VERSION=2.10.0
+CADDY2_VERSION=2.10.2
 JOURNAL_WEBD_VERSION=1.1
 ETCD3_VERSION=3.6.4
 NGINX_MAJOR_VERSION=1.28
 NGINX_REMOVE_SERVER_HEADER_MODULE_VERSION=1.28.0-1
 
-GRAFANA_VERSION=12.1.0
+GRAFANA_VERSION=12.1.1
 TEMPO_VERSION=2.8.2
 PROMETHEUS_VERSION=3.5.0
 ALERTMANAGER_VERSION=0.28.1
@@ -73,7 +73,6 @@ docker-push-github:
 
 
 docker-optionfactory-debian13: sync-tools
-docker-optionfactory-debian12: sync-tools
 
 
 #docker-optionfactory-%-medic: $(subst -jdk21,,$@)
@@ -189,11 +188,11 @@ sync-medic:
 
 sync-tools: deps/gosu1 
 	$(call task,syncing gosu)
-	$(call irun,echo optionfactory-debian12/deps optionfactory-debian13/deps | xargs -n 1 rsync -az deps/gosu-${GOSU1_VERSION})
+	$(call irun,echo optionfactory-debian13/deps | xargs -n 1 rsync -az deps/gosu-${GOSU1_VERSION})
 	$(call task,syncing ps1)
-	$(call irun,echo optionfactory-debian12/deps optionfactory-debian13/deps | xargs -n 1 rsync -az install-ps1.sh)
+	$(call irun,echo optionfactory-debian13/deps | xargs -n 1 rsync -az install-ps1.sh)
 	$(call task,syncing base image)
-	$(call irun,echo optionfactory-debian12/deps optionfactory-debian13/deps | xargs -n 1 rsync -az install-base-image.sh)
+	$(call irun,echo optionfactory-debian13/deps | xargs -n 1 rsync -az install-base-image.sh)
 sync-jdk21: deps/jdk21
 	$(call task,syncing jdk 21)
 	$(call irun,echo optionfactory-*-jdk21/deps | xargs -n 1 rsync -az install-jdk.sh)
@@ -269,7 +268,7 @@ sync-monitoring-alertmanager: deps/alertmanager
 sync-monitoring-grafana: deps/grafana
 	$(call task,syncing grafana)
 	$(call irun,echo optionfactory-*-grafana/deps | xargs -n 1 rsync -az install-monitoring-grafana.sh)
-	$(call irun,echo optionfactory-*-grafana/deps | xargs -n 1 rsync -az deps/grafana-v${GRAFANA_VERSION})
+	$(call irun,echo optionfactory-*-grafana/deps | xargs -n 1 rsync -az deps/grafana-${GRAFANA_VERSION})
 sync-monitoring-cadvisor: deps/cadvisor
 	$(call task,syncing cadvisor)
 	$(call irun,echo optionfactory-*-cadvisor/deps | xargs -n 1 rsync -az install-monitoring-cadvisor.sh)
