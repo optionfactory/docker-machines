@@ -112,6 +112,11 @@ docker-optionfactory-debian13-postgres16: BUILD_ARGS+=--build-arg PSQL_MAJOR_VER
 docker-optionfactory-debian13-postgres17: sync-postgres docker-optionfactory-debian13
 docker-optionfactory-debian13-postgres17: BUILD_ARGS+=--build-arg PSQL_MAJOR_VERSION=17
 
+
+#docker-optionfactory-%-postgres18: $(subst -postgres18,,$@)
+docker-optionfactory-debian13-postgres18: sync-postgres docker-optionfactory-debian13
+docker-optionfactory-debian13-postgres18: BUILD_ARGS+=--build-arg PSQL_MAJOR_VERSION=18
+
 #docker-optionfactory-%-etcd3: $(subst -etcd3,,$@)
 docker-optionfactory-debian13-etcd3: sync-etcd3 docker-optionfactory-debian13
 
