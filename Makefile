@@ -13,7 +13,7 @@ TOMCAT11_ERROR_REPORT_VALVE_VERSION=2.0
 GOSU1_VERSION=1.19
 LEGOPFA_VERSION=1.3
 KEYCLOAK2_VERSION=26.5.1
-KEYCLOAK_OPFA_MODULES_VERSION=8.12
+KEYCLOAK_OPFA_MODULES_VERSION=8.13
 MAVEN3_VERSION=3.9.12
 CADDY2_VERSION=2.10.2
 JOURNAL_WEBD_VERSION=1.1
@@ -356,8 +356,6 @@ deps/optionfactory-keycloak-${KEYCLOAK_OPFA_MODULES_VERSION}:
 	$(call irun,for module in ${modules}; do curl -# -j -k -L "https://repo1.maven.org/maven2/net/optionfactory/keycloak/$${module}/${KEYCLOAK_OPFA_MODULES_VERSION}/$${module}-${KEYCLOAK_OPFA_MODULES_VERSION}.jar" > "deps/optionfactory-keycloak-${KEYCLOAK_OPFA_MODULES_VERSION}/$${module}.jar"; done)
 	$(eval lpn_version=$(shell curl https://repo1.maven.org/maven2/net/optionfactory/keycloak/optionfactory-keycloak/${KEYCLOAK_OPFA_MODULES_VERSION}/optionfactory-keycloak-${KEYCLOAK_OPFA_MODULES_VERSION}.pom | grep '<libphonenumber.version>' | grep -Po '(?<=>)[^<]+(?=<)'))	
 	$(call irun,curl -# -j -k -L "https://repo1.maven.org/maven2/com/googlecode/libphonenumber/libphonenumber/${lpn_version}/libphonenumber-${lpn_version}.jar" > "deps/optionfactory-keycloak-${KEYCLOAK_OPFA_MODULES_VERSION}/libphonenumber-${lpn_version}.jar")	
-	$(eval hv_version=$(shell curl https://repo1.maven.org/maven2/net/optionfactory/keycloak/optionfactory-keycloak/${KEYCLOAK_OPFA_MODULES_VERSION}/optionfactory-keycloak-${KEYCLOAK_OPFA_MODULES_VERSION}.pom | grep '<hibernatevalidator.version>' | grep -Po '(?<=>)[^<]+(?=<)'))	
-	$(call irun,curl -# -j -k -L "https://repo1.maven.org/maven2/org/hibernate/validator/hibernate-validator/${hv_version}/hibernate-validator-${hv_version}.jar" > "deps/optionfactory-keycloak-${KEYCLOAK_OPFA_MODULES_VERSION}/hibernate-validator-${hv_version}.jar")	
 deps/opfa_http_remove_server_header_module-${NGINX_REMOVE_SERVER_HEADER_MODULE_VERSION}.so:
 	$(call irun,curl -# -j -k -L  https://github.com/optionfactory/nginx-remove-server-header-module/releases/download/v${NGINX_REMOVE_SERVER_HEADER_MODULE_VERSION}/opfa_http_remove_server_header_module-${NGINX_REMOVE_SERVER_HEADER_MODULE_VERSION}.so -o deps/opfa_http_remove_server_header_module-${NGINX_REMOVE_SERVER_HEADER_MODULE_VERSION}.so)
 deps/caddy-${CADDY2_VERSION}:

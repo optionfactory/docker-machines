@@ -4,7 +4,7 @@ echo "Installing Keycloak"
 mkdir -p /opt/keycloak
 cp -R /build/keycloak*/* /opt/keycloak
 cp -R /build/optionfactory-keycloak-*/* /opt/keycloak/providers/
-cp -R /opt/keycloak/lib/lib/deployment/jakarta.validation.jakarta.validation-api-*.jar /opt/keycloak/providers/
+
 cat <<-'EOF' > /opt/keycloak/conf/keycloak.conf
 #[build options]
 cache=local
