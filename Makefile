@@ -1,30 +1,30 @@
 DOCKER_BUILD_OPTIONS=--no-cache=false --progress=auto
-TAG_VERSION=211
+TAG_VERSION=213
 
 #software versions
 
 SONARQUBE10_VERSION=26.1.0.118079
-TOMCAT9_VERSION=9.0.113
+TOMCAT9_VERSION=9.0.115
 TOMCAT9_ERROR_REPORT_VALVE_VERSION=2.0
-TOMCAT10_VERSION=10.1.50
+TOMCAT10_VERSION=10.1.52
 TOMCAT10_ERROR_REPORT_VALVE_VERSION=2.0
-TOMCAT11_VERSION=11.0.15
+TOMCAT11_VERSION=11.0.18
 TOMCAT11_ERROR_REPORT_VALVE_VERSION=2.0
 GOSU1_VERSION=1.19
 LEGOPFA_VERSION=1.3
-KEYCLOAK2_VERSION=26.5.1
+KEYCLOAK2_VERSION=26.5.3
 KEYCLOAK_OPFA_MODULES_VERSION=8.13
 MAVEN3_VERSION=3.9.12
 CADDY2_VERSION=2.10.2
 JOURNAL_WEBD_VERSION=1.1
 ETCD3_VERSION=3.6.7
 NGINX_MAJOR_VERSION=1.28
-NGINX_REMOVE_SERVER_HEADER_MODULE_VERSION=1.28.0-1
+NGINX_REMOVE_SERVER_HEADER_MODULE_VERSION=1.28.2-1
 
-GRAFANA_VERSION=12.3.1
-TEMPO_VERSION=2.9.0
+GRAFANA_VERSION=12.3.2
+TEMPO_VERSION=2.10.0
 PROMETHEUS_VERSION=3.9.1
-ALERTMANAGER_VERSION=0.30.1
+ALERTMANAGER_VERSION=0.31.0
 NODE_EXPORTER_VERSION=1.10.2
 CADVISOR_VERSION=0.56.2
 POSTGRES_EXPORTER_VERSION=0.18.1
@@ -83,7 +83,6 @@ docker-optionfactory-debian13-jdk21: sync-jdk21 docker-optionfactory-debian13
 docker-optionfactory-debian13-jdk25: sync-jdk25 docker-optionfactory-debian13
 
 #docker-optionfactory-%-jdk21-sonarqube10: $(subst -jdk21-sonarqube10,,$@)
-docker-optionfactory-debian13-jdk21-sonarqube10: sync-sonarqube10 docker-optionfactory-debian13-jdk21
 docker-optionfactory-debian13-jdk25-sonarqube10: sync-sonarqube10 docker-optionfactory-debian13-jdk25
 
 #docker-optionfactory-%-jdk21-builder: $(subst -jdk21-builder,,$@)
@@ -111,7 +110,6 @@ docker-optionfactory-debian13-postgres16: BUILD_ARGS+=--build-arg PSQL_MAJOR_VER
 #docker-optionfactory-%-postgres17: $(subst -postgres17,,$@)
 docker-optionfactory-debian13-postgres17: sync-postgres docker-optionfactory-debian13
 docker-optionfactory-debian13-postgres17: BUILD_ARGS+=--build-arg PSQL_MAJOR_VERSION=17
-
 
 #docker-optionfactory-%-postgres18: $(subst -postgres18,,$@)
 docker-optionfactory-debian13-postgres18: sync-postgres docker-optionfactory-debian13
@@ -392,6 +390,7 @@ clean-deps: FORCE
 	$(call irun,rm -rf deps/*)
 
 cleanup-docker-images:
+	-docker images --quiet --filter "reference=optionfactory/*:209" | xargs -I{} docker rmi {}
 	-docker images --quiet --filter=dangling=true | xargs --no-run-if-empty docker rmi
 	-docker volume prune -f
 
