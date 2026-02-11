@@ -13,7 +13,7 @@ TOMCAT11_ERROR_REPORT_VALVE_VERSION=2.0
 GOSU1_VERSION=1.19
 LEGOPFA_VERSION=1.3
 KEYCLOAK2_VERSION=26.5.3
-KEYCLOAK_OPFA_MODULES_VERSION=8.13
+KEYCLOAK_OPFA_MODULES_VERSION=9.0
 MAVEN3_VERSION=3.9.12
 CADDY2_VERSION=2.10.2
 JOURNAL_WEBD_VERSION=1.1
@@ -27,7 +27,7 @@ PROMETHEUS_VERSION=3.9.1
 ALERTMANAGER_VERSION=0.31.0
 NODE_EXPORTER_VERSION=1.10.2
 CADVISOR_VERSION=0.56.2
-POSTGRES_EXPORTER_VERSION=0.18.1
+POSTGRES_EXPORTER_VERSION=0.19.0
 NGINX_EXPORTER_VERSION=1.5.1
 
 #/software versions
@@ -42,11 +42,38 @@ define irun
    @$(1) | sed 's/^/    /'
 endef
 
+define latest_github_version
+	@printf "%20s: " "$1"; curl -s https://api.github.com/repos/$2/releases/latest | jq -r .tag_name
+endef
 
 help:
 	@echo usage: make [clean-deps] [clean] sync docker-images
 	@echo usage: make [clean-deps] [clean] docker-optionfactory-debian13-mariadb10
 	exit 1
+
+latest-versions:
+	@#TODO sonarqube
+	@printf "%20s: " "Tomcat 11"; curl -s https://dlcdn.apache.org/tomcat/tomcat-11/ | grep -Po '(?<=href="v)[0-9.]+'
+	@printf "%20s: " "Tomcat 10"; curl -s https://dlcdn.apache.org/tomcat/tomcat-10/ | grep -Po '(?<=href="v)[0-9.]+'
+	@printf "%20s: " "Tomcat  9"; curl -s https://dlcdn.apache.org/tomcat/tomcat-9/ | grep -Po '(?<=href="v)[0-9.]+'
+	$(call latest_github_version,gosu,tianon/gosu)
+	$(call latest_github_version,legopfa,optionfactory/legopfa)
+	$(call latest_github_version,keycloak,keycloak/keycloak)
+	$(call latest_github_version,optionfactory-keycloak,optionfactory/optionfactory-keycloak)
+	$(call latest_github_version,caddy,caddyserver/caddy)
+	$(call latest_github_version,journal-webd,optionfactory/journal-webd)
+	$(call latest_github_version,etcd,etcd-io/etcd)
+	@#TODO nginx
+	$(call latest_github_version,nginx_remove_serv,optionfactory/nginx-remove-server-header-module)
+	$(call latest_github_version,grafana,grafana/grafana)
+	$(call latest_github_version,tempo,grafana/tempo)
+	$(call latest_github_version,prometheus,prometheus/prometheus)
+	$(call latest_github_version,alertmanager,prometheus/alertmanager)
+	$(call latest_github_version,node_exporter,prometheus/node_exporter)
+	$(call latest_github_version,cadvisor,google/cadvisor)
+	$(call latest_github_version,postgres_exporter,prometheus-community/postgres_exporter)
+	$(call latest_github_version,nginx_exporter,nginx/nginx-prometheus-exporter)
+
 
 docker-images: sync-base-images $(addprefix docker-,$(wildcard optionfactory-*))
 
