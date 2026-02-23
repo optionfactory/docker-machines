@@ -417,7 +417,7 @@ clean-deps: FORCE
 	$(call irun,rm -rf deps/*)
 
 cleanup-docker-images:
-	-docker images --quiet --filter "reference=optionfactory/*:209" | xargs -I{} docker rmi {}
+	-docker images --format "{{.Repository}}:{{.Tag}}" --filter "reference=optionfactory/*" | awk -F: '$$2 < ${TAG_VERSION} {print $$0}' | xargs -I{} docker rmi {}
 	-docker images --quiet --filter=dangling=true | xargs --no-run-if-empty docker rmi
 	-docker volume prune -f
 
