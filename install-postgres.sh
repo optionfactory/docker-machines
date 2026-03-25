@@ -5,7 +5,7 @@ useradd --system --create-home --gid docker-machines --uid 950 postgres
 
 
 DEBIAN_FRONTEND=noninteractive apt-get -y -q update
-DEBIAN_FRONTEND=noninteractive apt-get install -y -q curl
+DEBIAN_FRONTEND=noninteractive apt-get install -y -q curl less
 curl -# -L https://www.postgresql.org/media/keys/ACCC4CF8.asc > /etc/apt/trusted.gpg.d/postgres.asc
 echo "deb http://apt.postgresql.org/pub/repos/apt/ ${DISTRIB_CODENAME}-pgdg main" > /etc/apt/sources.list.d/pgdg.list
 DEBIAN_FRONTEND=noninteractive apt-get -y -q update
