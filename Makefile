@@ -1,5 +1,5 @@
 DOCKER_BUILD_OPTIONS=--no-cache=false --progress=auto
-TAG_VERSION=219
+TAG_VERSION=220
 
 #software versions
 
@@ -8,23 +8,23 @@ TOMCAT9_VERSION=9.0.117
 TOMCAT9_ERROR_REPORT_VALVE_VERSION=2.0
 TOMCAT10_VERSION=10.1.54
 TOMCAT10_ERROR_REPORT_VALVE_VERSION=2.0
-TOMCAT11_VERSION=11.0.21
+TOMCAT11_VERSION=11.0.22
 TOMCAT11_ERROR_REPORT_VALVE_VERSION=2.0
 GOSU1_VERSION=1.19
 LEGOPFA_VERSION=1.5
 KEYCLOAK2_VERSION=26.6.1
 KEYCLOAK_OPFA_MODULES_VERSION=9.2
-MAVEN3_VERSION=3.9.14
+MAVEN3_VERSION=3.9.15
 CADDY2_VERSION=2.11.2
 JOURNAL_WEBD_VERSION=1.1
-ETCD3_VERSION=3.6.10
-NGINX_MAJOR_VERSION=1.28
-NGINX_REMOVE_SERVER_HEADER_MODULE_VERSION=1.28.3-1
+ETCD3_VERSION=3.6.11
+NGINX_MAJOR_VERSION=1.30
+NGINX_REMOVE_SERVER_HEADER_MODULE_VERSION=1.30.0-1
 
 GRAFANA_VERSION=13.0.1
-TEMPO_VERSION=2.10.4
-PROMETHEUS_VERSION=3.11.2
-ALERTMANAGER_VERSION=0.32.0
+TEMPO_VERSION=2.10.5
+PROMETHEUS_VERSION=3.11.3
+ALERTMANAGER_VERSION=0.32.1
 NODE_EXPORTER_VERSION=1.11.1
 CADVISOR_VERSION=0.56.2
 POSTGRES_EXPORTER_VERSION=0.19.1
@@ -116,9 +116,10 @@ docker-optionfactory-debian13-jdk25-sonarqube10: sync-sonarqube10 docker-optionf
 docker-optionfactory-debian13-jdk21-builder: sync-builder docker-optionfactory-debian13-jdk21
 docker-optionfactory-debian13-jdk25-builder: sync-builder docker-optionfactory-debian13-jdk25
 
-#docker-optionfactory-%-nginx120: $(subst -nginx120,,$@)
-docker-optionfactory-debian13-nginx120: sync-nginx120 docker-optionfactory-debian13
-docker-optionfactory-debian13-nginx120: BUILD_ARGS+=--build-arg NGINX_MAJOR_VERSION=$(NGINX_MAJOR_VERSION)
+#docker-optionfactory-%-nginx130: $(subst -nginx130,,$@)
+docker-optionfactory-debian13-nginx130: sync-nginx130 docker-optionfactory-debian13
+docker-optionfactory-debian13-nginx130: BUILD_ARGS+=--build-arg NGINX_MAJOR_VERSION=$(NGINX_MAJOR_VERSION)
+
 
 #docker-optionfactory-%-caddy2: $(subst -caddy2,,$@)
 docker-optionfactory-debian13-caddy2: sync-caddy2 docker-optionfactory-debian13
@@ -259,11 +260,11 @@ sync-keycloak2: deps/keycloak2
 	$(call irun,echo optionfactory-*-keycloak2/deps | xargs -n 1 rsync -az install-keycloak.sh)
 	$(call irun,echo optionfactory-*-keycloak2/deps | xargs -n 1 rsync -az deps/keycloak-${KEYCLOAK2_VERSION})
 	$(call irun,echo optionfactory-*-keycloak2/deps | xargs -n 1 rsync -az deps/optionfactory-keycloak-${KEYCLOAK_OPFA_MODULES_VERSION})
-sync-nginx120: deps/nginx_remove_server_header_module deps/legopfa1
+sync-nginx130: deps/nginx_remove_server_header_module deps/legopfa1
 	$(call task,syncing nginx)
-	$(call irun,echo optionfactory-*-nginx120/deps | xargs -n 1 rsync -az install-nginx.sh)
-	$(call irun,echo optionfactory-*-nginx120/deps | xargs -n 1 rsync -az deps/opfa_http_remove_server_header_module-${NGINX_REMOVE_SERVER_HEADER_MODULE_VERSION}.so)
-	$(call irun,echo optionfactory-*-nginx120/deps | xargs -n 1 rsync -az deps/legopfa-${LEGOPFA_VERSION})
+	$(call irun,echo optionfactory-*-nginx130/deps | xargs -n 1 rsync -az install-nginx.sh)
+	$(call irun,echo optionfactory-*-nginx130/deps | xargs -n 1 rsync -az deps/opfa_http_remove_server_header_module-${NGINX_REMOVE_SERVER_HEADER_MODULE_VERSION}.so)
+	$(call irun,echo optionfactory-*-nginx130/deps | xargs -n 1 rsync -az deps/legopfa-${LEGOPFA_VERSION})
 sync-caddy2: deps/caddy2
 	$(call task,syncing caddy 2)
 	$(call irun,echo optionfactory-*-caddy2/deps | xargs -n 1 rsync -az install-caddy.sh)
