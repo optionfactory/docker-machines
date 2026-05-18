@@ -1,12 +1,12 @@
 DOCKER_BUILD_OPTIONS=--no-cache=false --progress=auto
-TAG_VERSION=220
+TAG_VERSION=221
 
 #software versions
 
 SONARQUBE10_VERSION=26.3.0.120487
 TOMCAT9_VERSION=9.0.117
 TOMCAT9_ERROR_REPORT_VALVE_VERSION=2.0
-TOMCAT10_VERSION=10.1.54
+TOMCAT10_VERSION=10.1.55
 TOMCAT10_ERROR_REPORT_VALVE_VERSION=2.0
 TOMCAT11_VERSION=11.0.22
 TOMCAT11_ERROR_REPORT_VALVE_VERSION=2.0
@@ -14,19 +14,19 @@ GOSU1_VERSION=1.19
 LEGOPFA_VERSION=1.5
 KEYCLOAK2_VERSION=26.6.1
 KEYCLOAK_OPFA_MODULES_VERSION=9.2
-MAVEN3_VERSION=3.9.15
-CADDY2_VERSION=2.11.2
+MAVEN3_VERSION=3.9.16
+CADDY2_VERSION=2.11.3
 JOURNAL_WEBD_VERSION=1.1
 ETCD3_VERSION=3.6.11
 NGINX_MAJOR_VERSION=1.30
 NGINX_REMOVE_SERVER_HEADER_MODULE_VERSION=1.30.0-1
 
-GRAFANA_VERSION=13.0.1
+GRAFANA_VERSION=13.0.1+security-01
 TEMPO_VERSION=2.10.5
 PROMETHEUS_VERSION=3.11.3
 ALERTMANAGER_VERSION=0.32.1
 NODE_EXPORTER_VERSION=1.11.1
-CADVISOR_VERSION=0.56.2
+CADVISOR_VERSION=0.57.0
 POSTGRES_EXPORTER_VERSION=0.19.1
 NGINX_EXPORTER_VERSION=1.5.1
 
@@ -63,7 +63,6 @@ latest-versions:
 	$(call latest_github_version,caddy,caddyserver/caddy)
 	$(call latest_github_version,journal-webd,optionfactory/journal-webd)
 	$(call latest_github_version,etcd,etcd-io/etcd)
-	@#TODO nginx
 	$(call latest_github_version,nginx_remove_serv,optionfactory/nginx-remove-server-header-module)
 	$(call latest_github_version,grafana,grafana/grafana)
 	$(call latest_github_version,tempo,grafana/tempo)
@@ -203,10 +202,13 @@ docker-optionfactory-debian13-monitoring-host: sync-monitoring-host docker-optio
 docker-optionfactory-debian13-monitoring-tempo: sync-monitoring-tempo docker-optionfactory-debian13
 
 
-docker-optionfactory-%:
+verify-docker-backend:
+	@docker info --format '{{json .DriverStatus}}' | grep -q "io.containerd.snapshotter.v1" || (echo -e "Docker is not configured with the containerd-snapshotter." && exit 1)
+
+docker-optionfactory-%: verify-docker-backend
 	$(call task,building $@)
 	$(eval name=$(subst docker-optionfactory-,,$@))
-	$(call irun,docker build ${DOCKER_BUILD_OPTIONS} $(BUILD_ARGS) --tag=optionfactory/$(name):${TAG_VERSION} --tag=optionfactory/$(name):latest optionfactory-$(name))
+	$(call irun,docker build ${DOCKER_BUILD_OPTIONS} $(BUILD_ARGS) --sbom=true --tag=optionfactory/$(name):${TAG_VERSION} --tag=optionfactory/$(name):latest optionfactory-$(name))
 
 sync-base-images:
 	$(call task,updating base images)
