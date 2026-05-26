@@ -47,7 +47,7 @@ define latest_github_version
 endef
 
 help:
-	@echo usage: make [clean-deps] [clean] sync docker-images
+	@echo usage: make [clean-deps] [clean] docker-images
 	@echo usage: make [clean-deps] [clean] docker-optionfactory-debian13-mariadb10
 	exit 1
 
@@ -76,13 +76,13 @@ check-updates:
 
 docker-images: sync-base-images $(addprefix docker-,$(wildcard optionfactory-*))
 
-docker-push:
+publish-dockerhub:
 	$(call task,pushing tag: ${TAG_VERSION})
 	$(call irun,docker images --filter="reference=optionfactory/*:${TAG_VERSION}" --format='{{.Repository}}' | sort | uniq |  xargs -I'{}' docker push {}:${TAG_VERSION})
 	$(call task,pushing tag: latest)
 	$(call irun,docker images --filter="reference=optionfactory/*:${TAG_VERSION}" --format='{{.Repository}}' | sort | uniq |  xargs -I'{}' docker push {}:latest)
 
-docker-push-github:
+publish-github:
 	$(call task,logging in to ghcr.io)
 	$(eval github_user=$(shell echo url=https://github.com/optionfactory | git credential fill | grep '^username=' | sed 's/username=//'))
 	$(eval github_token=$(shell echo url=https://github.com/optionfactory | git credential fill | grep '^password=' | sed 's/password=//'))
@@ -419,13 +419,18 @@ clean-deps: FORCE
 	$(call task,removing cached deps)
 	$(call irun,rm -rf deps/*)
 
-cleanup-docker-images:
-	-docker images --format "{{.Repository}}:{{.Tag}}" --filter "reference=optionfactory/*" | awk -F: '$$2 < ${TAG_VERSION} {print $$0}' | xargs -I{} docker rmi {}
-	-docker images --quiet --filter=dangling=true | xargs --no-run-if-empty docker rmi
-	-docker volume prune -f
+cleanup-docker-images: FORCE
+	$(call task,stats before)
+	$(call irun,docker system df)
+	$(call irun,docker images --format "{{.Repository}}:{{.Tag}}" --filter "reference=optionfactory/*" | awk -F: '$$2 < ${TAG_VERSION} {print $$0}' | xargs -I{} docker rmi {})
+	$(call irun,docker images --quiet --filter=dangling=true | xargs --no-run-if-empty docker rmi)
+	$(call irun,docker volume prune -f)
+	$(call irun,docker builder prune -f)
+	$(call task,stats after)
+	$(call irun,docker system df)
 
 #If a rule has no prerequisites or recipe, and the target of the rule is a nonexistent file,
 #then make imagines this target to have been updated whenever its rule is run.
 #This implies that all targets depending on this one will always have their recipe run.
 FORCE:
-.PHONY: docker-images clean clean-deps
+.PHONY: docker-images clean clean-deps cleanup-docker-images
