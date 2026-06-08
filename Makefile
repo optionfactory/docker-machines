@@ -42,7 +42,7 @@ define irun
    @$(1) | sed 's/^/    /'
 endef
 
-define latest_github_version
+define check_updates_github
 	@printf "%20s: " "$1"; curl -s https://api.github.com/repos/$2/releases/latest | jq -r .tag_name
 endef
 
@@ -56,22 +56,22 @@ check-updates:
 	@printf "%20s: " "Tomcat 11"; curl -s https://dlcdn.apache.org/tomcat/tomcat-11/ | grep -Po '(?<=href="v)[0-9.]+'
 	@printf "%20s: " "Tomcat 10"; curl -s https://dlcdn.apache.org/tomcat/tomcat-10/ | grep -Po '(?<=href="v)[0-9.]+'
 	@printf "%20s: " "Tomcat  9"; curl -s https://dlcdn.apache.org/tomcat/tomcat-9/ | grep -Po '(?<=href="v)[0-9.]+'
-	$(call latest_github_version,gosu,tianon/gosu)
-	$(call latest_github_version,legopfa,optionfactory/legopfa)
-	$(call latest_github_version,keycloak,keycloak/keycloak)
-	$(call latest_github_version,optionfactory-keycloak,optionfactory/optionfactory-keycloak)
-	$(call latest_github_version,caddy,caddyserver/caddy)
-	$(call latest_github_version,journal-webd,optionfactory/journal-webd)
-	$(call latest_github_version,etcd,etcd-io/etcd)
-	$(call latest_github_version,nginx_remove_serv,optionfactory/nginx-remove-server-header-module)
-	$(call latest_github_version,grafana,grafana/grafana)
-	$(call latest_github_version,tempo,grafana/tempo)
-	$(call latest_github_version,prometheus,prometheus/prometheus)
-	$(call latest_github_version,alertmanager,prometheus/alertmanager)
-	$(call latest_github_version,node_exporter,prometheus/node_exporter)
-	$(call latest_github_version,cadvisor,google/cadvisor)
-	$(call latest_github_version,postgres_exporter,prometheus-community/postgres_exporter)
-	$(call latest_github_version,nginx_exporter,nginx/nginx-prometheus-exporter)
+	$(call check_updates_github,gosu,tianon/gosu)
+	$(call check_updates_github,legopfa,optionfactory/legopfa)
+	$(call check_updates_github,keycloak,keycloak/keycloak)
+	$(call check_updates_github,optionfactory-keycloak,optionfactory/optionfactory-keycloak)
+	$(call check_updates_github,caddy,caddyserver/caddy)
+	$(call check_updates_github,journal-webd,optionfactory/journal-webd)
+	$(call check_updates_github,etcd,etcd-io/etcd)
+	$(call check_updates_github,nginx_remove_serv,optionfactory/nginx-remove-server-header-module)
+	$(call check_updates_github,grafana,grafana/grafana)
+	$(call check_updates_github,tempo,grafana/tempo)
+	$(call check_updates_github,prometheus,prometheus/prometheus)
+	$(call check_updates_github,alertmanager,prometheus/alertmanager)
+	$(call check_updates_github,node_exporter,prometheus/node_exporter)
+	$(call check_updates_github,cadvisor,google/cadvisor)
+	$(call check_updates_github,postgres_exporter,prometheus-community/postgres_exporter)
+	$(call check_updates_github,nginx_exporter,nginx/nginx-prometheus-exporter)
 
 
 docker-images: sync-base-images $(addprefix docker-,$(wildcard optionfactory-*))
@@ -422,12 +422,16 @@ clean-deps: FORCE
 cleanup-docker-images: FORCE
 	$(call task,stats before)
 	$(call irun,docker system df)
-	$(call irun,docker images --format "{{.Repository}}:{{.Tag}}" --filter "reference=optionfactory/*" | awk -F: '$$2 < ${TAG_VERSION} {print $$0}' | xargs -I{} docker rmi {})
-	$(call irun,docker images --quiet --filter=dangling=true | xargs --no-run-if-empty docker rmi)
-	$(call irun,docker volume prune -f)
-	$(call irun,docker builder prune -f)
-	$(call task,stats after)
-	$(call irun,docker system df)
+	$(call task,removing old tags)
+	$(call irun, docker images --format "{{.Repository}}:{{.Tag}}" --filter "reference=optionfactory/*" | awk -F: '$$2 < ${TAG_VERSION} {print $$0}' | xargs -I{} docker rmi {})
+	$(call task,removing dengling images)
+	$(call irun, docker images --quiet --filter=dangling=true | xargs --no-run-if-empty docker rmi)
+	$(call task,removing volumes)
+	$(call irun, docker volume prune -f)
+	$(call task,removing builder cache)
+	$(call irun, docker builder prune -f)
+	$(call task,status after)
+	$(call irun, docker system df)
 
 #If a rule has no prerequisites or recipe, and the target of the rule is a nonexistent file,
 #then make imagines this target to have been updated whenever its rule is run.
