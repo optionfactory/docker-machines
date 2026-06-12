@@ -42,36 +42,54 @@ define irun
    @$(1) | sed 's/^/    /'
 endef
 
-define check_updates_github
-	@printf "%20s: " "$1"; curl -s https://api.github.com/repos/$2/releases/latest | jq -r .tag_name
-endef
+
 
 help:
 	@echo usage: make [clean-deps] [clean] docker-images
 	@echo usage: make [clean-deps] [clean] docker-optionfactory-debian13-mariadb10
 	exit 1
 
+
+define check_updates_tomcat
+	@latest=$$(curl -s https://dlcdn.apache.org/tomcat/$1/ | grep -Po '(?<=href="v)[0-9.]+' | tail -1); \
+	[ "$2" = "$$latest" ] && symbol="\033[1;32m✓\033[0m" || symbol="\033[1;31m✗\033[0m"; \
+	printf "%b %-25s: current: %-20s latest: %s\n" "$$symbol" "$1" "$2" "$$latest" 
+endef
+
+
+define check_updates_github
+	@latest=$$(curl -s https://api.github.com/repos/$3/releases/latest | jq -r .tag_name); \
+	[ "$2" = "$$latest" ] && symbol="\033[1;32m✓\033[0m" || symbol="\033[1;31m✗\033[0m"; \
+	printf "%b %-25s: current: %-20s latest: %s\n" "$$symbol" "$1" "$2" "$$latest"
+endef
+
+define check_updates_maven
+	@latest=$$(curl -s "https://repo1.maven.org/maven2/$3/maven-metadata.xml" | grep -Po '(?<=<release>)[^<]+'); \
+	[ "$2" = "$$latest" ] && symbol="\033[1;32m✓\033[0m" || symbol="\033[1;31m✗\033[0m"; \
+	printf "%b %-25s: current: %-20s latest: %s\n" "$$symbol" "$1" "$2" "$$latest"
+endef
+
 check-updates:
 	@#TODO sonarqube
-	@printf "%20s: " "Tomcat 11"; curl -s https://dlcdn.apache.org/tomcat/tomcat-11/ | grep -Po '(?<=href="v)[0-9.]+'
-	@printf "%20s: " "Tomcat 10"; curl -s https://dlcdn.apache.org/tomcat/tomcat-10/ | grep -Po '(?<=href="v)[0-9.]+'
-	@printf "%20s: " "Tomcat  9"; curl -s https://dlcdn.apache.org/tomcat/tomcat-9/ | grep -Po '(?<=href="v)[0-9.]+'
-	$(call check_updates_github,gosu,tianon/gosu)
-	$(call check_updates_github,legopfa,optionfactory/legopfa)
-	$(call check_updates_github,keycloak,keycloak/keycloak)
-	$(call check_updates_github,optionfactory-keycloak,optionfactory/optionfactory-keycloak)
-	$(call check_updates_github,caddy,caddyserver/caddy)
-	$(call check_updates_github,journal-webd,optionfactory/journal-webd)
-	$(call check_updates_github,etcd,etcd-io/etcd)
-	$(call check_updates_github,nginx_remove_serv,optionfactory/nginx-remove-server-header-module)
-	$(call check_updates_github,grafana,grafana/grafana)
-	$(call check_updates_github,tempo,grafana/tempo)
-	$(call check_updates_github,prometheus,prometheus/prometheus)
-	$(call check_updates_github,alertmanager,prometheus/alertmanager)
-	$(call check_updates_github,node_exporter,prometheus/node_exporter)
-	$(call check_updates_github,cadvisor,google/cadvisor)
-	$(call check_updates_github,postgres_exporter,prometheus-community/postgres_exporter)
-	$(call check_updates_github,nginx_exporter,nginx/nginx-prometheus-exporter)
+	$(call check_updates_tomcat,tomcat-9,$(TOMCAT9_VERSION))
+	$(call check_updates_tomcat,tomcat-10,$(TOMCAT10_VERSION))
+	$(call check_updates_tomcat,tomcat-11,$(TOMCAT11_VERSION))
+	$(call check_updates_github,gosu,$(GOSU1_VERSION),tianon/gosu)
+	$(call check_updates_github,legopfa,$(LEGOPFA_VERSION),optionfactory/legopfa)
+	$(call check_updates_github,keycloak,$(KEYCLOAK2_VERSION),keycloak/keycloak)
+	$(call check_updates_maven,optionfactory-keycloak,$(KEYCLOAK_OPFA_MODULES_VERSION),net/optionfactory/keycloak/optionfactory-keycloak)
+	$(call check_updates_github,caddy,$(CADDY2_VERSION),caddyserver/caddy)
+	$(call check_updates_github,journal-webd,$(JOURNAL_WEBD_VERSION),optionfactory/journal-webd)
+	$(call check_updates_github,etcd,$(ETCD3_VERSION),etcd-io/etcd)
+	$(call check_updates_github,nginx_remove_serv,$(NGINX_REMOVE_SERVER_HEADER_MODULE_VERSION),optionfactory/nginx-remove-server-header-module)
+	$(call check_updates_github,grafana,$(GRAFANA_VERSION),grafana/grafana)
+	$(call check_updates_github,tempo,$(TEMPO_VERSION),grafana/tempo)
+	$(call check_updates_github,prometheus,$(PROMETHEUS_VERSION),prometheus/prometheus)
+	$(call check_updates_github,alertmanager,$(ALERTMANAGER_VERSION),prometheus/alertmanager)
+	$(call check_updates_github,node_exporter,$(NODE_EXPORTER_VERSION),prometheus/node_exporter)
+	$(call check_updates_github,cadvisor,$(CADVISOR_VERSION),google/cadvisor)
+	$(call check_updates_github,postgres_exporter,$(POSTGRES_EXPORTER_VERSION),prometheus-community/postgres_exporter)
+	$(call check_updates_github,nginx_exporter,$(NGINX_EXPORTER_VERSION),nginx/nginx-prometheus-exporter)
 
 
 docker-images: sync-base-images $(addprefix docker-,$(wildcard optionfactory-*))
