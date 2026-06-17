@@ -58,7 +58,7 @@ endef
 
 
 define check_updates_github
-	@latest=$$(curl -s https://api.github.com/repos/$3/releases/latest | jq -r .tag_name); \
+	@latest=$$(curl -s https://api.github.com/repos/$3/releases | jq -r '.[] | select(.prerelease == false) | .tag_name | ltrimstr("v")' | sort -V | tail -n 1); \
 	[ "$2" = "$$latest" ] && symbol="\033[1;32m✓\033[0m" || symbol="\033[1;31m✗\033[0m"; \
 	printf "%b %-25s: current: %-20s latest: %s\n" "$$symbol" "$1" "$2" "$$latest"
 endef
