@@ -3,6 +3,7 @@ TAG_VERSION=225
 
 #software versions
 
+SLOTH_VERSION=1.0.0
 SONARQUBE10_VERSION=26.5.0.122743
 TOMCAT9_VERSION=9.0.119
 TOMCAT9_ERROR_REPORT_VALVE_VERSION=2.0
@@ -90,6 +91,7 @@ check-updates:
 	$(call check_updates_github,cadvisor,$(CADVISOR_VERSION),google/cadvisor)
 	$(call check_updates_github,postgres_exporter,$(POSTGRES_EXPORTER_VERSION),prometheus-community/postgres_exporter)
 	$(call check_updates_github,nginx_exporter,$(NGINX_EXPORTER_VERSION),nginx/nginx-prometheus-exporter)
+	$(call check_updates_github,sloth,$(SLOTH_VERSION),optionfactory/sloth)
 
 
 docker-images: sync-base-images $(addprefix docker-,$(wildcard optionfactory-*))
@@ -117,6 +119,7 @@ publish-github:
 
 docker-optionfactory-debian13: sync-tools
 
+docker-optionfactory-sloth: sync-sloth
 
 #docker-optionfactory-%-medic: $(subst -jdk21,,$@)
 docker-optionfactory-debian13-medic: sync-medic docker-optionfactory-debian13
@@ -233,6 +236,10 @@ sync-base-images:
 	$(call irun,docker pull debian:bookworm)
 	$(call irun,docker pull debian:trixie)
 
+sync-sloth: deps/sloth
+	$(call task,syncing sloth)
+	$(call irun,echo optionfactory-sloth/deps | xargs -n 1 rsync -az deps/sloth-${SLOTH_VERSION})
+
 sync-medic:
 	$(call task,syncing medic)
 	$(call irun,echo optionfactory-*-medic/deps | xargs -n 1 rsync -az install-medic.sh)
@@ -342,6 +349,7 @@ sync-monitoring-tempo: deps/tempo
 	$(call irun,echo optionfactory-*-monitoring-tempo/deps | xargs -n 1 rsync -az deps/tempo-${TEMPO_VERSION}-linux-amd64)
 
 
+deps/sloth: deps/sloth-${SLOTH_VERSION}
 deps/gosu1: deps/gosu-${GOSU1_VERSION}
 deps/legopfa1: deps/legopfa-${LEGOPFA_VERSION}
 deps/maven3: deps/apache-maven-${MAVEN3_VERSION}
@@ -368,6 +376,9 @@ deps/tempo: deps/tempo-${TEMPO_VERSION}-linux-amd64
 
 #bsdtar -xvf-
 
+deps/sloth-${SLOTH_VERSION}:
+	$(call irun,curl -# -sSL -k https://github.com/optionfactory/sloth/releases/download/v${SLOTH_VERSION}/sloth-v${SLOTH_VERSION}-x86_64-unknown-linux-musl -o deps/sloth-${SLOTH_VERSION})
+	$(call irun,chmod +x deps/sloth-${SLOTH_VERSION})
 deps/jdk21:
 	$(call irun,curl -# -j -k -L https://corretto.aws/downloads/latest/amazon-corretto-21-x64-linux-jdk.tar.gz | tar xz -C deps)
 deps/jdk25:
