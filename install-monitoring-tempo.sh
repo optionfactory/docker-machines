@@ -30,7 +30,7 @@ EOF
 
 cat <<'EOF' > /tempo
 #!/bin/bash -e
-exec gosu tempo:docker-machines /opt/tempo/bin/tempo -config.file /opt/tempo/conf/tempo.yml "$@"
+exec setpriv --reuid=tempo --regid=docker-machines --init-groups -- /opt/tempo/bin/tempo -config.file /opt/tempo/conf/tempo.yml "$@"
 EOF
 
 chown -R tempo:docker-machines /opt/tempo

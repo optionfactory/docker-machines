@@ -3,12 +3,12 @@
 chown -R mysql:docker-machines "/var/lib/mysql"
 if [ ! -d "/var/lib/mysql/mysql" ]; then
 	echo "initializing database"
-	gosu mysql:docker-machines mysql_install_db --datadir="/var/lib/mysql"
+	setpriv --reuid=mysql --regid=docker-machines --init-groups -- mysql_install_db --datadir="/var/lib/mysql"
 	echo "database initialized"
 
 	mysql_client=( mysql --protocol=socket -uroot )
 	echo "database initialized"
-	gosu mysql:docker-machines mysqld_safe --defaults-file=/etc/my.cnf --user=mysql --skip-networking &
+	setpriv --reuid=mysql --regid=docker-machines --init-groups -- mysqld_safe --defaults-file=/etc/my.cnf --user=mysql --skip-networking &
 	jid="$!"
 	for i in {30..0}; do
 		if echo 'select 1' | "${mysql_client[@]}" &> /dev/null; then
@@ -35,4 +35,4 @@ if [ ! -d "/var/lib/mysql/mysql" ]; then
 	fi
 
 fi
-exec gosu mysql:docker-machines mysqld_safe --defaults-file=/etc/my.cnf --user=mysql
+exec setpriv --reuid=mysql --regid=docker-machines --init-groups -- mysqld_safe --defaults-file=/etc/my.cnf --user=mysql

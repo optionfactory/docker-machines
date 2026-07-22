@@ -42,7 +42,7 @@ cat <<'EOF' > /barman
 #!/bin/bash -e
 while :
 do
-    gosu barman:barman barman cron
+    setpriv --reuid=barman --regid=barman --init-groups -- barman cron
     sleep 60
 done
 EOF

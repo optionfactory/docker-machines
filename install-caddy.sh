@@ -41,7 +41,7 @@ chown -R caddy:docker-machines /opt/caddy
 cat <<'EOF' > /caddy
 #!/bin/bash -e
 
-XDG_DATA_HOME=/opt/caddy/data/ exec gosu caddy:docker-machines /opt/caddy/bin/caddy run --config /opt/caddy/conf/caddy.conf.json
+XDG_DATA_HOME=/opt/caddy/data/ exec setpriv --reuid=caddy --regid=docker-machines --init-groups -- /opt/caddy/bin/caddy run --config /opt/caddy/conf/caddy.conf.json
 EOF
 
 chmod 750 /caddy

@@ -10,7 +10,7 @@ fi
 
 if [ -s /var/lib/postgresql/conf/patroni.yml ]; then
     echo "Patroni configuration detected. Starting patroni"
-    exec gosu postgres:docker-machines patroni /var/lib/postgresql/conf/patroni.yml
+    exec setpriv --reuid=postgres --regid=docker-machines --init-groups -- patroni /var/lib/postgresql/conf/patroni.yml
 fi
 
 echo "Patroni configuration '/var/lib/postgresql/conf/patroni.yml' missing. Runing as a standalone instance"
@@ -18,7 +18,7 @@ echo "Patroni configuration '/var/lib/postgresql/conf/patroni.yml' missing. Runi
 
 if [ ! -s "/var/lib/postgresql/data/PG_VERSION" ]; then
     echo "initializing a new database"
-    gosu postgres:docker-machines /usr/lib/postgresql/*/bin/initdb \
+    setpriv --reuid=postgres --regid=docker-machines --init-groups -- /usr/lib/postgresql/*/bin/initdb \
         -D /var/lib/postgresql/data \
         --encoding 'UTF-8' \
         --lc-collate='en_US.UTF-8' \
@@ -26,7 +26,7 @@ if [ ! -s "/var/lib/postgresql/data/PG_VERSION" ]; then
         --allow-group-access \
         --no-instructions
     rm /var/lib/postgresql/data/{postgresql.conf,pg_hba.conf,pg_ident.conf}
-    gosu postgres:docker-machines /usr/lib/postgresql/*/bin/pg_ctl -s \
+    setpriv --reuid=postgres --regid=docker-machines --init-groups -- /usr/lib/postgresql/*/bin/pg_ctl -s \
         -D "/var/lib/postgresql/data" \
         -o "-c listen_addresses='127.0.0.1'" \
         -o "-c config_file=/var/lib/postgresql/conf/postgresql.conf" \
@@ -40,7 +40,7 @@ if [ ! -s "/var/lib/postgresql/data/PG_VERSION" ]; then
             *)        echo "$0: ignoring $f" ;;
         esac
     done
-    gosu postgres:docker-machines /usr/lib/postgresql/*/bin/pg_ctl -s \
+    setpriv --reuid=postgres --regid=docker-machines --init-groups -- /usr/lib/postgresql/*/bin/pg_ctl -s \
         -D "/var/lib/postgresql/data" \
         -o "-c config_file=/var/lib/postgresql/conf/postgresql.conf" \
         -m fast \
@@ -49,6 +49,6 @@ if [ ! -s "/var/lib/postgresql/data/PG_VERSION" ]; then
     echo 'PostgreSQL init process complete; ready for start up.'
     echo
 fi
+exec setpriv --reuid=postgres --regid=docker-machines --init-groups -- usr/lib/postgresql/*/bin/postgres -c config_file=/var/lib/postgresql/conf/postgresql.conf
 
-exec gosu postgres:docker-machines /usr/lib/postgresql/*/bin/postgres -c config_file=/var/lib/postgresql/conf/postgresql.conf
 

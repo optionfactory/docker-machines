@@ -51,7 +51,7 @@ touch /opt/grafana/conf/grafana.ini
 
 cat <<'EOF' > /grafana
 #!/bin/bash -e
-exec gosu grafana:docker-machines /opt/grafana/bin/grafana server \
+exec setpriv --reuid=grafana --regid=docker-machines --init-groups -- /opt/grafana/bin/grafana server \
   --homepath /opt/grafana/ \
   --config /opt/grafana/conf/grafana.ini \
   "$@"

@@ -1,5 +1,5 @@
 DOCKER_BUILD_OPTIONS=--no-cache=false --progress=auto
-TAG_VERSION=228
+TAG_VERSION=229
 
 #software versions
 
@@ -11,7 +11,6 @@ TOMCAT10_VERSION=10.1.57
 TOMCAT10_ERROR_REPORT_VALVE_VERSION=2.0
 TOMCAT11_VERSION=11.0.24
 TOMCAT11_ERROR_REPORT_VALVE_VERSION=2.0
-GOSU1_VERSION=1.19
 LEGOPFA_VERSION=1.5
 KEYCLOAK2_VERSION=26.7.0
 KEYCLOAK_OPFA_MODULES_VERSION=9.8
@@ -75,7 +74,6 @@ check-updates:
 	$(call check_updates_tomcat,tomcat-9,$(TOMCAT9_VERSION))
 	$(call check_updates_tomcat,tomcat-10,$(TOMCAT10_VERSION))
 	$(call check_updates_tomcat,tomcat-11,$(TOMCAT11_VERSION))
-	$(call check_updates_github,gosu,$(GOSU1_VERSION),tianon/gosu)
 	$(call check_updates_github,legopfa,$(LEGOPFA_VERSION),optionfactory/legopfa)
 	$(call check_updates_github,keycloak,$(KEYCLOAK2_VERSION),keycloak/keycloak)
 	$(call check_updates_maven,optionfactory-keycloak,$(KEYCLOAK_OPFA_MODULES_VERSION),net/optionfactory/keycloak/optionfactory-keycloak)
@@ -244,9 +242,7 @@ sync-medic:
 	$(call task,syncing medic)
 	$(call irun,echo optionfactory-*-medic/deps | xargs -n 1 rsync -az install-medic.sh)
 
-sync-tools: deps/gosu1 
-	$(call task,syncing gosu)
-	$(call irun,echo optionfactory-debian13/deps | xargs -n 1 rsync -az deps/gosu-${GOSU1_VERSION})
+sync-tools:
 	$(call task,syncing ps1)
 	$(call irun,echo optionfactory-debian13/deps | xargs -n 1 rsync -az install-ps1.sh)
 	$(call task,syncing base image)
@@ -350,7 +346,6 @@ sync-monitoring-tempo: deps/tempo
 
 
 deps/sloth: deps/sloth-${SLOTH_VERSION}
-deps/gosu1: deps/gosu-${GOSU1_VERSION}
 deps/legopfa1: deps/legopfa-${LEGOPFA_VERSION}
 deps/maven3: deps/apache-maven-${MAVEN3_VERSION}
 deps/sonarqube10: deps/sonarqube-${SONARQUBE10_VERSION}
@@ -399,9 +394,6 @@ deps/apache-tomcat-${TOMCAT11_VERSION}:
 	$(call irun,curl -# -sSL -k https://archive.apache.org/dist/tomcat/tomcat-11/v${TOMCAT11_VERSION}/bin/apache-tomcat-${TOMCAT11_VERSION}.tar.gz | tar xz -C deps)
 deps/tomcat11-logging-error-report-valve-${TOMCAT11_ERROR_REPORT_VALVE_VERSION}.jar:
 	$(call irun,curl -# -j -k -L  https://repo1.maven.org/maven2/net/optionfactory/tomcat9-logging-error-report-valve/${TOMCAT11_ERROR_REPORT_VALVE_VERSION}/tomcat9-logging-error-report-valve-${TOMCAT11_ERROR_REPORT_VALVE_VERSION}.jar -o deps/tomcat11-logging-error-report-valve-${TOMCAT11_ERROR_REPORT_VALVE_VERSION}.jar)
-deps/gosu-${GOSU1_VERSION}:
-	$(call irun,curl -# -sSL -k https://github.com/tianon/gosu/releases/download/${GOSU1_VERSION}/gosu-amd64 -o deps/gosu-${GOSU1_VERSION})
-	$(call irun,chmod +x deps/gosu-${GOSU1_VERSION})
 deps/legopfa-${LEGOPFA_VERSION}:	
 	$(call irun,curl -# -j -k -L https://github.com/optionfactory/legopfa/releases/download/${LEGOPFA_VERSION}/legopfa-${LEGOPFA_VERSION} -o deps/legopfa-${LEGOPFA_VERSION})
 	$(call irun,chmod +x deps/legopfa-${LEGOPFA_VERSION})
