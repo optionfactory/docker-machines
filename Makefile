@@ -11,7 +11,7 @@ TOMCAT10_VERSION=10.1.57
 TOMCAT10_ERROR_REPORT_VALVE_VERSION=2.0
 TOMCAT11_VERSION=11.0.24
 TOMCAT11_ERROR_REPORT_VALVE_VERSION=2.0
-LEGOPFA_VERSION=1.5
+LEGOPFA_VERSION=1.6
 KEYCLOAK2_VERSION=26.7.0
 KEYCLOAK_OPFA_MODULES_VERSION=9.8
 MAVEN3_VERSION=3.9.16
@@ -283,7 +283,7 @@ sync-keycloak2: deps/keycloak2
 	$(call irun,echo optionfactory-*-keycloak2/deps | xargs -n 1 rsync -az install-keycloak.sh)
 	$(call irun,echo optionfactory-*-keycloak2/deps | xargs -n 1 rsync -az deps/keycloak-${KEYCLOAK2_VERSION})
 	$(call irun,echo optionfactory-*-keycloak2/deps | xargs -n 1 rsync -az deps/optionfactory-keycloak-${KEYCLOAK_OPFA_MODULES_VERSION})
-sync-nginx130: deps/nginx_remove_server_header_module deps/legopfa1
+sync-nginx130: deps/nginx_remove_server_header_module deps/legopfa
 	$(call task,syncing nginx)
 	$(call irun,echo optionfactory-*-nginx130/deps | xargs -n 1 rsync -az install-nginx.sh)
 	$(call irun,echo optionfactory-*-nginx130/deps | xargs -n 1 rsync -az deps/opfa_http_remove_server_header_module-${NGINX_REMOVE_SERVER_HEADER_MODULE_VERSION}.so)
@@ -346,7 +346,7 @@ sync-monitoring-tempo: deps/tempo
 
 
 deps/sloth: deps/sloth-${SLOTH_VERSION}
-deps/legopfa1: deps/legopfa-${LEGOPFA_VERSION}
+deps/legopfa: deps/legopfa-${LEGOPFA_VERSION}
 deps/maven3: deps/apache-maven-${MAVEN3_VERSION}
 deps/sonarqube10: deps/sonarqube-${SONARQUBE10_VERSION}
 deps/tomcat9: deps/apache-tomcat-${TOMCAT9_VERSION} deps/tomcat9-logging-error-report-valve-${TOMCAT9_ERROR_REPORT_VALVE_VERSION}.jar
@@ -395,7 +395,7 @@ deps/apache-tomcat-${TOMCAT11_VERSION}:
 deps/tomcat11-logging-error-report-valve-${TOMCAT11_ERROR_REPORT_VALVE_VERSION}.jar:
 	$(call irun,curl -# -j -k -L  https://repo1.maven.org/maven2/net/optionfactory/tomcat9-logging-error-report-valve/${TOMCAT11_ERROR_REPORT_VALVE_VERSION}/tomcat9-logging-error-report-valve-${TOMCAT11_ERROR_REPORT_VALVE_VERSION}.jar -o deps/tomcat11-logging-error-report-valve-${TOMCAT11_ERROR_REPORT_VALVE_VERSION}.jar)
 deps/legopfa-${LEGOPFA_VERSION}:	
-	$(call irun,curl -# -j -k -L https://github.com/optionfactory/legopfa/releases/download/${LEGOPFA_VERSION}/legopfa-${LEGOPFA_VERSION} -o deps/legopfa-${LEGOPFA_VERSION})
+	$(call irun,curl -# -j -k -L https://github.com/optionfactory/legopfa/releases/download/v${LEGOPFA_VERSION}/legopfa-linux-amd64 -o deps/legopfa-${LEGOPFA_VERSION})
 	$(call irun,chmod +x deps/legopfa-${LEGOPFA_VERSION})
 deps/keycloak-${KEYCLOAK2_VERSION}:
 	$(call irun,curl -# -j -k -L  https://github.com/keycloak/keycloak/releases/download/${KEYCLOAK2_VERSION}/keycloak-${KEYCLOAK2_VERSION}.tar.gz | tar xz -C deps)
