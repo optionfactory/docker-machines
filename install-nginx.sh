@@ -11,7 +11,8 @@ curl -# -L https://nginx.org/keys/nginx_signing.key > /etc/apt/trusted.gpg.d/ngi
 echo "deb https://nginx.org/packages/${DISTRIB_ID}/ ${DISTRIB_CODENAME} nginx" >> /etc/apt/sources.list.d/nginx.list
 
 DEBIAN_FRONTEND=noninteractive apt-get -y -q update
-DEBIAN_FRONTEND=noninteractive apt-get -y -q install --no-install-recommends --no-install-suggests nginx=${NGINX_MAJOR_VERSION}.* gettext-base
+DEBIAN_FRONTEND=noninteractive apt-get -y -q install --no-install-recommends --no-install-suggests nginx=${NGINX_MAJOR_VERSION}.* nginx-module-acme=${NGINX_MAJOR_VERSION}.* gettext-base
+
 rm -rf /var/lib/apt/lists/* /etc/apt/sources.list.d/nginx.list
 
 cat <<'EOF' > /etc/nginx/nginx.conf
