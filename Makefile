@@ -45,7 +45,7 @@ endef
 
 
 help:
-	@echo usage: make [clean-deps] [clean] docker-images
+	@echo usage: make [clean-deps] [clean] build
 	@echo usage: make [clean-deps] [clean] docker-optionfactory-debian13-mariadb10
 	exit 1
 
@@ -92,7 +92,7 @@ check-updates:
 	$(call check_updates_github,sloth,$(SLOTH_VERSION),optionfactory/sloth)
 
 
-docker-images: sync-base-images $(addprefix docker-,$(wildcard optionfactory-*))
+build: sync-base-images $(addprefix docker-,$(wildcard optionfactory-*))
 
 publish-dockerhub:
 	$(call task,pushing tag: ${TAG_VERSION})
@@ -231,7 +231,6 @@ docker-optionfactory-%: verify-docker-backend
 
 sync-base-images:
 	$(call task,updating base images)
-	$(call irun,docker pull debian:bookworm)
 	$(call irun,docker pull debian:trixie)
 
 sync-sloth: deps/sloth
