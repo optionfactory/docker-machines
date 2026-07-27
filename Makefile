@@ -46,7 +46,7 @@ endef
 
 help:
 	@echo usage: make [clean-deps] [clean] build
-	@echo usage: make [clean-deps] [clean] docker-optionfactory-debian13-mariadb10
+	@echo usage: make [clean-deps] [clean] build-optionfactory-debian13-mariadb10
 	exit 1
 
 
@@ -92,7 +92,7 @@ check-updates:
 	$(call check_updates_github,sloth,$(SLOTH_VERSION),optionfactory/sloth)
 
 
-build: sync-base-images $(addprefix docker-,$(wildcard optionfactory-*))
+build: sync-base-images $(addprefix build-,$(wildcard optionfactory-*))
 
 publish-dockerhub:
 	$(call task,pushing tag: ${TAG_VERSION})
@@ -115,118 +115,118 @@ publish-github:
 	$(call irun,docker images --filter="reference=optionfactory/*:${TAG_VERSION}" --format='{{.Repository}}' | sort | uniq |  xargs -I'{}' docker push ghcr.io/{}:latest)
 
 
-docker-optionfactory-debian13: sync-tools
+build-optionfactory-debian13: sync-tools
 
-docker-optionfactory-sloth: sync-sloth
+build-optionfactory-sloth: sync-sloth
 
-#docker-optionfactory-%-medic: $(subst -jdk21,,$@)
-docker-optionfactory-debian13-medic: sync-medic docker-optionfactory-debian13
-
-
-#docker-optionfactory-%-jdk21: $(subst -jdk21,,$@)
-docker-optionfactory-debian13-jdk21: sync-jdk21 docker-optionfactory-debian13
-docker-optionfactory-debian13-jdk25: sync-jdk25 docker-optionfactory-debian13
-
-#docker-optionfactory-%-jdk21-sonarqube10: $(subst -jdk21-sonarqube10,,$@)
-docker-optionfactory-debian13-jdk25-sonarqube10: sync-sonarqube10 docker-optionfactory-debian13-jdk25
-
-#docker-optionfactory-%-jdk21-builder: $(subst -jdk21-builder,,$@)
-docker-optionfactory-debian13-jdk21-builder: sync-builder docker-optionfactory-debian13-jdk21
-docker-optionfactory-debian13-jdk25-builder: sync-builder docker-optionfactory-debian13-jdk25
-
-#docker-optionfactory-%-nginx130: $(subst -nginx130,,$@)
-docker-optionfactory-debian13-nginx130: sync-nginx130 docker-optionfactory-debian13
-docker-optionfactory-debian13-nginx130: BUILD_ARGS+=--build-arg NGINX_MAJOR_VERSION=$(NGINX_MAJOR_VERSION)
+#build-optionfactory-%-medic: $(subst -jdk21,,$@)
+build-optionfactory-debian13-medic: sync-medic build-optionfactory-debian13
 
 
-#docker-optionfactory-%-caddy2: $(subst -caddy2,,$@)
-docker-optionfactory-debian13-caddy2: sync-caddy2 docker-optionfactory-debian13
+#build-optionfactory-%-jdk21: $(subst -jdk21,,$@)
+build-optionfactory-debian13-jdk21: sync-jdk21 build-optionfactory-debian13
+build-optionfactory-debian13-jdk25: sync-jdk25 build-optionfactory-debian13
 
-#docker-optionfactory-%-mariadb12: $(subst -mariadb10,,$@)
-docker-optionfactory-debian13-mariadb12: sync-mariadb12 docker-optionfactory-debian13
+#build-optionfactory-%-jdk21-sonarqube10: $(subst -jdk21-sonarqube10,,$@)
+build-optionfactory-debian13-jdk25-sonarqube10: sync-sonarqube10 build-optionfactory-debian13-jdk25
 
-#docker-optionfactory-%-postgres15: $(subst -postgres15,,$@)
-docker-optionfactory-debian13-postgres15: sync-postgres docker-optionfactory-debian13
-docker-optionfactory-debian13-postgres15: BUILD_ARGS+=--build-arg PSQL_MAJOR_VERSION=15
+#build-optionfactory-%-jdk21-builder: $(subst -jdk21-builder,,$@)
+build-optionfactory-debian13-jdk21-builder: sync-builder build-optionfactory-debian13-jdk21
+build-optionfactory-debian13-jdk25-builder: sync-builder build-optionfactory-debian13-jdk25
 
-#docker-optionfactory-%-postgres16: $(subst -postgres16,,$@)
-docker-optionfactory-debian13-postgres16: sync-postgres docker-optionfactory-debian13
-docker-optionfactory-debian13-postgres16: BUILD_ARGS+=--build-arg PSQL_MAJOR_VERSION=16
-
-#docker-optionfactory-%-postgres17: $(subst -postgres17,,$@)
-docker-optionfactory-debian13-postgres17: sync-postgres docker-optionfactory-debian13
-docker-optionfactory-debian13-postgres17: BUILD_ARGS+=--build-arg PSQL_MAJOR_VERSION=17
-
-#docker-optionfactory-%-postgres18: $(subst -postgres18,,$@)
-docker-optionfactory-debian13-postgres18: sync-postgres docker-optionfactory-debian13
-docker-optionfactory-debian13-postgres18: BUILD_ARGS+=--build-arg PSQL_MAJOR_VERSION=18
-
-#docker-optionfactory-%-etcd3: $(subst -etcd3,,$@)
-docker-optionfactory-debian13-etcd3: sync-etcd3 docker-optionfactory-debian13
-
-#docker-optionfactory-%-barman2: $(subst -barman2,,$@)
-docker-optionfactory-debian13-barman2: sync-barman2 docker-optionfactory-debian13
-
-#docker-optionfactory-%-journal-webd: $(subst -journal-webd,,$@)
-docker-optionfactory-debian13-journal-webd: sync-journal-webd docker-optionfactory-debian13
-
-#docker-optionfactory-%-jdk21-tomcat9: $(subst -tomcat9,,$@)
-docker-optionfactory-debian13-jdk21-tomcat9: sync-tomcat9 docker-optionfactory-debian13-jdk21
-docker-optionfactory-debian13-jdk21-tomcat9: BUILD_ARGS+=--build-arg TOMCAT_MAJOR_VERSION=9
-
-docker-optionfactory-debian13-jdk25-tomcat9: sync-tomcat9 docker-optionfactory-debian13-jdk25
-docker-optionfactory-debian13-jdk25-tomcat9: BUILD_ARGS+=--build-arg TOMCAT_MAJOR_VERSION=9
-
-#docker-optionfactory-%-jdk21-tomcat10: $(subst -tomcat10,,$@)
-docker-optionfactory-debian13-jdk21-tomcat10: sync-tomcat10 docker-optionfactory-debian13-jdk21
-docker-optionfactory-debian13-jdk21-tomcat10: BUILD_ARGS+=--build-arg TOMCAT_MAJOR_VERSION=10
-
-docker-optionfactory-debian13-jdk25-tomcat10: sync-tomcat10 docker-optionfactory-debian13-jdk25
-docker-optionfactory-debian13-jdk25-tomcat10: BUILD_ARGS+=--build-arg TOMCAT_MAJOR_VERSION=10
+#build-optionfactory-%-nginx130: $(subst -nginx130,,$@)
+build-optionfactory-debian13-nginx130: sync-nginx130 build-optionfactory-debian13
+build-optionfactory-debian13-nginx130: BUILD_ARGS+=--build-arg NGINX_MAJOR_VERSION=$(NGINX_MAJOR_VERSION)
 
 
-#docker-optionfactory-%-jdk21-tomcat10: $(subst -tomcat11,,$@)
-docker-optionfactory-debian13-jdk21-tomcat11: sync-tomcat11 docker-optionfactory-debian13-jdk21
-docker-optionfactory-debian13-jdk21-tomcat11: BUILD_ARGS+=--build-arg TOMCAT_MAJOR_VERSION=11
+#build-optionfactory-%-caddy2: $(subst -caddy2,,$@)
+build-optionfactory-debian13-caddy2: sync-caddy2 build-optionfactory-debian13
 
-docker-optionfactory-debian13-jdk25-tomcat11: sync-tomcat11 docker-optionfactory-debian13-jdk25
-docker-optionfactory-debian13-jdk25-tomcat11: BUILD_ARGS+=--build-arg TOMCAT_MAJOR_VERSION=11
+#build-optionfactory-%-mariadb12: $(subst -mariadb10,,$@)
+build-optionfactory-debian13-mariadb12: sync-mariadb12 build-optionfactory-debian13
 
-#docker-optionfactory-%-jdk21-keycloak2: $(subst -keycloak2,,$@)
-docker-optionfactory-debian13-jdk21-keycloak2: sync-keycloak2 docker-optionfactory-debian13-jdk21
-docker-optionfactory-debian13-jdk25-keycloak2: sync-keycloak2 docker-optionfactory-debian13-jdk25
+#build-optionfactory-%-postgres15: $(subst -postgres15,,$@)
+build-optionfactory-debian13-postgres15: sync-postgres build-optionfactory-debian13
+build-optionfactory-debian13-postgres15: BUILD_ARGS+=--build-arg PSQL_MAJOR_VERSION=15
 
-#docker-optionfactory-%-monitoring-prometheus: $(subst -monitoring-prometheus,,$@)
-docker-optionfactory-debian13-monitoring-prometheus: sync-monitoring-prometheus docker-optionfactory-debian13
+#build-optionfactory-%-postgres16: $(subst -postgres16,,$@)
+build-optionfactory-debian13-postgres16: sync-postgres build-optionfactory-debian13
+build-optionfactory-debian13-postgres16: BUILD_ARGS+=--build-arg PSQL_MAJOR_VERSION=16
 
-#docker-optionfactory-%-monitoring-alertmanager: $(subst -monitoring-alertmanager,,$@)
-docker-optionfactory-debian13-monitoring-alertmanager: sync-monitoring-alertmanager docker-optionfactory-debian13
+#build-optionfactory-%-postgres17: $(subst -postgres17,,$@)
+build-optionfactory-debian13-postgres17: sync-postgres build-optionfactory-debian13
+build-optionfactory-debian13-postgres17: BUILD_ARGS+=--build-arg PSQL_MAJOR_VERSION=17
 
-#docker-optionfactory-%-monitoring-grafana: $(subst -monitoring-alertmanager,,$@)
-docker-optionfactory-debian13-monitoring-grafana: sync-monitoring-grafana docker-optionfactory-debian13
+#build-optionfactory-%-postgres18: $(subst -postgres18,,$@)
+build-optionfactory-debian13-postgres18: sync-postgres build-optionfactory-debian13
+build-optionfactory-debian13-postgres18: BUILD_ARGS+=--build-arg PSQL_MAJOR_VERSION=18
 
-#docker-optionfactory-%-monitoring-cadvisor: $(subst -monitoring-cadvisor,,$@)
-docker-optionfactory-debian13-monitoring-cadvisor: sync-monitoring-cadvisor docker-optionfactory-debian13
+#build-optionfactory-%-etcd3: $(subst -etcd3,,$@)
+build-optionfactory-debian13-etcd3: sync-etcd3 build-optionfactory-debian13
 
-#docker-optionfactory-%-monitoring-postgres: $(subst -monitoring-postgres,,$@)
-docker-optionfactory-debian13-monitoring-postgres: sync-monitoring-postgres docker-optionfactory-debian13
+#build-optionfactory-%-barman2: $(subst -barman2,,$@)
+build-optionfactory-debian13-barman2: sync-barman2 build-optionfactory-debian13
 
-#docker-optionfactory-%-monitoring-nginx: $(subst -monitoring-nginx,,$@)
-docker-optionfactory-debian13-monitoring-nginx: sync-monitoring-nginx docker-optionfactory-debian13
+#build-optionfactory-%-journal-webd: $(subst -journal-webd,,$@)
+build-optionfactory-debian13-journal-webd: sync-journal-webd build-optionfactory-debian13
 
-#docker-optionfactory-%-monitoring-host: $(subst -monitoring-host,,$@)
-docker-optionfactory-debian13-monitoring-host: sync-monitoring-host docker-optionfactory-debian13
+#build-optionfactory-%-jdk21-tomcat9: $(subst -tomcat9,,$@)
+build-optionfactory-debian13-jdk21-tomcat9: sync-tomcat9 build-optionfactory-debian13-jdk21
+build-optionfactory-debian13-jdk21-tomcat9: BUILD_ARGS+=--build-arg TOMCAT_MAJOR_VERSION=9
 
-#docker-optionfactory-%-monitoring-tempo: $(subst -monitoring-tempo,,$@)
-docker-optionfactory-debian13-monitoring-tempo: sync-monitoring-tempo docker-optionfactory-debian13
+build-optionfactory-debian13-jdk25-tomcat9: sync-tomcat9 build-optionfactory-debian13-jdk25
+build-optionfactory-debian13-jdk25-tomcat9: BUILD_ARGS+=--build-arg TOMCAT_MAJOR_VERSION=9
+
+#build-optionfactory-%-jdk21-tomcat10: $(subst -tomcat10,,$@)
+build-optionfactory-debian13-jdk21-tomcat10: sync-tomcat10 build-optionfactory-debian13-jdk21
+build-optionfactory-debian13-jdk21-tomcat10: BUILD_ARGS+=--build-arg TOMCAT_MAJOR_VERSION=10
+
+build-optionfactory-debian13-jdk25-tomcat10: sync-tomcat10 build-optionfactory-debian13-jdk25
+build-optionfactory-debian13-jdk25-tomcat10: BUILD_ARGS+=--build-arg TOMCAT_MAJOR_VERSION=10
+
+
+#build-optionfactory-%-jdk21-tomcat10: $(subst -tomcat11,,$@)
+build-optionfactory-debian13-jdk21-tomcat11: sync-tomcat11 build-optionfactory-debian13-jdk21
+build-optionfactory-debian13-jdk21-tomcat11: BUILD_ARGS+=--build-arg TOMCAT_MAJOR_VERSION=11
+
+build-optionfactory-debian13-jdk25-tomcat11: sync-tomcat11 build-optionfactory-debian13-jdk25
+build-optionfactory-debian13-jdk25-tomcat11: BUILD_ARGS+=--build-arg TOMCAT_MAJOR_VERSION=11
+
+#build-optionfactory-%-jdk21-keycloak2: $(subst -keycloak2,,$@)
+build-optionfactory-debian13-jdk21-keycloak2: sync-keycloak2 build-optionfactory-debian13-jdk21
+build-optionfactory-debian13-jdk25-keycloak2: sync-keycloak2 build-optionfactory-debian13-jdk25
+
+#build-optionfactory-%-monitoring-prometheus: $(subst -monitoring-prometheus,,$@)
+build-optionfactory-debian13-monitoring-prometheus: sync-monitoring-prometheus build-optionfactory-debian13
+
+#build-optionfactory-%-monitoring-alertmanager: $(subst -monitoring-alertmanager,,$@)
+build-optionfactory-debian13-monitoring-alertmanager: sync-monitoring-alertmanager build-optionfactory-debian13
+
+#build-optionfactory-%-monitoring-grafana: $(subst -monitoring-alertmanager,,$@)
+build-optionfactory-debian13-monitoring-grafana: sync-monitoring-grafana build-optionfactory-debian13
+
+#build-optionfactory-%-monitoring-cadvisor: $(subst -monitoring-cadvisor,,$@)
+build-optionfactory-debian13-monitoring-cadvisor: sync-monitoring-cadvisor build-optionfactory-debian13
+
+#build-optionfactory-%-monitoring-postgres: $(subst -monitoring-postgres,,$@)
+build-optionfactory-debian13-monitoring-postgres: sync-monitoring-postgres build-optionfactory-debian13
+
+#build-optionfactory-%-monitoring-nginx: $(subst -monitoring-nginx,,$@)
+build-optionfactory-debian13-monitoring-nginx: sync-monitoring-nginx build-optionfactory-debian13
+
+#build-optionfactory-%-monitoring-host: $(subst -monitoring-host,,$@)
+build-optionfactory-debian13-monitoring-host: sync-monitoring-host build-optionfactory-debian13
+
+#build-optionfactory-%-monitoring-tempo: $(subst -monitoring-tempo,,$@)
+build-optionfactory-debian13-monitoring-tempo: sync-monitoring-tempo build-optionfactory-debian13
 
 
 verify-docker-backend:
 	@docker info --format '{{json .DriverStatus}}' | grep -q "io.containerd.snapshotter.v1" || (echo -e "Docker is not configured with the containerd-snapshotter." && exit 1)
 
-docker-optionfactory-%: verify-docker-backend
+build-optionfactory-%: verify-docker-backend
 	$(call task,building $@)
-	$(eval name=$(subst docker-optionfactory-,,$@))
+	$(eval name=$(subst build-optionfactory-,,$@))
 	$(call irun,docker build ${DOCKER_BUILD_OPTIONS} $(BUILD_ARGS) --sbom=true --tag=optionfactory/$(name):${TAG_VERSION} --tag=optionfactory/$(name):latest optionfactory-$(name))
 
 sync-base-images:
@@ -457,4 +457,4 @@ cleanup-docker-images: FORCE
 #then make imagines this target to have been updated whenever its rule is run.
 #This implies that all targets depending on this one will always have their recipe run.
 FORCE:
-.PHONY: docker-images clean clean-deps cleanup-docker-images
+.PHONY: build clean clean-deps cleanup-docker-images
