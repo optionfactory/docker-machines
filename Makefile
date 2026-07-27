@@ -395,7 +395,7 @@ deps/apache-tomcat-${TOMCAT11_VERSION}:
 deps/tomcat11-logging-error-report-valve-${TOMCAT11_ERROR_REPORT_VALVE_VERSION}.jar:
 	$(call irun,curl -# -j -k -L  https://repo1.maven.org/maven2/net/optionfactory/tomcat9-logging-error-report-valve/${TOMCAT11_ERROR_REPORT_VALVE_VERSION}/tomcat9-logging-error-report-valve-${TOMCAT11_ERROR_REPORT_VALVE_VERSION}.jar -o deps/tomcat11-logging-error-report-valve-${TOMCAT11_ERROR_REPORT_VALVE_VERSION}.jar)
 deps/legopfa-${LEGOPFA_VERSION}:	
-	$(call irun,curl -# -j -k -L https://github.com/optionfactory/legopfa/releases/download/v${LEGOPFA_VERSION}/legopfa-linux-amd64 -o deps/legopfa-${LEGOPFA_VERSION})
+	$(call irun,curl -# -j -k -L https://github.com/optionfactory/legopfa/releases/download/v${LEGOPFA_VERSION}/legopfa -o deps/legopfa-${LEGOPFA_VERSION})
 	$(call irun,chmod +x deps/legopfa-${LEGOPFA_VERSION})
 deps/keycloak-${KEYCLOAK2_VERSION}:
 	$(call irun,curl -# -j -k -L  https://github.com/keycloak/keycloak/releases/download/${KEYCLOAK2_VERSION}/keycloak-${KEYCLOAK2_VERSION}.tar.gz | tar xz -C deps)
