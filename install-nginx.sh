@@ -71,6 +71,72 @@ location /internal_custom_error {
 }
 EOF
 
+cat <<'EOF' > /etc/nginx/forwarded.conf
+    # edge proxy
+    # headers
+    proxy_set_header Host              $http_host;
+    proxy_set_header X-Real-IP         $remote_addr;
+    proxy_set_header X-Forwarded-For   $remote_addr;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_set_header X-Forwarded-Host  $http_host;
+    proxy_set_header X-Forwarded-Port  $server_port;
+    proxy_set_header X-Forwarded-Server $host;
+
+    # Tracing & Custom Headers
+    proxy_set_header X-RID          $request_id;
+    proxy_set_header X-Scheme       $scheme;
+    proxy_set_header X-Original-URI $request_uri;
+
+    # websockets / HTTP upgrade (Requires 'map $http_upgrade $connection_upgrade' in http block)
+    proxy_set_header Upgrade        $http_upgrade;
+    proxy_set_header Connection     $connection_upgrade;
+
+    # timeouts
+    proxy_send_timeout 300s;
+    proxy_read_timeout 300s;
+
+    # buffers
+    proxy_buffer_size          128k;
+    proxy_buffers              4 256k;
+    proxy_busy_buffers_size    256k;
+
+EOF
+
+cat <<'EOF' > /etc/nginx/reforwarded.conf
+    # internal proxy 
+    # headers
+    proxy_set_header Host              $http_host;
+    proxy_set_header X-Real-IP $http_x_real_ip;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $http_x_forwarded_proto;
+    proxy_set_header X-Forwarded-Host  $http_host;
+    proxy_set_header X-Forwarded-Port $http_x_forwarded_port;
+    proxy_set_header X-Forwarded-Server $host;
+
+    # Tracing & Custom Headers
+    proxy_set_header X-RID          $request_id;
+    proxy_set_header X-Scheme       $scheme;
+    proxy_set_header X-Original-URI $request_uri;
+
+    # websockets / HTTP upgrade (Requires 'map $http_upgrade $connection_upgrade' in http block)
+    proxy_set_header Upgrade        $http_upgrade;
+    proxy_set_header Connection     $connection_upgrade;
+
+    # timeouts
+    proxy_send_timeout 300s;
+    proxy_read_timeout 300s;
+
+    # buffers
+    proxy_buffer_size          128k;
+    proxy_buffers              4 256k;
+    proxy_busy_buffers_size    256k;
+EOF
+
+cat <<'EOF' > /etc/nginx/hsts.conf
+    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+EOF
+
+
 
 
 ln -sf /dev/stdout /var/log/nginx/access.log
