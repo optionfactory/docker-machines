@@ -50,17 +50,6 @@ http {
 }
 EOF
 
-cat <<'EOF' > /etc/nginx/dhparam.pem
------BEGIN DH PARAMETERS-----
-MIIBCAKCAQEA//////////+t+FRYortKmq/cViAnPTzx2LnFg84tNpWp4TZBFGQz
-+8yTnc4kmz75fS/jY2MMddj2gbICrsRhetPfHtXV/WVhJDP1H18GbtCFY2VVPe0a
-87VXE15/V8k1mE8McODmi3fipona8+/och3xWKE2rec1MKzKT0g6eXq8CrGCsyT7
-YdEIqUuyyOP7uWrat2DX9GgdT0Kj3jlN9K5W7edjcrsZCwenyO4KbXCeAvzhzffi
-7MA0BM0oNC9hkXL+nOmFg/+OTxIy7vKBg8P+OxtMb61zO7X8vC7CIAXFjvGDfRaD
-ssbzSibBsu/6iGtCOGEoXJf//////////wIBAg==
------END DH PARAMETERS-----
-EOF
-
 cat <<'EOF' > /etc/nginx/error_pages.conf
 error_page 301 302 303 307 308 400 401 402 403 404 405 406 408 409 410 411 412 413 414 415 416 421 429 494 495 496 497 500 501 502 503 504 505 507 /internal_custom_error;
 
@@ -136,8 +125,23 @@ cat <<'EOF' > /etc/nginx/hsts.conf
     add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
 EOF
 
+cat <<'EOF' > /etc/nginx/tls-modern.conf
+    ssl_protocols TLSv1.3;
+    ssl_ecdh_curve X25519MLKEM768:X25519:prime256v1:secp384r1;
+    ssl_prefer_server_ciphers off;
+EOF
 
 
+cat <<'EOF' > /etc/nginx/tls-intermediate.conf
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ecdh_curve X25519MLKEM768:X25519:prime256v1:secp384r1;
+    ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305;
+    ssl_prefer_server_ciphers off;
+
+    ssl_session_tickets off;
+    ssl_session_timeout 1d;
+    ssl_session_cache shared:MozSSL:10m;  # about 40000 sessions
+EOF
 
 ln -sf /dev/stdout /var/log/nginx/access.log
 ln -sf /dev/stderr /var/log/nginx/error.log
