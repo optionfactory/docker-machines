@@ -1,2 +1,5 @@
-optionfactory-*/install-*.sh
+deps/
+.venv/
+.pytest_cache/
+__pycache__/
 *expc.tar.gz

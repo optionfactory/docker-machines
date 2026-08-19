@@ -149,24 +149,28 @@ docker run -d --rm \
 
 ## Building
 
-Requirements: `make`, `docker` with the containerd snapshotter (buildkit image store), `curl`, `jq`, `rsync`, `unzip`.
+Requirements: `make`, `docker` with the containerd snapshotter (buildkit image store), the `docker buildx` plugin, `curl`, `jq`, `unzip`, `python3-venv` (for the test suite, a `.venv` is created on demand).
 
 ```bash
 make check-updates              # compares pinned versions with upstream releases
-make build                      # builds all images
+make build                      # builds all images (docker buildx bake, parallel siblings)
 make build-optionfactory-debian13-jdk25-tomcat11   # builds one image and its parents
-make clean                      # removes install scripts and deps from build contexts
+make test                       # smoke-tests all built images (pytest)
 make clean-deps                 # removes cached deps/ downloads
-make publish-dockerhub          # pushes TAG_VERSION and latest to Docker Hub
+make publish                    # builds, tests, then pushes TAG_VERSION and latest to Docker Hub
 ```
 
-Versions are pinned as Makefile variables; dependency tarballs are downloaded to `deps/` on demand and rsynced into each image's build context.
+Tests live in `test/`: `test_images.py` is a parametrized table exercising every image through its real binaries (version/content assertions, major-version level so pin bumps don't break it); `test_boot.py` boots postgres/tomcat/sloth with their real entrypoints and asserts readiness log lines, HTTP responses, and running state. `make publish` runs the suite between building and pushing.
+
+Versions are pinned as Makefile variables. `docker buildx bake` (driven by the make wrappers) builds the whole graph: `docker-bake.hcl` defines one target per image, renders its Dockerfile inline (`dockerfile-inline`, no per-image Dockerfiles or directories), links each image to its parent via `contexts.base = "target:<parent>"` + `FROM base`, and mounts exactly the artifacts each image needs from `deps/<family>/` via named build contexts (`distrib`), plus the shared installer scripts (`scripts/`). Artifacts are downloaded into per-family directories on demand and re-downloaded whenever a pinned version changes; nothing is ever copied around.
+
+To publish to ghcr.io instead (emergency fallback), uncomment the `ghcr.io` tags in `docker-bake.hcl`, `docker login ghcr.io`, and run the `publish-github` target (commented out in the Makefile).
 
 ## Conventions
 
 - **Privileges**: Dockerfiles do not declare `USER`. Entrypoints start as root to perform init (chowns, initdb, certificate renewal), then drop to a dedicated user with `exec setpriv --reuid=<service> --regid=docker-machines --init-groups`. This mirrors the official postgres/mariadb images and allows volume permissions to be fixed at startup.
 - **Shared ids**: every service account uses uid/gid 950, group `docker-machines`, so containers can share volumes regardless of the image they come from.
-- **deps flow**: `deps/` at the repo root caches downloaded artifacts. `sync-*` make targets rsync install scripts and artifacts into each image's `deps/` build context, where they are bind-mounted at `/build` during the build. Editing an `install-*.sh` at the repo root has no effect until the corresponding sync target runs — `make clean` followed by `make build` always resyncs.
+- **deps flow**: `deps/<family>/` at the repo root caches downloaded artifacts, one directory per artifact family, containing exactly what the family's images need. Dockerfiles read them directly through named build contexts (`--mount=type=bind,from=distrib,target=/build`); install scripts are mounted from `scripts/` and executed as `/build-scripts/install-*.sh`. Editing a script takes effect on the next build — there is no sync step. Bumping a pinned version wipes and re-downloads the family directory (`.stamp-<version>` files). Corretto JDKs are pinned (`CORRETTO2x_VERSION`) and checked by `make check-updates` via the corretto.aws `latest` redirect.
 - **Tagging**: all images share one monotonically increasing `TAG_VERSION` (plus `latest`), bumped together with the version pins in the same commit. `make check-updates` compares the pins against upstream releases.
-- **Naming**: image suffixes lock the packaged major version (e.g. `keycloak2`, `nginx130`, `postgres15`-`postgres18`, `mariadb12`); breaking upgrades get a new directory rather than overwriting the suffix.
-- **Build requirements**: docker must use the containerd snapshotter (checked by `verify-docker-backend`), because builds pass `--sbom=true`.
+- **Naming**: image suffixes lock the packaged major version (e.g. `keycloak2`, `nginx130`, `postgres15`-`postgres18`, `mariadb12`); breaking upgrades get a new bake target/image name rather than overwriting the suffix.
+- **Build requirements**: docker must use the containerd snapshotter (checked by `verify-docker-backend`), because images are built with SBOM attestations. Dockerfiles live inline in `docker-bake.hcl` and use `FROM base`, resolved by bake — always build through the make/bake entry points, not standalone `docker build`.

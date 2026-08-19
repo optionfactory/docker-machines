@@ -1,0 +1,216 @@
+# smoke-test table: one [[check]] per assertion, loaded by test/test_images.py.
+# keep `expect` at major-version level so routine pin bumps don't break the suite.
+
+# base
+[[check]]
+image = "debian13"
+command = ["grep", "trixie", "/etc/os-release"]
+expect = "trixie"
+
+# runtimes
+[[check]]
+image = "debian13-jdk21"
+command = ["/usr/bin/java", "-version"]
+expect = "version \"21"
+id = "jdk21"
+
+[[check]]
+image = "debian13-jdk25"
+command = ["/usr/bin/java", "-version"]
+expect = "version \"25"
+id = "jdk25"
+
+[[check]]
+image = "debian13-postgres15"
+command = ["/usr/lib/postgresql/15/bin/postgres", "--version"]
+expect = "PostgreSQL) 15"
+
+[[check]]
+image = "debian13-postgres16"
+command = ["/usr/lib/postgresql/16/bin/postgres", "--version"]
+expect = "PostgreSQL) 16"
+
+[[check]]
+image = "debian13-postgres17"
+command = ["/usr/lib/postgresql/17/bin/postgres", "--version"]
+expect = "PostgreSQL) 17"
+
+[[check]]
+image = "debian13-postgres18"
+command = ["/usr/lib/postgresql/18/bin/postgres", "--version"]
+expect = "PostgreSQL) 18"
+
+[[check]]
+image = "debian13-mariadb12"
+command = ["mariadbd", "--version"]
+expect = "MariaDB"
+
+[[check]]
+image = "debian13-etcd3"
+command = ["/opt/etcd3/bin/etcd", "--version"]
+expect = "etcd Version: 3."
+
+# application servers
+[[check]]
+image = "debian13-jdk21-tomcat9"
+command = ["/opt/apache-tomcat/bin/version.sh"]
+expect = "Apache Tomcat/9"
+id = "tomcat9-jdk21"
+
+[[check]]
+image = "debian13-jdk25-tomcat9"
+command = ["/opt/apache-tomcat/bin/version.sh"]
+expect = "Apache Tomcat/9"
+id = "tomcat9-jdk25"
+
+[[check]]
+image = "debian13-jdk21-tomcat10"
+command = ["/opt/apache-tomcat/bin/version.sh"]
+expect = "Apache Tomcat/10"
+id = "tomcat10-jdk21"
+
+[[check]]
+image = "debian13-jdk25-tomcat10"
+command = ["/opt/apache-tomcat/bin/version.sh"]
+expect = "Apache Tomcat/10"
+id = "tomcat10-jdk25"
+
+[[check]]
+image = "debian13-jdk21-tomcat11"
+command = ["/opt/apache-tomcat/bin/version.sh"]
+expect = "Apache Tomcat/11"
+id = "tomcat11-jdk21"
+
+[[check]]
+image = "debian13-jdk25-tomcat11"
+command = ["/opt/apache-tomcat/bin/version.sh"]
+expect = "Apache Tomcat/11"
+id = "tomcat11-jdk25"
+
+[[check]]
+image = "debian13-jdk21-keycloak2"
+command = ["/opt/keycloak/bin/kc.sh", "--version"]
+expect = "Keycloak"
+id = "keycloak2-jdk21"
+
+[[check]]
+image = "debian13-jdk25-keycloak2"
+command = ["/opt/keycloak/bin/kc.sh", "--version"]
+expect = "Keycloak"
+id = "keycloak2-jdk25"
+
+[[check]]
+image = "debian13-jdk25-keycloak2"
+command = ["ls", "/opt/keycloak/providers"]
+expect = "optionfactory-keycloak"
+id = "keycloak2-providers"
+
+[[check]]
+image = "debian13-jdk25-sonarqube10"
+command = ["ls", "/opt/sonarqube/bin/linux-x86-64"]
+expect = "sonar.sh"
+
+# builders
+[[check]]
+image = "debian13-jdk21-builder"
+command = ["id", "-un"]
+expect = "builder"
+id = "builder-jdk21-user"
+
+[[check]]
+image = "debian13-jdk21-builder"
+command = ["mvn", "-v"]
+expect = "Apache Maven"
+id = "builder-jdk21-maven"
+
+[[check]]
+image = "debian13-jdk25-builder"
+command = ["id", "-un"]
+expect = "builder"
+id = "builder-jdk25-user"
+
+[[check]]
+image = "debian13-jdk25-builder"
+command = ["mvn", "-v"]
+expect = "Apache Maven"
+id = "builder-jdk25-maven"
+
+# web servers / proxies
+[[check]]
+image = "debian13-nginx130"
+command = ["nginx", "-v"]
+expect = "nginx/1.30"
+
+[[check]]
+image = "debian13-nginx130"
+command = ["nginx", "-T"]
+expect = "opfa_http_remove_server_header"
+id = "nginx130-module"
+
+[[check]]
+image = "debian13-nginx130"
+command = ["ls", "/usr/bin/legopfa"]
+expect = "legopfa"
+id = "nginx130-legopfa"
+
+[[check]]
+image = "debian13-caddy2"
+command = ["/opt/caddy/bin/caddy", "version"]
+expect = "v2."
+
+# tools
+[[check]]
+image = "debian13-barman2"
+command = ["barman", "--version"]
+expect = "Barman by EnterpriseDB"
+
+[[check]]
+image = "debian13-journal-webd"
+command = ["ls", "-l", "/journal-webd"]
+expect = "journal-webd"
+
+[[check]]
+image = "debian13-medic"
+command = ["tcpdump", "--version"]
+expect = "tcpdump version"
+
+# monitoring
+[[check]]
+image = "debian13-monitoring-prometheus"
+command = ["/opt/prometheus/bin/prometheus", "--version"]
+expect = "prometheus, version"
+
+[[check]]
+image = "debian13-monitoring-alertmanager"
+command = ["/opt/alertmanager/bin/alertmanager", "--version"]
+expect = "alertmanager, version"
+
+[[check]]
+image = "debian13-monitoring-grafana"
+command = ["/opt/grafana/bin/grafana", "-v"]
+expect = "grafana version"
+
+[[check]]
+image = "debian13-monitoring-tempo"
+command = ["/opt/tempo/bin/tempo", "--version"]
+expect = "tempo, version"
+
+[[check]]
+image = "debian13-monitoring-cadvisor"
+command = ["/opt/cadvisor/bin/cadvisor", "--version"]
+expect = "cAdvisor version"
+
+[[check]]
+image = "debian13-monitoring-host"
+command = ["/opt/node-exporter/bin/node-exporter", "--version"]
+expect = "node_exporter, version"
+
+[[check]]
+image = "debian13-monitoring-postgres"
+command = ["/opt/postgres-exporter/bin/postgres-exporter", "--version"]
+expect = "postgres_exporter, version"
+
+[[check]]
+image = "debian13-monitoring-nginx"
+command = ["/opt/nginx-exporter/bin/nginx-exporter", "--version"]
+expect = "nginx_exporter, version"
