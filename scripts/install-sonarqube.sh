@@ -4,6 +4,8 @@ echo "Installing Sonarqube"
 mkdir -p /opt/sonarqube
 cp -R /build/sonarqube-*/* /opt/sonarqube
 chmod +x /opt/sonarqube/elasticsearch/bin/elasticsearch-{cli,env}
+# the entrypoint runs the application jar with the system jdk: the bundled jres are dead weight
+rm -rf /opt/sonarqube/jres
 
 groupadd --system --gid 950 docker-machines
 useradd --system --create-home --gid docker-machines --uid 950 sonarqube
