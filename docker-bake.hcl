@@ -85,7 +85,7 @@ target "debian13" {
   tags = tags("debian13")
   contexts = { scripts = "scripts" }
   dockerfile-inline = <<-EOF
-    ${base("debian:trixie")}
+    ${base("debian:trixie-slim")}
 
     ${run_debian13("install-base-image.sh", false, [])}
   EOF

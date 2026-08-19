@@ -112,7 +112,7 @@ verify-docker-backend:
 
 pull-base:
 	$(call task,updating base images)
-	$(call irun,docker pull debian:trixie)
+	$(call irun,docker pull debian:trixie-slim)
 
 build: pull-base verify-docker-backend all-deps
 	$(call task,baking all images)
