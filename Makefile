@@ -292,7 +292,7 @@ sync-caddy2: deps/caddy2
 	$(call irun,echo optionfactory-*-caddy2/deps | xargs -n 1 rsync -az install-caddy.sh)
 	$(call irun,echo optionfactory-*-caddy2/deps | xargs -n 1 rsync -az deps/caddy-${CADDY2_VERSION})
 sync-mariadb12: deps/mariadb12
-	$(call task,syncing mariadb 10)
+	$(call task,syncing mariadb 12)
 	$(call irun,echo optionfactory-*-mariadb12/deps | xargs -n 1 rsync -az install-mariadb.sh)
 	$(call irun,echo optionfactory-*-mariadb12/deps | xargs -n 1 rsync -az init-mariadb.sh)
 sync-postgres: deps/postgres
@@ -380,7 +380,7 @@ deps/jdk25:
 deps/apache-maven-${MAVEN3_VERSION}:
 	$(call irun,curl -# -j -L https://downloads.apache.org/maven/maven-3/${MAVEN3_VERSION}/binaries/apache-maven-${MAVEN3_VERSION}-bin.tar.gz | tar xz -C deps)
 deps/sonarqube-${SONARQUBE10_VERSION}:
-	$(call irun,cd deps && curl -# -sSL https://binaries.sonarsource.com/Distribution/sonarqube/sonarqube-${SONARQUBE10_VERSION}.zip -o tmp.sonar.${SONARQUBE10_VERSION}.zip && jar xf tmp.sonar.${SONARQUBE10_VERSION}.zip; rm tmp.sonar.${SONARQUBE10_VERSION}.zip)
+	$(call irun,cd deps && curl -# -sSL https://binaries.sonarsource.com/Distribution/sonarqube/sonarqube-${SONARQUBE10_VERSION}.zip -o tmp.sonar.${SONARQUBE10_VERSION}.zip && unzip -q tmp.sonar.${SONARQUBE10_VERSION}.zip; rm tmp.sonar.${SONARQUBE10_VERSION}.zip)
 deps/apache-tomcat-${TOMCAT9_VERSION}:
 	$(call irun,curl -# -sSL https://archive.apache.org/dist/tomcat/tomcat-9/v${TOMCAT9_VERSION}/bin/apache-tomcat-${TOMCAT9_VERSION}.tar.gz | tar xz -C deps)
 deps/tomcat9-logging-error-report-valve-${TOMCAT9_ERROR_REPORT_VALVE_VERSION}.jar:
@@ -388,7 +388,7 @@ deps/tomcat9-logging-error-report-valve-${TOMCAT9_ERROR_REPORT_VALVE_VERSION}.ja
 deps/apache-tomcat-${TOMCAT10_VERSION}:
 	$(call irun,curl -# -sSL https://archive.apache.org/dist/tomcat/tomcat-10/v${TOMCAT10_VERSION}/bin/apache-tomcat-${TOMCAT10_VERSION}.tar.gz | tar xz -C deps)
 deps/tomcat10-logging-error-report-valve-${TOMCAT10_ERROR_REPORT_VALVE_VERSION}.jar:
-	$(call irun,curl -# -j -L  https://repo1.maven.org/maven2/net/optionfactory/tomcat9-logging-error-report-valve/${TOMCAT10_ERROR_REPORT_VALVE_VERSION}/tomcat9-logging-error-report-valve-${TOMCAT9_ERROR_REPORT_VALVE_VERSION}.jar -o deps/tomcat10-logging-error-report-valve-${TOMCAT9_ERROR_REPORT_VALVE_VERSION}.jar)
+	$(call irun,curl -# -j -L  https://repo1.maven.org/maven2/net/optionfactory/tomcat9-logging-error-report-valve/${TOMCAT10_ERROR_REPORT_VALVE_VERSION}/tomcat9-logging-error-report-valve-${TOMCAT10_ERROR_REPORT_VALVE_VERSION}.jar -o deps/tomcat10-logging-error-report-valve-${TOMCAT10_ERROR_REPORT_VALVE_VERSION}.jar)
 deps/apache-tomcat-${TOMCAT11_VERSION}:
 	$(call irun,curl -# -sSL https://archive.apache.org/dist/tomcat/tomcat-11/v${TOMCAT11_VERSION}/bin/apache-tomcat-${TOMCAT11_VERSION}.tar.gz | tar xz -C deps)
 deps/tomcat11-logging-error-report-valve-${TOMCAT11_ERROR_REPORT_VALVE_VERSION}.jar:
