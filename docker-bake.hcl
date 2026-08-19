@@ -81,7 +81,7 @@ group "default" {
 # base image
 
 target "debian13" {
-  attest = ["type=sbom"]
+  attest = ["type=sbom", "type=provenance,mode=max"]
   tags = tags("debian13")
   contexts = { scripts = "scripts" }
   dockerfile-inline = <<-EOF
@@ -94,7 +94,7 @@ target "debian13" {
 # static binary in a FROM scratch image
 
 target "sloth" {
-  attest = ["type=sbom"]
+  attest = ["type=sbom", "type=provenance,mode=max"]
   tags = tags("sloth")
   contexts = { bin = "deps/sloth" }
   dockerfile-inline = <<-EOF
@@ -109,7 +109,7 @@ target "sloth" {
 # script-only images
 
 target "debian13-medic" {
-  attest = ["type=sbom"]
+  attest = ["type=sbom", "type=provenance,mode=max"]
   tags = tags("debian13-medic")
   contexts = { scripts = "scripts", base = "target:debian13" }
   dockerfile-inline = <<-EOF
@@ -120,7 +120,7 @@ target "debian13-medic" {
 }
 
 target "debian13-barman2" {
-  attest = ["type=sbom"]
+  attest = ["type=sbom", "type=provenance,mode=max"]
   tags = tags("debian13-barman2")
   contexts = { scripts = "scripts", base = "target:debian13" }
   dockerfile-inline = <<-EOF
@@ -133,7 +133,7 @@ target "debian13-barman2" {
 }
 
 target "debian13-mariadb12" {
-  attest = ["type=sbom"]
+  attest = ["type=sbom", "type=provenance,mode=max"]
   tags = tags("debian13-mariadb12")
   contexts = { scripts = "scripts", base = "target:debian13" }
   dockerfile-inline = <<-EOF
@@ -147,7 +147,7 @@ target "debian13-mariadb12" {
 }
 
 target "debian13-postgres15" {
-  attest = ["type=sbom"]
+  attest = ["type=sbom", "type=provenance,mode=max"]
   tags = tags("debian13-postgres15")
   contexts = { scripts = "scripts", base = "target:debian13" }
   dockerfile-inline = <<-EOF
@@ -161,7 +161,7 @@ target "debian13-postgres15" {
 }
 
 target "debian13-postgres16" {
-  attest = ["type=sbom"]
+  attest = ["type=sbom", "type=provenance,mode=max"]
   tags = tags("debian13-postgres16")
   contexts = { scripts = "scripts", base = "target:debian13" }
   dockerfile-inline = <<-EOF
@@ -175,7 +175,7 @@ target "debian13-postgres16" {
 }
 
 target "debian13-postgres17" {
-  attest = ["type=sbom"]
+  attest = ["type=sbom", "type=provenance,mode=max"]
   tags = tags("debian13-postgres17")
   contexts = { scripts = "scripts", base = "target:debian13" }
   dockerfile-inline = <<-EOF
@@ -189,7 +189,7 @@ target "debian13-postgres17" {
 }
 
 target "debian13-postgres18" {
-  attest = ["type=sbom"]
+  attest = ["type=sbom", "type=provenance,mode=max"]
   tags = tags("debian13-postgres18")
   contexts = { scripts = "scripts", base = "target:debian13" }
   dockerfile-inline = <<-EOF
@@ -205,7 +205,7 @@ target "debian13-postgres18" {
 # single-artifact images
 
 target "debian13-journal-webd" {
-  attest = ["type=sbom"]
+  attest = ["type=sbom", "type=provenance,mode=max"]
   tags = tags("debian13-journal-webd")
   contexts = { scripts = "scripts", base = "target:debian13", distrib = "deps/journal-webd" }
   dockerfile-inline = <<-EOF
@@ -218,7 +218,7 @@ target "debian13-journal-webd" {
 }
 
 target "debian13-etcd3" {
-  attest = ["type=sbom"]
+  attest = ["type=sbom", "type=provenance,mode=max"]
   tags = tags("debian13-etcd3")
   contexts = { scripts = "scripts", base = "target:debian13", distrib = "deps/etcd3" }
   dockerfile-inline = <<-EOF
@@ -231,7 +231,7 @@ target "debian13-etcd3" {
 }
 
 target "debian13-caddy2" {
-  attest = ["type=sbom"]
+  attest = ["type=sbom", "type=provenance,mode=max"]
   tags = tags("debian13-caddy2")
   contexts = { scripts = "scripts", base = "target:debian13", distrib = "deps/caddy2" }
   dockerfile-inline = <<-EOF
@@ -244,7 +244,7 @@ target "debian13-caddy2" {
 }
 
 target "debian13-nginx130" {
-  attest = ["type=sbom"]
+  attest = ["type=sbom", "type=provenance,mode=max"]
   tags = tags("debian13-nginx130")
   contexts = { scripts = "scripts", base = "target:debian13", distrib = "deps/nginx130" }
   dockerfile-inline = <<-EOF
@@ -257,7 +257,7 @@ target "debian13-nginx130" {
 }
 
 target "debian13-jdk21" {
-  attest = ["type=sbom"]
+  attest = ["type=sbom", "type=provenance,mode=max"]
   tags = tags("debian13-jdk21")
   contexts = { scripts = "scripts", base = "target:debian13", distrib = "deps/jdk21" }
   dockerfile-inline = <<-EOF
@@ -268,7 +268,7 @@ target "debian13-jdk21" {
 }
 
 target "debian13-jdk25" {
-  attest = ["type=sbom"]
+  attest = ["type=sbom", "type=provenance,mode=max"]
   tags = tags("debian13-jdk25")
   contexts = { scripts = "scripts", base = "target:debian13", distrib = "deps/jdk25" }
   dockerfile-inline = <<-EOF
@@ -279,7 +279,7 @@ target "debian13-jdk25" {
 }
 
 target "debian13-jdk25-sonarqube10" {
-  attest = ["type=sbom"]
+  attest = ["type=sbom", "type=provenance,mode=max"]
   tags = tags("debian13-jdk25-sonarqube10")
   contexts = { scripts = "scripts", base = "target:debian13-jdk25", distrib = "deps/sonarqube10" }
   dockerfile-inline = <<-EOF
@@ -292,7 +292,7 @@ target "debian13-jdk25-sonarqube10" {
 }
 
 target "debian13-jdk21-builder" {
-  attest = ["type=sbom"]
+  attest = ["type=sbom", "type=provenance,mode=max"]
   tags = tags("debian13-jdk21-builder")
   contexts = { scripts = "scripts", base = "target:debian13-jdk21", distrib = "deps/maven3" }
   dockerfile-inline = <<-EOF
@@ -306,7 +306,7 @@ target "debian13-jdk21-builder" {
 }
 
 target "debian13-jdk25-builder" {
-  attest = ["type=sbom"]
+  attest = ["type=sbom", "type=provenance,mode=max"]
   tags = tags("debian13-jdk25-builder")
   contexts = { scripts = "scripts", base = "target:debian13-jdk25", distrib = "deps/maven3" }
   dockerfile-inline = <<-EOF
@@ -320,7 +320,7 @@ target "debian13-jdk25-builder" {
 }
 
 target "debian13-jdk21-tomcat9" {
-  attest = ["type=sbom"]
+  attest = ["type=sbom", "type=provenance,mode=max"]
   tags = tags("debian13-jdk21-tomcat9")
   contexts = { scripts = "scripts", base = "target:debian13-jdk21", distrib = "deps/tomcat9" }
   dockerfile-inline = <<-EOF
@@ -333,7 +333,7 @@ target "debian13-jdk21-tomcat9" {
 }
 
 target "debian13-jdk25-tomcat9" {
-  attest = ["type=sbom"]
+  attest = ["type=sbom", "type=provenance,mode=max"]
   tags = tags("debian13-jdk25-tomcat9")
   contexts = { scripts = "scripts", base = "target:debian13-jdk25", distrib = "deps/tomcat9" }
   dockerfile-inline = <<-EOF
@@ -346,7 +346,7 @@ target "debian13-jdk25-tomcat9" {
 }
 
 target "debian13-jdk21-tomcat10" {
-  attest = ["type=sbom"]
+  attest = ["type=sbom", "type=provenance,mode=max"]
   tags = tags("debian13-jdk21-tomcat10")
   contexts = { scripts = "scripts", base = "target:debian13-jdk21", distrib = "deps/tomcat10" }
   dockerfile-inline = <<-EOF
@@ -359,7 +359,7 @@ target "debian13-jdk21-tomcat10" {
 }
 
 target "debian13-jdk25-tomcat10" {
-  attest = ["type=sbom"]
+  attest = ["type=sbom", "type=provenance,mode=max"]
   tags = tags("debian13-jdk25-tomcat10")
   contexts = { scripts = "scripts", base = "target:debian13-jdk25", distrib = "deps/tomcat10" }
   dockerfile-inline = <<-EOF
@@ -372,7 +372,7 @@ target "debian13-jdk25-tomcat10" {
 }
 
 target "debian13-jdk21-tomcat11" {
-  attest = ["type=sbom"]
+  attest = ["type=sbom", "type=provenance,mode=max"]
   tags = tags("debian13-jdk21-tomcat11")
   contexts = { scripts = "scripts", base = "target:debian13-jdk21", distrib = "deps/tomcat11" }
   dockerfile-inline = <<-EOF
@@ -385,7 +385,7 @@ target "debian13-jdk21-tomcat11" {
 }
 
 target "debian13-jdk25-tomcat11" {
-  attest = ["type=sbom"]
+  attest = ["type=sbom", "type=provenance,mode=max"]
   tags = tags("debian13-jdk25-tomcat11")
   contexts = { scripts = "scripts", base = "target:debian13-jdk25", distrib = "deps/tomcat11" }
   dockerfile-inline = <<-EOF
@@ -398,7 +398,7 @@ target "debian13-jdk25-tomcat11" {
 }
 
 target "debian13-jdk21-keycloak2" {
-  attest = ["type=sbom"]
+  attest = ["type=sbom", "type=provenance,mode=max"]
   tags = tags("debian13-jdk21-keycloak2")
   contexts = { scripts = "scripts", base = "target:debian13-jdk21", distrib = "deps/keycloak2" }
   dockerfile-inline = <<-EOF
@@ -411,7 +411,7 @@ target "debian13-jdk21-keycloak2" {
 }
 
 target "debian13-jdk25-keycloak2" {
-  attest = ["type=sbom"]
+  attest = ["type=sbom", "type=provenance,mode=max"]
   tags = tags("debian13-jdk25-keycloak2")
   contexts = { scripts = "scripts", base = "target:debian13-jdk25", distrib = "deps/keycloak2" }
   dockerfile-inline = <<-EOF
@@ -426,7 +426,7 @@ target "debian13-jdk25-keycloak2" {
 # monitoring
 
 target "debian13-monitoring-prometheus" {
-  attest = ["type=sbom"]
+  attest = ["type=sbom", "type=provenance,mode=max"]
   tags = tags("debian13-monitoring-prometheus")
   contexts = { scripts = "scripts", base = "target:debian13", distrib = "deps/prometheus" }
   dockerfile-inline = <<-EOF
@@ -439,7 +439,7 @@ target "debian13-monitoring-prometheus" {
 }
 
 target "debian13-monitoring-alertmanager" {
-  attest = ["type=sbom"]
+  attest = ["type=sbom", "type=provenance,mode=max"]
   tags = tags("debian13-monitoring-alertmanager")
   contexts = { scripts = "scripts", base = "target:debian13", distrib = "deps/alertmanager" }
   dockerfile-inline = <<-EOF
@@ -452,7 +452,7 @@ target "debian13-monitoring-alertmanager" {
 }
 
 target "debian13-monitoring-grafana" {
-  attest = ["type=sbom"]
+  attest = ["type=sbom", "type=provenance,mode=max"]
   tags = tags("debian13-monitoring-grafana")
   contexts = { scripts = "scripts", base = "target:debian13", distrib = "deps/grafana" }
   dockerfile-inline = <<-EOF
@@ -465,7 +465,7 @@ target "debian13-monitoring-grafana" {
 }
 
 target "debian13-monitoring-cadvisor" {
-  attest = ["type=sbom"]
+  attest = ["type=sbom", "type=provenance,mode=max"]
   tags = tags("debian13-monitoring-cadvisor")
   contexts = { scripts = "scripts", base = "target:debian13", distrib = "deps/cadvisor" }
   dockerfile-inline = <<-EOF
@@ -478,7 +478,7 @@ target "debian13-monitoring-cadvisor" {
 }
 
 target "debian13-monitoring-postgres" {
-  attest = ["type=sbom"]
+  attest = ["type=sbom", "type=provenance,mode=max"]
   tags = tags("debian13-monitoring-postgres")
   contexts = { scripts = "scripts", base = "target:debian13", distrib = "deps/postgres-exporter" }
   dockerfile-inline = <<-EOF
@@ -491,7 +491,7 @@ target "debian13-monitoring-postgres" {
 }
 
 target "debian13-monitoring-nginx" {
-  attest = ["type=sbom"]
+  attest = ["type=sbom", "type=provenance,mode=max"]
   tags = tags("debian13-monitoring-nginx")
   contexts = { scripts = "scripts", base = "target:debian13", distrib = "deps/nginx-exporter" }
   dockerfile-inline = <<-EOF
@@ -504,7 +504,7 @@ target "debian13-monitoring-nginx" {
 }
 
 target "debian13-monitoring-host" {
-  attest = ["type=sbom"]
+  attest = ["type=sbom", "type=provenance,mode=max"]
   tags = tags("debian13-monitoring-host")
   contexts = { scripts = "scripts", base = "target:debian13", distrib = "deps/node-exporter" }
   dockerfile-inline = <<-EOF
@@ -517,7 +517,7 @@ target "debian13-monitoring-host" {
 }
 
 target "debian13-monitoring-tempo" {
-  attest = ["type=sbom"]
+  attest = ["type=sbom", "type=provenance,mode=max"]
   tags = tags("debian13-monitoring-tempo")
   contexts = { scripts = "scripts", base = "target:debian13", distrib = "deps/tempo" }
   dockerfile-inline = <<-EOF

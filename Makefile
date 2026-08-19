@@ -1,4 +1,4 @@
-export TAG_VERSION=232
+export TAG_VERSION=233-dev
 
 #software versions
 
@@ -132,6 +132,8 @@ test: verify-docker-backend .venv/bin/python
 	$(call irun,.venv/bin/python -m pytest test -v)
 
 publish: verify-docker-backend all-deps
+	$(call task,checking TAG_VERSION is publishable)
+	@case '${TAG_VERSION}' in *-dev) echo "TAG_VERSION ${TAG_VERSION} ends with -dev: refusing to push" >&2; exit 1;; esac
 	$(call task,baking all images)
 	$(call irun,docker buildx bake)
 	$(MAKE) test
