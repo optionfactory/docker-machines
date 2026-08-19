@@ -356,12 +356,12 @@ deps/nginx_remove_server_header_module: deps/opfa_http_remove_server_header_modu
 deps/caddy2: deps/caddy-${CADDY2_VERSION}
 deps/mariadb12:
 deps/postgres:
-deps/etcd3: deps/ectd-v${ETCD3_VERSION}-linux-amd64
+deps/etcd3: deps/etcd-v${ETCD3_VERSION}-linux-amd64
 deps/barman2:
 deps/journal-webd: deps/journal-webd-${JOURNAL_WEBD_VERSION}
 deps/prometheus: deps/prometheus-${PROMETHEUS_VERSION}.linux-amd64
 deps/alertmanager: deps/alertmanager-${ALERTMANAGER_VERSION}.linux-amd64
-deps/grafana: deps/grafana-v${GRAFANA_VERSION}
+deps/grafana: deps/grafana-${GRAFANA_VERSION}
 deps/cadvisor: deps/cadvisor-v${CADVISOR_VERSION}-linux-amd64
 deps/postgres-exporter: deps/postgres-exporter-${POSTGRES_EXPORTER_VERSION}-linux-amd64
 deps/nginx-exporter: deps/nginx-exporter-${NGINX_EXPORTER_VERSION}-linux-amd64
@@ -408,7 +408,7 @@ deps/opfa_http_remove_server_header_module-${NGINX_REMOVE_SERVER_HEADER_MODULE_V
 	$(call irun,curl -# -j -L  https://github.com/optionfactory/nginx-remove-server-header-module/releases/download/v${NGINX_REMOVE_SERVER_HEADER_MODULE_VERSION}/opfa_http_remove_server_header_module-${NGINX_REMOVE_SERVER_HEADER_MODULE_VERSION}.so -o deps/opfa_http_remove_server_header_module-${NGINX_REMOVE_SERVER_HEADER_MODULE_VERSION}.so)
 deps/caddy-${CADDY2_VERSION}:
 	$(call irun,curl -# -j -L  "https://github.com/caddyserver/caddy/releases/download/v${CADDY2_VERSION}/caddy_${CADDY2_VERSION}_linux_amd64.tar.gz" | tar xz -C deps caddy && mv deps/caddy deps/caddy-${CADDY2_VERSION})
-deps/ectd-v${ETCD3_VERSION}-linux-amd64:
+deps/etcd-v${ETCD3_VERSION}-linux-amd64:
 	$(call irun,curl -# -j -L  "https://github.com/etcd-io/etcd/releases/download/v${ETCD3_VERSION}/etcd-v${ETCD3_VERSION}-linux-amd64.tar.gz" | tar xz -C deps)		
 deps/journal-webd-${JOURNAL_WEBD_VERSION}:
 	$(call irun,curl -# -j -L  "https://github.com/optionfactory/journal-webd/releases/download/${JOURNAL_WEBD_VERSION}/journal-webd-${JOURNAL_WEBD_VERSION}" -o deps/journal-webd-${JOURNAL_WEBD_VERSION})
@@ -418,7 +418,7 @@ deps/prometheus-${PROMETHEUS_VERSION}.linux-amd64:
 	$(call irun,curl -# -j -L  "https://github.com/prometheus/prometheus/releases/download/v${PROMETHEUS_VERSION}/prometheus-${PROMETHEUS_VERSION}.linux-amd64.tar.gz" | tar xz -C deps)
 deps/alertmanager-${ALERTMANAGER_VERSION}.linux-amd64:
 	$(call irun,curl -# -j -L  "https://github.com/prometheus/alertmanager/releases/download/v${ALERTMANAGER_VERSION}/alertmanager-${ALERTMANAGER_VERSION}.linux-amd64.tar.gz" | tar xz -C deps)
-deps/grafana-v${GRAFANA_VERSION}:
+deps/grafana-${GRAFANA_VERSION}:
 	$(call irun,curl -# -j -L  "https://dl.grafana.com/oss/release/grafana-${GRAFANA_VERSION}.linux-amd64.tar.gz" | tar xz -C deps)
 deps/postgres-exporter-${POSTGRES_EXPORTER_VERSION}-linux-amd64:
 	$(call irun,curl -# -j -L  "https://github.com/prometheus-community/postgres_exporter/releases/download/v${POSTGRES_EXPORTER_VERSION}/postgres_exporter-${POSTGRES_EXPORTER_VERSION}.linux-amd64.tar.gz" | tar xz --transform='s/.*/postgres-exporter-${POSTGRES_EXPORTER_VERSION}-linux-amd64/g' -C deps postgres_exporter-${POSTGRES_EXPORTER_VERSION}.linux-amd64/postgres_exporter)
