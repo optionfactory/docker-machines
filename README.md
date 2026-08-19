@@ -66,7 +66,7 @@ docker run -d --rm \
 
 Runs [postgres_exporter](https://github.com/prometheus-community/postgres_exporter).  
 Default port is `9187`.  
-Promethues endpoint is `/metrics`.  
+Prometheus endpoint is `/metrics`.  
 
 example:
 ```bash

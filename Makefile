@@ -444,7 +444,7 @@ cleanup-docker-images: FORCE
 	$(call irun,docker system df)
 	$(call task,removing old tags)
 	$(call irun, docker images --format "{{.Repository}}:{{.Tag}}" --filter "reference=optionfactory/*" | awk -F: '$$2 < ${TAG_VERSION} {print $$0}' | xargs -I{} docker rmi {})
-	$(call task,removing dengling images)
+	$(call task,removing dangling images)
 	$(call irun, docker images --quiet --filter=dangling=true | xargs --no-run-if-empty docker rmi)
 	$(call task,removing volumes)
 	$(call irun, docker volume prune -f)

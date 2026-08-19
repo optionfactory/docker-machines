@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-echo "Installing base imnage"
+echo "Installing base image"
 
 cp /build/install-ps1.sh /etc/bash.bashrc
 
