@@ -371,63 +371,63 @@ deps/tempo: deps/tempo-${TEMPO_VERSION}-linux-amd64
 #bsdtar -xvf-
 
 deps/sloth-${SLOTH_VERSION}:
-	$(call irun,curl -# -sSL -k https://github.com/optionfactory/sloth/releases/download/v${SLOTH_VERSION}/sloth-v${SLOTH_VERSION}-x86_64-unknown-linux-musl -o deps/sloth-${SLOTH_VERSION})
+	$(call irun,curl -# -sSL https://github.com/optionfactory/sloth/releases/download/v${SLOTH_VERSION}/sloth-v${SLOTH_VERSION}-x86_64-unknown-linux-musl -o deps/sloth-${SLOTH_VERSION})
 	$(call irun,chmod +x deps/sloth-${SLOTH_VERSION})
 deps/jdk21:
-	$(call irun,curl -# -j -k -L https://corretto.aws/downloads/latest/amazon-corretto-21-x64-linux-jdk.tar.gz | tar xz -C deps)
+	$(call irun,curl -# -j -L https://corretto.aws/downloads/latest/amazon-corretto-21-x64-linux-jdk.tar.gz | tar xz -C deps)
 deps/jdk25:
-	$(call irun,curl -# -j -k -L https://corretto.aws/downloads/latest/amazon-corretto-25-x64-linux-jdk.tar.gz | tar xz -C deps)
+	$(call irun,curl -# -j -L https://corretto.aws/downloads/latest/amazon-corretto-25-x64-linux-jdk.tar.gz | tar xz -C deps)
 deps/apache-maven-${MAVEN3_VERSION}:
-	$(call irun,curl -# -j -k -L https://downloads.apache.org/maven/maven-3/${MAVEN3_VERSION}/binaries/apache-maven-${MAVEN3_VERSION}-bin.tar.gz | tar xz -C deps)
+	$(call irun,curl -# -j -L https://downloads.apache.org/maven/maven-3/${MAVEN3_VERSION}/binaries/apache-maven-${MAVEN3_VERSION}-bin.tar.gz | tar xz -C deps)
 deps/sonarqube-${SONARQUBE10_VERSION}:
-	$(call irun,cd deps && curl -# -sSL -k https://binaries.sonarsource.com/Distribution/sonarqube/sonarqube-${SONARQUBE10_VERSION}.zip -o tmp.sonar.${SONARQUBE10_VERSION}.zip && jar xf tmp.sonar.${SONARQUBE10_VERSION}.zip; rm tmp.sonar.${SONARQUBE10_VERSION}.zip)
+	$(call irun,cd deps && curl -# -sSL https://binaries.sonarsource.com/Distribution/sonarqube/sonarqube-${SONARQUBE10_VERSION}.zip -o tmp.sonar.${SONARQUBE10_VERSION}.zip && jar xf tmp.sonar.${SONARQUBE10_VERSION}.zip; rm tmp.sonar.${SONARQUBE10_VERSION}.zip)
 deps/apache-tomcat-${TOMCAT9_VERSION}:
-	$(call irun,curl -# -sSL -k https://archive.apache.org/dist/tomcat/tomcat-9/v${TOMCAT9_VERSION}/bin/apache-tomcat-${TOMCAT9_VERSION}.tar.gz | tar xz -C deps)
+	$(call irun,curl -# -sSL https://archive.apache.org/dist/tomcat/tomcat-9/v${TOMCAT9_VERSION}/bin/apache-tomcat-${TOMCAT9_VERSION}.tar.gz | tar xz -C deps)
 deps/tomcat9-logging-error-report-valve-${TOMCAT9_ERROR_REPORT_VALVE_VERSION}.jar:
-	$(call irun,curl -# -j -k -L  https://repo1.maven.org/maven2/net/optionfactory/tomcat9-logging-error-report-valve/${TOMCAT9_ERROR_REPORT_VALVE_VERSION}/tomcat9-logging-error-report-valve-${TOMCAT9_ERROR_REPORT_VALVE_VERSION}.jar -o deps/tomcat9-logging-error-report-valve-${TOMCAT9_ERROR_REPORT_VALVE_VERSION}.jar)
+	$(call irun,curl -# -j -L  https://repo1.maven.org/maven2/net/optionfactory/tomcat9-logging-error-report-valve/${TOMCAT9_ERROR_REPORT_VALVE_VERSION}/tomcat9-logging-error-report-valve-${TOMCAT9_ERROR_REPORT_VALVE_VERSION}.jar -o deps/tomcat9-logging-error-report-valve-${TOMCAT9_ERROR_REPORT_VALVE_VERSION}.jar)
 deps/apache-tomcat-${TOMCAT10_VERSION}:
-	$(call irun,curl -# -sSL -k https://archive.apache.org/dist/tomcat/tomcat-10/v${TOMCAT10_VERSION}/bin/apache-tomcat-${TOMCAT10_VERSION}.tar.gz | tar xz -C deps)
+	$(call irun,curl -# -sSL https://archive.apache.org/dist/tomcat/tomcat-10/v${TOMCAT10_VERSION}/bin/apache-tomcat-${TOMCAT10_VERSION}.tar.gz | tar xz -C deps)
 deps/tomcat10-logging-error-report-valve-${TOMCAT10_ERROR_REPORT_VALVE_VERSION}.jar:
-	$(call irun,curl -# -j -k -L  https://repo1.maven.org/maven2/net/optionfactory/tomcat9-logging-error-report-valve/${TOMCAT10_ERROR_REPORT_VALVE_VERSION}/tomcat9-logging-error-report-valve-${TOMCAT9_ERROR_REPORT_VALVE_VERSION}.jar -o deps/tomcat10-logging-error-report-valve-${TOMCAT9_ERROR_REPORT_VALVE_VERSION}.jar)
+	$(call irun,curl -# -j -L  https://repo1.maven.org/maven2/net/optionfactory/tomcat9-logging-error-report-valve/${TOMCAT10_ERROR_REPORT_VALVE_VERSION}/tomcat9-logging-error-report-valve-${TOMCAT9_ERROR_REPORT_VALVE_VERSION}.jar -o deps/tomcat10-logging-error-report-valve-${TOMCAT9_ERROR_REPORT_VALVE_VERSION}.jar)
 deps/apache-tomcat-${TOMCAT11_VERSION}:
-	$(call irun,curl -# -sSL -k https://archive.apache.org/dist/tomcat/tomcat-11/v${TOMCAT11_VERSION}/bin/apache-tomcat-${TOMCAT11_VERSION}.tar.gz | tar xz -C deps)
+	$(call irun,curl -# -sSL https://archive.apache.org/dist/tomcat/tomcat-11/v${TOMCAT11_VERSION}/bin/apache-tomcat-${TOMCAT11_VERSION}.tar.gz | tar xz -C deps)
 deps/tomcat11-logging-error-report-valve-${TOMCAT11_ERROR_REPORT_VALVE_VERSION}.jar:
-	$(call irun,curl -# -j -k -L  https://repo1.maven.org/maven2/net/optionfactory/tomcat9-logging-error-report-valve/${TOMCAT11_ERROR_REPORT_VALVE_VERSION}/tomcat9-logging-error-report-valve-${TOMCAT11_ERROR_REPORT_VALVE_VERSION}.jar -o deps/tomcat11-logging-error-report-valve-${TOMCAT11_ERROR_REPORT_VALVE_VERSION}.jar)
+	$(call irun,curl -# -j -L  https://repo1.maven.org/maven2/net/optionfactory/tomcat9-logging-error-report-valve/${TOMCAT11_ERROR_REPORT_VALVE_VERSION}/tomcat9-logging-error-report-valve-${TOMCAT11_ERROR_REPORT_VALVE_VERSION}.jar -o deps/tomcat11-logging-error-report-valve-${TOMCAT11_ERROR_REPORT_VALVE_VERSION}.jar)
 deps/legopfa-${LEGOPFA_VERSION}:	
-	$(call irun,curl -# -j -k -L https://github.com/optionfactory/legopfa/releases/download/v${LEGOPFA_VERSION}/legopfa-linux-amd64 -o deps/legopfa-${LEGOPFA_VERSION})
+	$(call irun,curl -# -j -L https://github.com/optionfactory/legopfa/releases/download/v${LEGOPFA_VERSION}/legopfa-linux-amd64 -o deps/legopfa-${LEGOPFA_VERSION})
 	$(call irun,chmod +x deps/legopfa-${LEGOPFA_VERSION})
 deps/keycloak-${KEYCLOAK2_VERSION}:
-	$(call irun,curl -# -j -k -L  https://github.com/keycloak/keycloak/releases/download/${KEYCLOAK2_VERSION}/keycloak-${KEYCLOAK2_VERSION}.tar.gz | tar xz -C deps)
+	$(call irun,curl -# -j -L  https://github.com/keycloak/keycloak/releases/download/${KEYCLOAK2_VERSION}/keycloak-${KEYCLOAK2_VERSION}.tar.gz | tar xz -C deps)
 deps/optionfactory-keycloak-${KEYCLOAK_OPFA_MODULES_VERSION}:
 	$(call irun,mkdir -p deps/optionfactory-keycloak-${KEYCLOAK_OPFA_MODULES_VERSION})
 	$(eval modules=$(shell curl https://repo1.maven.org/maven2/net/optionfactory/keycloak/optionfactory-keycloak/${KEYCLOAK_OPFA_MODULES_VERSION}/optionfactory-keycloak-${KEYCLOAK_OPFA_MODULES_VERSION}.pom | grep '<module>' | grep -Po '(?<=>)[^<]+(?=<)'))
-	$(call irun,for module in ${modules}; do curl -# -j -k -L "https://repo1.maven.org/maven2/net/optionfactory/keycloak/$${module}/${KEYCLOAK_OPFA_MODULES_VERSION}/$${module}-${KEYCLOAK_OPFA_MODULES_VERSION}.jar" > "deps/optionfactory-keycloak-${KEYCLOAK_OPFA_MODULES_VERSION}/$${module}.jar"; done)
+	$(call irun,for module in ${modules}; do curl -# -j -L "https://repo1.maven.org/maven2/net/optionfactory/keycloak/$${module}/${KEYCLOAK_OPFA_MODULES_VERSION}/$${module}-${KEYCLOAK_OPFA_MODULES_VERSION}.jar" > "deps/optionfactory-keycloak-${KEYCLOAK_OPFA_MODULES_VERSION}/$${module}.jar"; done)
 	$(eval lpn_version=$(shell curl https://repo1.maven.org/maven2/net/optionfactory/keycloak/optionfactory-keycloak/${KEYCLOAK_OPFA_MODULES_VERSION}/optionfactory-keycloak-${KEYCLOAK_OPFA_MODULES_VERSION}.pom | grep '<libphonenumber.version>' | grep -Po '(?<=>)[^<]+(?=<)'))	
-	$(call irun,curl -# -j -k -L "https://repo1.maven.org/maven2/com/googlecode/libphonenumber/libphonenumber/${lpn_version}/libphonenumber-${lpn_version}.jar" > "deps/optionfactory-keycloak-${KEYCLOAK_OPFA_MODULES_VERSION}/libphonenumber-${lpn_version}.jar")	
+	$(call irun,curl -# -j -L "https://repo1.maven.org/maven2/com/googlecode/libphonenumber/libphonenumber/${lpn_version}/libphonenumber-${lpn_version}.jar" > "deps/optionfactory-keycloak-${KEYCLOAK_OPFA_MODULES_VERSION}/libphonenumber-${lpn_version}.jar")	
 deps/opfa_http_remove_server_header_module-${NGINX_REMOVE_SERVER_HEADER_MODULE_VERSION}.so:
-	$(call irun,curl -# -j -k -L  https://github.com/optionfactory/nginx-remove-server-header-module/releases/download/v${NGINX_REMOVE_SERVER_HEADER_MODULE_VERSION}/opfa_http_remove_server_header_module-${NGINX_REMOVE_SERVER_HEADER_MODULE_VERSION}.so -o deps/opfa_http_remove_server_header_module-${NGINX_REMOVE_SERVER_HEADER_MODULE_VERSION}.so)
+	$(call irun,curl -# -j -L  https://github.com/optionfactory/nginx-remove-server-header-module/releases/download/v${NGINX_REMOVE_SERVER_HEADER_MODULE_VERSION}/opfa_http_remove_server_header_module-${NGINX_REMOVE_SERVER_HEADER_MODULE_VERSION}.so -o deps/opfa_http_remove_server_header_module-${NGINX_REMOVE_SERVER_HEADER_MODULE_VERSION}.so)
 deps/caddy-${CADDY2_VERSION}:
-	$(call irun,curl -# -j -k -L  "https://github.com/caddyserver/caddy/releases/download/v${CADDY2_VERSION}/caddy_${CADDY2_VERSION}_linux_amd64.tar.gz" | tar xz -C deps caddy && mv deps/caddy deps/caddy-${CADDY2_VERSION})
+	$(call irun,curl -# -j -L  "https://github.com/caddyserver/caddy/releases/download/v${CADDY2_VERSION}/caddy_${CADDY2_VERSION}_linux_amd64.tar.gz" | tar xz -C deps caddy && mv deps/caddy deps/caddy-${CADDY2_VERSION})
 deps/ectd-v${ETCD3_VERSION}-linux-amd64:
-	$(call irun,curl -# -j -k -L  "https://github.com/etcd-io/etcd/releases/download/v${ETCD3_VERSION}/etcd-v${ETCD3_VERSION}-linux-amd64.tar.gz" | tar xz -C deps)		
+	$(call irun,curl -# -j -L  "https://github.com/etcd-io/etcd/releases/download/v${ETCD3_VERSION}/etcd-v${ETCD3_VERSION}-linux-amd64.tar.gz" | tar xz -C deps)		
 deps/journal-webd-${JOURNAL_WEBD_VERSION}:
-	$(call irun,curl -# -j -k -L  "https://github.com/optionfactory/journal-webd/releases/download/${JOURNAL_WEBD_VERSION}/journal-webd-${JOURNAL_WEBD_VERSION}" -o deps/journal-webd-${JOURNAL_WEBD_VERSION})
+	$(call irun,curl -# -j -L  "https://github.com/optionfactory/journal-webd/releases/download/${JOURNAL_WEBD_VERSION}/journal-webd-${JOURNAL_WEBD_VERSION}" -o deps/journal-webd-${JOURNAL_WEBD_VERSION})
 deps/cadvisor-v${CADVISOR_VERSION}-linux-amd64:
-	$(call irun,curl -# -j -k -L  "https://github.com/google/cadvisor/releases/download/v${CADVISOR_VERSION}/cadvisor-v${CADVISOR_VERSION}-linux-amd64" -o deps/cadvisor-v${CADVISOR_VERSION}-linux-amd64)
+	$(call irun,curl -# -j -L  "https://github.com/google/cadvisor/releases/download/v${CADVISOR_VERSION}/cadvisor-v${CADVISOR_VERSION}-linux-amd64" -o deps/cadvisor-v${CADVISOR_VERSION}-linux-amd64)
 deps/prometheus-${PROMETHEUS_VERSION}.linux-amd64:
-	$(call irun,curl -# -j -k -L  "https://github.com/prometheus/prometheus/releases/download/v${PROMETHEUS_VERSION}/prometheus-${PROMETHEUS_VERSION}.linux-amd64.tar.gz" | tar xz -C deps)
+	$(call irun,curl -# -j -L  "https://github.com/prometheus/prometheus/releases/download/v${PROMETHEUS_VERSION}/prometheus-${PROMETHEUS_VERSION}.linux-amd64.tar.gz" | tar xz -C deps)
 deps/alertmanager-${ALERTMANAGER_VERSION}.linux-amd64:
-	$(call irun,curl -# -j -k -L  "https://github.com/prometheus/alertmanager/releases/download/v${ALERTMANAGER_VERSION}/alertmanager-${ALERTMANAGER_VERSION}.linux-amd64.tar.gz" | tar xz -C deps)
+	$(call irun,curl -# -j -L  "https://github.com/prometheus/alertmanager/releases/download/v${ALERTMANAGER_VERSION}/alertmanager-${ALERTMANAGER_VERSION}.linux-amd64.tar.gz" | tar xz -C deps)
 deps/grafana-v${GRAFANA_VERSION}:
-	$(call irun,curl -# -j -k -L  "https://dl.grafana.com/oss/release/grafana-${GRAFANA_VERSION}.linux-amd64.tar.gz" | tar xz -C deps)
+	$(call irun,curl -# -j -L  "https://dl.grafana.com/oss/release/grafana-${GRAFANA_VERSION}.linux-amd64.tar.gz" | tar xz -C deps)
 deps/postgres-exporter-${POSTGRES_EXPORTER_VERSION}-linux-amd64:
-	$(call irun,curl -# -j -k -L  "https://github.com/prometheus-community/postgres_exporter/releases/download/v${POSTGRES_EXPORTER_VERSION}/postgres_exporter-${POSTGRES_EXPORTER_VERSION}.linux-amd64.tar.gz" | tar xz --transform='s/.*/postgres-exporter-${POSTGRES_EXPORTER_VERSION}-linux-amd64/g' -C deps postgres_exporter-${POSTGRES_EXPORTER_VERSION}.linux-amd64/postgres_exporter)
+	$(call irun,curl -# -j -L  "https://github.com/prometheus-community/postgres_exporter/releases/download/v${POSTGRES_EXPORTER_VERSION}/postgres_exporter-${POSTGRES_EXPORTER_VERSION}.linux-amd64.tar.gz" | tar xz --transform='s/.*/postgres-exporter-${POSTGRES_EXPORTER_VERSION}-linux-amd64/g' -C deps postgres_exporter-${POSTGRES_EXPORTER_VERSION}.linux-amd64/postgres_exporter)
 deps/nginx-exporter-${NGINX_EXPORTER_VERSION}-linux-amd64:
-	$(call irun,curl -# -j -k -L  "https://github.com/nginxinc/nginx-prometheus-exporter/releases/download/v${NGINX_EXPORTER_VERSION}/nginx-prometheus-exporter_${NGINX_EXPORTER_VERSION}_linux_amd64.tar.gz" | tar xz --transform='s/.*/nginx-exporter-${NGINX_EXPORTER_VERSION}-linux-amd64/g' -C deps nginx-prometheus-exporter)
+	$(call irun,curl -# -j -L  "https://github.com/nginxinc/nginx-prometheus-exporter/releases/download/v${NGINX_EXPORTER_VERSION}/nginx-prometheus-exporter_${NGINX_EXPORTER_VERSION}_linux_amd64.tar.gz" | tar xz --transform='s/.*/nginx-exporter-${NGINX_EXPORTER_VERSION}-linux-amd64/g' -C deps nginx-prometheus-exporter)
 deps/node-exporter-${NODE_EXPORTER_VERSION}-linux-amd64:
-	$(call irun,curl -# -j -k -L  "https://github.com/prometheus/node_exporter/releases/download/v${NODE_EXPORTER_VERSION}/node_exporter-${NODE_EXPORTER_VERSION}.linux-amd64.tar.gz" | tar xz --transform='s/.*/node-exporter-${NODE_EXPORTER_VERSION}-linux-amd64/g' -C deps node_exporter-${NODE_EXPORTER_VERSION}.linux-amd64/node_exporter)
+	$(call irun,curl -# -j -L  "https://github.com/prometheus/node_exporter/releases/download/v${NODE_EXPORTER_VERSION}/node_exporter-${NODE_EXPORTER_VERSION}.linux-amd64.tar.gz" | tar xz --transform='s/.*/node-exporter-${NODE_EXPORTER_VERSION}-linux-amd64/g' -C deps node_exporter-${NODE_EXPORTER_VERSION}.linux-amd64/node_exporter)
 deps/tempo-${TEMPO_VERSION}-linux-amd64:
-	$(call irun,curl -# -j -k -L  "https://github.com/grafana/tempo/releases/download/v${TEMPO_VERSION}/tempo_${TEMPO_VERSION}_linux_amd64.tar.gz" | tar xz -C deps --one-top-level=tempo-${TEMPO_VERSION}-linux-amd64)
+	$(call irun,curl -# -j -L  "https://github.com/grafana/tempo/releases/download/v${TEMPO_VERSION}/tempo_${TEMPO_VERSION}_linux_amd64.tar.gz" | tar xz -C deps --one-top-level=tempo-${TEMPO_VERSION}-linux-amd64)
 
 clean: FORCE
 	$(call task,removing install scripts)
