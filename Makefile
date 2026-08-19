@@ -144,6 +144,7 @@ build-optionfactory-debian13-caddy2: sync-caddy2 build-optionfactory-debian13
 
 #build-optionfactory-%-mariadb12: $(subst -mariadb10,,$@)
 build-optionfactory-debian13-mariadb12: sync-mariadb12 build-optionfactory-debian13
+build-optionfactory-debian13-mariadb12: BUILD_ARGS+=--build-arg MARIA_DB_VERSION=12.rolling
 
 #build-optionfactory-%-postgres15: $(subst -postgres15,,$@)
 build-optionfactory-debian13-postgres15: sync-postgres build-optionfactory-debian13

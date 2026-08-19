@@ -49,6 +49,6 @@ if [ ! -s "/var/lib/postgresql/data/PG_VERSION" ]; then
     echo 'PostgreSQL init process complete; ready for start up.'
     echo
 fi
-exec setpriv --reuid=postgres --regid=docker-machines --init-groups -- usr/lib/postgresql/*/bin/postgres -c config_file=/var/lib/postgresql/conf/postgresql.conf
+exec setpriv --reuid=postgres --regid=docker-machines --init-groups -- /usr/lib/postgresql/*/bin/postgres -c config_file=/var/lib/postgresql/conf/postgresql.conf
 
 

@@ -22,7 +22,7 @@ exec /opt/prometheus/bin/prometheus \
     --config.file=/opt/prometheus/conf/prometheus.yml \
     --storage.tsdb.path=/opt/prometheus/data/ \
     --web.console.libraries=/opt/prometheus/console-libs \
-    --web.console.templates=/usr/prometheus/consoles \
+    --web.console.templates=/opt/prometheus/consoles \
     "$@"
 EOF
 
