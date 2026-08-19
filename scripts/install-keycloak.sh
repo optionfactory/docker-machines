@@ -42,8 +42,9 @@ groupadd --system --gid 950 docker-machines
 useradd --system --create-home --gid docker-machines --uid 950 keycloak
 chown -R keycloak:docker-machines /opt/keycloak
 
-/opt/keycloak/bin/kc.sh build 
+/opt/keycloak/bin/kc.sh build
 /opt/keycloak/bin/kc.sh show-config
+rm -rf /tmp/hsperfdata_root
 
 
 cat <<'EOF' > /keycloak
