@@ -6,10 +6,7 @@ mkdir -p /opt/apache-tomcat/conf
 cp -R /build/apache-tomcat*/* /opt/apache-tomcat
 cp /build/tomcat*-logging-error-report-valve-*.jar /opt/apache-tomcat/lib/
 rm -rf /opt/apache-tomcat/webapps/*
-
-cat <<-'EOF' > /opt/apache-tomcat/bin/setenv.sh
-JAVA_OPTS="$JAVA_OPTS -Djava.security.egd=file:/dev/./urandom"
-EOF
+rm -f /opt/apache-tomcat/bin/*.bat /opt/apache-tomcat/*.txt
 
 cat <<-'EOF' > /opt/apache-tomcat/conf/logging.properties
 	handlers = java.util.logging.ConsoleHandler
