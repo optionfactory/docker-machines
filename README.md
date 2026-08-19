@@ -161,3 +161,12 @@ make publish-dockerhub          # pushes TAG_VERSION and latest to Docker Hub
 ```
 
 Versions are pinned as Makefile variables; dependency tarballs are downloaded to `deps/` on demand and rsynced into each image's build context.
+
+## Conventions
+
+- **Privileges**: Dockerfiles do not declare `USER`. Entrypoints start as root to perform init (chowns, initdb, certificate renewal), then drop to a dedicated user with `exec setpriv --reuid=<service> --regid=docker-machines --init-groups`. This mirrors the official postgres/mariadb images and allows volume permissions to be fixed at startup.
+- **Shared ids**: every service account uses uid/gid 950, group `docker-machines`, so containers can share volumes regardless of the image they come from.
+- **deps flow**: `deps/` at the repo root caches downloaded artifacts. `sync-*` make targets rsync install scripts and artifacts into each image's `deps/` build context, where they are bind-mounted at `/build` during the build. Editing an `install-*.sh` at the repo root has no effect until the corresponding sync target runs — `make clean` followed by `make build` always resyncs.
+- **Tagging**: all images share one monotonically increasing `TAG_VERSION` (plus `latest`), bumped together with the version pins in the same commit. `make check-updates` compares the pins against upstream releases.
+- **Naming**: image suffixes lock the packaged major version (e.g. `keycloak2`, `nginx130`, `postgres15`-`postgres18`, `mariadb12`); breaking upgrades get a new directory rather than overwriting the suffix.
+- **Build requirements**: docker must use the containerd snapshotter (checked by `verify-docker-backend`), because builds pass `--sbom=true`.
