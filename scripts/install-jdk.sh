@@ -1,10 +1,6 @@
 #!/bin/bash -e
 echo "installing jdk (Amazon Corretto)"
 
-if [ ! -f /usr/sbin/update-alternatives ]; then
-    ln -s /usr/sbin/update-alternatives  /usr/sbin/alternatives
-fi
-
 mkdir -p /usr/java
 cp -R /build/amazon-corretto-* /usr/java/
 jdkdir=$(readlink -f /usr/java/amazon-corretto-*)
