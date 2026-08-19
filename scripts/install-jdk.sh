@@ -11,6 +11,11 @@ jdkdir=$(readlink -f /usr/java/amazon-corretto-*)
 jdkbindir=$(readlink -f ${jdkdir}/bin)
 jdkmajorversion=$(basename $jdkdir | sed 's/amazon-corretto-\([0-9]\+\)[.+].*/\1/')
 
+# drops jlink/jpackage inputs, sources, docs and the jlink/jpackage 
+# launchers themselves (non-functional without jmods)
+rm -rf ${jdkdir}/jmods ${jdkdir}/lib/src.zip ${jdkdir}/man ${jdkdir}/legal
+rm -f ${jdkdir}/bin/jlink ${jdkdir}/bin/jpackage
+
 chown -R root:root ${jdkdir}
 
 echo "installing alternatives (java) for Amazon Corretto jdk (${jdkmajorversion})"

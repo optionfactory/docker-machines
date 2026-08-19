@@ -35,11 +35,8 @@ NGINX_EXPORTER_VERSION=1.5.3
 
 SHELL=/bin/bash -o pipefail
 
-# canonical download flags: fail loudly on HTTP errors (no error-page bodies
-# saved/piped, no retries — a wrong pin or renamed upstream asset fails fast
-# and clean), follow redirects, keep session cookies, show a progress bar.
-# The two $(shell) pom fetches append -s to stay silent (an -s anywhere
-# suppresses the progress meter).
+# fail loudly on HTTP errors (no error-page bodies saved, follow redirects, 
+# keep session cookies, show a progress bar.
 CURL=curl --fail --progress-bar -j -L
 
 define task
