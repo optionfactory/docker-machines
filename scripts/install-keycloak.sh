@@ -49,7 +49,6 @@ rm -rf /tmp/hsperfdata_root
 
 cat <<'EOF' > /keycloak
 #!/bin/bash -e
-chown -R keycloak:docker-machines /opt/keycloak
 exec setpriv --reuid=keycloak --regid=docker-machines --init-groups -- /opt/keycloak/bin/kc.sh start "$@"
 EOF
 

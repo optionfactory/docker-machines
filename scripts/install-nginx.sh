@@ -17,7 +17,7 @@ rm -rf /var/lib/apt/lists/* /etc/apt/sources.list.d/nginx.list
 
 cat <<'EOF' > /etc/nginx/nginx.conf
 
-#load_module modules/opfa_http_remove_server_header_module.so;
+load_module modules/opfa_http_remove_server_header_module.so;
 
 user  nginx;
 worker_processes  1;

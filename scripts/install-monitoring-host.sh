@@ -12,7 +12,7 @@ cat <<'EOF' > /monitoring-host
 exec /opt/node-exporter/bin/node-exporter "$@"
 EOF
 
-chmod 750 /opt/node-exporter/bin/node-exporter 
+chmod 750 /opt/node-exporter/bin/node-exporter
 chmod 750 /monitoring-host
 
 

@@ -2,8 +2,10 @@
 
 echo "Installing alertmanager"
 
+groupadd --system --gid 950 docker-machines
+useradd --system --create-home --gid docker-machines --uid 950 monitoring
+
 mkdir -p /opt/alertmanager/{bin,conf,data}
-chmod 750 /opt/alertmanager/{bin,conf,data}
 
 cp /build/alertmanager-*/alertmanager /opt/alertmanager/bin/alertmanager
 cp /build/alertmanager-*/amtool /opt/alertmanager/bin/amtool
@@ -21,12 +23,17 @@ EOF
 
 cat <<'EOF' > /alertmanager
 #!/bin/bash -e
-exec /opt/alertmanager/bin/alertmanager \
+exec setpriv --reuid=monitoring --regid=docker-machines --init-groups -- /opt/alertmanager/bin/alertmanager \
   --config.file=/opt/alertmanager/conf/alertmanager.yml \
   --storage.path=/opt/alertmanager/data/ \
   "$@"
 EOF
 
-chmod 750 /alertmanager
+chown -R monitoring:docker-machines /opt/alertmanager
+find /opt/alertmanager -type f -exec chmod 600 {} \;
+find /opt/alertmanager -type d -exec chmod 700 {} \;
+chmod 700 /opt/alertmanager/bin/alertmanager
+chmod 700 /opt/alertmanager/bin/amtool
+chmod 700 /alertmanager
 
 

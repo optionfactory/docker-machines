@@ -2,8 +2,10 @@
 
 echo "Installing prometheus"
 
+groupadd --system --gid 950 docker-machines
+useradd --system --create-home --gid docker-machines --uid 950 monitoring
+
 mkdir -p /opt/prometheus/{bin,conf,data,consoles,console-libs}
-chmod 750 /opt/prometheus/{bin,conf,data,consoles,console-libs}
 
 cp /build/prometheus-*/prometheus /opt/prometheus/bin/prometheus
 cp /build/prometheus-*/promtool /opt/prometheus/bin/promtool
@@ -18,7 +20,7 @@ EOF
 
 cat <<'EOF' > /prometheus
 #!/bin/bash -e
-exec /opt/prometheus/bin/prometheus \
+exec setpriv --reuid=monitoring --regid=docker-machines --init-groups -- /opt/prometheus/bin/prometheus \
     --config.file=/opt/prometheus/conf/prometheus.yml \
     --storage.tsdb.path=/opt/prometheus/data/ \
     --web.console.libraries=/opt/prometheus/console-libs \
@@ -26,6 +28,11 @@ exec /opt/prometheus/bin/prometheus \
     "$@"
 EOF
 
-chmod 750 /prometheus
+chown -R monitoring:docker-machines /opt/prometheus
+find /opt/prometheus -type f -exec chmod 600 {} \;
+find /opt/prometheus -type d -exec chmod 700 {} \;
+chmod 700 /opt/prometheus/bin/prometheus
+chmod 700 /opt/prometheus/bin/promtool
+chmod 700 /prometheus
 
 
