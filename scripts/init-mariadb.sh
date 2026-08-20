@@ -1,6 +1,5 @@
 #!/bin/bash -e
 
-chown -R mysql:docker-machines "/var/lib/mysql"
 if [ ! -d "/var/lib/mysql/mysql" ]; then
 	echo "initializing database"
 	setpriv --reuid=mysql --regid=docker-machines --init-groups -- mysql_install_db --datadir="/var/lib/mysql"

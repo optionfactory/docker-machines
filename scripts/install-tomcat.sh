@@ -19,7 +19,7 @@ EOF
 
 cat <<'EOF' > /opt/apache-tomcat/conf/server.xml
 <?xml version='1.0' encoding='utf-8'?>
-<Server port="8005" shutdown="SHUTDOWN">
+<Server port="-1">
   <Listener className="org.apache.catalina.startup.VersionLoggerListener" />
   <Listener className="org.apache.catalina.core.JreMemoryLeakPreventionListener" />
   <Listener className="org.apache.catalina.mbeans.GlobalResourcesLifecycleListener" />

@@ -1,13 +1,5 @@
 #!/bin/bash -e
 
-chown -R postgres:docker-machines /var/lib/postgresql/{data,conf}
-
-if [ -d /run/postgresql ]; then
-    chmod g+s /run/postgresql
-    chown -R postgres:docker-machines /run/postgresql
-fi
-
-
 if [ -s /var/lib/postgresql/conf/patroni.yml ]; then
     echo "Patroni configuration detected. Starting patroni"
     exec setpriv --reuid=postgres --regid=docker-machines --init-groups -- patroni /var/lib/postgresql/conf/patroni.yml
