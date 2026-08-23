@@ -238,7 +238,7 @@ deps/keycloak2/.stamp-$(KEYCLOAK2_VERSION)-$(KEYCLOAK_OPFA_MODULES_VERSION):
 	$(call irun,rm -rf deps/keycloak2 && mkdir -p deps/keycloak2)
 	$(call irun,$(CURL) https://github.com/keycloak/keycloak/releases/download/$(KEYCLOAK2_VERSION)/keycloak-$(KEYCLOAK2_VERSION).tar.gz | tar xz -C deps/keycloak2)
 	$(call irun,mkdir -p deps/keycloak2/optionfactory-keycloak-$(KEYCLOAK_OPFA_MODULES_VERSION))
-	$(eval modules=$(shell $(CURL) -s https://repo1.maven.org/maven2/net/optionfactory/keycloak/optionfactory-keycloak/$(KEYCLOAK_OPFA_MODULES_VERSION)/optionfactory-keycloak-$(KEYCLOAK_OPFA_MODULES_VERSION).pom | grep '<module>' | grep -Po '(?<=>)[^<]+(?=<)'))
+	$(eval modules=$(shell $(CURL) -s https://repo1.maven.org/maven2/net/optionfactory/keycloak/optionfactory-keycloak/$(KEYCLOAK_OPFA_MODULES_VERSION)/optionfactory-keycloak-$(KEYCLOAK_OPFA_MODULES_VERSION).pom | grep '<module>' | grep -Po '(?<=>)[^<]+(?=<)' | grep -v 'optionfactory-keycloak-themes-preview'))
 	$(call irun,test -n "${modules}" || (echo "could not resolve optionfactory-keycloak modules from maven" && false))
 	$(call irun,for module in ${modules}; do $(CURL) "https://repo1.maven.org/maven2/net/optionfactory/keycloak/$${module}/$(KEYCLOAK_OPFA_MODULES_VERSION)/$${module}-$(KEYCLOAK_OPFA_MODULES_VERSION).jar" > "deps/keycloak2/optionfactory-keycloak-$(KEYCLOAK_OPFA_MODULES_VERSION)/$${module}.jar"; done)
 	$(eval lpn_version=$(shell $(CURL) -s https://repo1.maven.org/maven2/net/optionfactory/keycloak/optionfactory-keycloak/$(KEYCLOAK_OPFA_MODULES_VERSION)/optionfactory-keycloak-$(KEYCLOAK_OPFA_MODULES_VERSION).pom | grep '<libphonenumber.version>' | grep -Po '(?<=>)[^<]+(?=<)'))
