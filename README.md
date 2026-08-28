@@ -23,6 +23,8 @@ Images are published to [Docker Hub](https://hub.docker.com/u/optionfactory) wit
 | `optionfactory/debian13-postgres17` | PostgreSQL 17 + Patroni (optional) |
 | `optionfactory/debian13-postgres18` | PostgreSQL 18 + Patroni (optional) |
 | `optionfactory/debian13-mariadb12` | MariaDB 12 |
+| `optionfactory/debian13-mysql8` | MySQL 8.4 (LTS, from repo.mysql.com) |
+| `optionfactory/debian13-mysql9` | MySQL 9 (LTS, from repo.mysql.com) |
 | `optionfactory/debian13-etcd3` | etcd 3.x |
 
 ### Application servers

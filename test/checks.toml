@@ -46,6 +46,16 @@ command = ["mariadbd", "--version"]
 expect = "MariaDB"
 
 [[check]]
+image = "debian13-mysql8"
+command = ["mysqld", "--version"]
+expect = "Ver 8."
+
+[[check]]
+image = "debian13-mysql9"
+command = ["mysqld", "--version"]
+expect = "Ver 9."
+
+[[check]]
 image = "debian13-etcd3"
 command = ["/opt/etcd3/bin/etcd", "--version"]
 expect = "etcd Version: 3."

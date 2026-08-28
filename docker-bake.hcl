@@ -49,6 +49,8 @@ group "default" {
     "debian13-etcd3",
     "debian13-caddy2",
     "debian13-mariadb12",
+    "debian13-mysql8",
+    "debian13-mysql9",
     "debian13-postgres15",
     "debian13-postgres16",
     "debian13-postgres17",
@@ -143,6 +145,34 @@ target "debian13-mariadb12" {
 
     VOLUME ["/var/lib/mysql", "/sql-init.d/"]
     ENTRYPOINT ["/mariadb"]
+  EOF
+}
+
+target "debian13-mysql8" {
+  attest = ["type=sbom", "type=provenance,mode=max"]
+  tags = tags("debian13-mysql8")
+  contexts = { scripts = "scripts", base = "target:debian13" }
+  dockerfile-inline = <<-EOF
+    ${base("base")}
+
+    ${run_debian13("install-mysql.sh", false, ["MYSQL_VERSION=8.4-lts"])}
+
+    VOLUME ["/var/lib/mysql", "/sql-init.d/"]
+    ENTRYPOINT ["/mysql"]
+  EOF
+}
+
+target "debian13-mysql9" {
+  attest = ["type=sbom", "type=provenance,mode=max"]
+  tags = tags("debian13-mysql9")
+  contexts = { scripts = "scripts", base = "target:debian13" }
+  dockerfile-inline = <<-EOF
+    ${base("base")}
+
+    ${run_debian13("install-mysql.sh", false, ["MYSQL_VERSION=9.7-lts"])}
+
+    VOLUME ["/var/lib/mysql", "/sql-init.d/"]
+    ENTRYPOINT ["/mysql"]
   EOF
 }
 
