@@ -1,15 +1,15 @@
 #!/bin/bash -e
+set -o pipefail
 
 if [ -s /var/lib/postgresql/conf/patroni.yml ]; then
     echo "Patroni configuration detected. Starting patroni"
     exec setpriv --reuid=postgres --regid=docker-machines --init-groups -- patroni /var/lib/postgresql/conf/patroni.yml
 fi
 
-echo "Patroni configuration '/var/lib/postgresql/conf/patroni.yml' missing. Runing as a standalone instance"
-
+echo "Patroni configuration '/var/lib/postgresql/conf/patroni.yml' missing. Running as a standalone instance"
 
 if [ ! -s "/var/lib/postgresql/data/PG_VERSION" ]; then
-    echo "initializing a new database"
+    echo "initializing database"
     setpriv --reuid=postgres --regid=docker-machines --init-groups -- /usr/lib/postgresql/*/bin/initdb \
         -D /var/lib/postgresql/data \
         --encoding 'UTF-8' \
@@ -18,29 +18,30 @@ if [ ! -s "/var/lib/postgresql/data/PG_VERSION" ]; then
         --allow-group-access \
         --no-instructions
     rm /var/lib/postgresql/data/{postgresql.conf,pg_hba.conf,pg_ident.conf}
+    echo "database initialized"
+
+    psql=( psql -v ON_ERROR_STOP=1 --username "postgres" --dbname "postgres" )
     setpriv --reuid=postgres --regid=docker-machines --init-groups -- /usr/lib/postgresql/*/bin/pg_ctl -s \
         -D "/var/lib/postgresql/data" \
         -o "-c listen_addresses='127.0.0.1'" \
         -o "-c config_file=/var/lib/postgresql/conf/postgresql.conf" \
         -w start
-    psql=( psql -v ON_ERROR_STOP=1 --username "postgres" --dbname "postgres" )
+
     for f in /sql-init.d/*; do
+        [ -e "$f" ] || { echo "no scripts found in /sql-init.d/"; break; }
         case "$f" in
-            *.sh)     echo "$0: running $f"; . "$f" ;;
-            *.sql)    echo "$0: running $f"; "${psql[@]}" < "$f"; echo ;;
-            /sql-init.d/*) echo "no scripts found in /sql-init.d/" ;;
-            *)        echo "$0: ignoring $f" ;;
+            *.sh)     echo "running $f"; . "$f" ;;
+            *.sql)    echo "running $f"; "${psql[@]}" < "$f" ;;
+            *.sql.gz) echo "running $f"; gunzip -c "$f" | "${psql[@]}" ;;
+            *)        echo "ignoring $f" ;;
         esac
     done
+
     setpriv --reuid=postgres --regid=docker-machines --init-groups -- /usr/lib/postgresql/*/bin/pg_ctl -s \
         -D "/var/lib/postgresql/data" \
         -o "-c config_file=/var/lib/postgresql/conf/postgresql.conf" \
         -m fast \
         -w stop
-    echo
-    echo 'PostgreSQL init process complete; ready for start up.'
-    echo
+    echo "initialization complete"
 fi
 exec setpriv --reuid=postgres --regid=docker-machines --init-groups -- /usr/lib/postgresql/*/bin/postgres -c config_file=/var/lib/postgresql/conf/postgresql.conf
-
-

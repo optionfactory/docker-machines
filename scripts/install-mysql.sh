@@ -39,17 +39,23 @@ cat <<-'EOF' > /etc/my.cnf
 	bind-address=0.0.0.0
 	port=3306
 	socket=/var/run/mysqld/mysqld.sock
-	log_output=TABLE
+	# error log goes to stderr (default). slow/general logs are written here and forwarded to stderr by the entrypoint
+	# (mysqld only accepts regular files as query log targets).
+	# general log is off; toggle at runtime with SET GLOBAL general_log=1
+	log_output=FILE
 	slow_query_log=1
+	slow_query_log_file=/var/run/mysqld/slow.log
 	long_query_time=3
-    innodb_file_per_table=ON
-    transaction_isolation=READ-COMMITTED
-    character-set-server=utf8mb4
-    collation-server=utf8mb4_0900_ai_ci
-    [client]
-    port=3306
-    socket=/var/run/mysqld/mysqld.sock
-    default-character-set=utf8mb4
+	general_log=0
+	general_log_file=/var/run/mysqld/general.log
+	innodb_file_per_table=ON
+	transaction_isolation=READ-COMMITTED
+	character-set-server=utf8mb4
+	collation-server=utf8mb4_0900_ai_ci
+	[client]
+	port=3306
+	socket=/var/run/mysqld/mysqld.sock
+	default-character-set=utf8mb4
 EOF
 
 
@@ -57,13 +63,5 @@ chown -R mysql:mysql /etc/my.cnf
 
 mkdir -p /sql-init.d/
 chown -R mysql:mysql /sql-init.d/
-
-cat <<-'EOF' > /sql-init.d/000.mysql-first-time.sql
-	DELETE FROM mysql.user WHERE user NOT IN ('mysql.sys', 'mysql.session', 'mysql.infoschema') OR host NOT IN ('localhost') ;
-	DROP DATABASE IF EXISTS test ;
-	CREATE USER 'root'@'%' IDENTIFIED BY '' ;
-	GRANT ALL ON *.* TO 'root'@'%' WITH GRANT OPTION ;
-	FLUSH PRIVILEGES ;
-EOF
 
 cp /build-scripts/init-mysql.sh /mysql

@@ -36,16 +36,22 @@ cat <<-'EOF' > /etc/my.cnf
 	[mysqld]
 	server-id=1
 	bind-address=0.0.0.0
-	log_output=TABLE
+	# error log goes to stderr (default). slow/general logs are written here and forwarded to stderr by the entrypoint
+	# (the server cannot reliably reopen /dev/stderr itself: permission denied on docker's pipes, ESPIPE on a tty).
+	# general log is off; toggle at runtime with SET GLOBAL general_log=1
+	log_output=FILE
 	slow_query_log=1
+	slow_query_log_file=/var/run/mysqld/slow.log
 	long_query_time=3
-    innodb_file_per_table=ON
-    transaction_isolation=READ-COMMITTED
-    character-set-client-handshake = FALSE
-    character-set-server = utf8mb4
-    collation-server = utf8mb4_unicode_ci
-    [client]
-    default-character-set = utf8mb4
+	general_log=0
+	general_log_file=/var/run/mysqld/general.log
+	innodb_file_per_table=ON
+	transaction_isolation=READ-COMMITTED
+	character-set-client-handshake = FALSE
+	character-set-server = utf8mb4
+	collation-server = utf8mb4_unicode_ci
+	[client]
+	default-character-set = utf8mb4
 EOF
 
 
@@ -53,13 +59,5 @@ chown -R mysql:mysql /etc/my.cnf
 
 mkdir -p /sql-init.d/
 chown -R mysql:mysql /sql-init.d/
-
-cat <<-'EOF' > /sql-init.d/000.mariadb-first-time.sql
-	DELETE FROM mysql.user ;
-	DROP DATABASE IF EXISTS test ;
-	CREATE USER 'root'@'%' IDENTIFIED BY '';
-	GRANT ALL ON *.* TO 'root'@'%' WITH GRANT OPTION ;
-	FLUSH PRIVILEGES ;
-EOF
 
 cp /build-scripts/init-mariadb.sh /mariadb

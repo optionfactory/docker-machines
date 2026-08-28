@@ -37,7 +37,7 @@ Images are published to [Docker Hub](https://hub.docker.com/u/optionfactory) wit
 | `optionfactory/debian13-jdk{21,25}-keycloak2` | Keycloak 26 + [optionfactory-keycloak](https://github.com/optionfactory/keycloak) modules |
 | `optionfactory/debian13-jdk25-sonarqube10` | SonarQube |
 
-Services run as dedicated non-root users via `setpriv`; init steps (initdb, volume chowns) run as root.
+Services run as dedicated non-root users via `setpriv`; init steps (initdb, bootstrap scripts) run as root.
 
 ### Web servers / proxies
 
@@ -149,6 +149,84 @@ docker run -d --rm \
 | `optionfactory/debian13-monitoring-grafana` | [Grafana](https://github.com/grafana/grafana) |
 | `optionfactory/debian13-monitoring-tempo` | [Tempo](https://github.com/grafana/tempo) |
 
+## Databases
+
+`debian13-mysql8`, `debian13-mysql9`, `debian13-mariadb12` and `debian13-postgres{15,16,17,18}` share the same bootstrap model.
+
+### Volumes
+
+| Image | Data directory | Init scripts |
+|---|---|---|
+| `mysql8`, `mysql9`, `mariadb12` | `/var/lib/mysql` | `/sql-init.d/` |
+| `postgres15`-`postgres18` | `/var/lib/postgresql/data` | `/sql-init.d/` (config in `/var/lib/postgresql/conf/`) |
+
+Both paths are declared as `VOLUME`s. The data directory must be writable by uid/gid `950` (`docker-machines`): the entrypoints do **not** chown it at startup, so with a bind mount either pre-create the directory with that ownership or remap ids (e.g. pinch `remap_ids: ["me:950"]`).
+
+### First start
+
+When the data directory is empty the entrypoint bootstraps it, then starts the real server. The init phase is a one-off: on subsequent starts the scripts in `/sql-init.d/` are **not** re-run.
+
+1. Initialize the data directory (`mysqld --initialize-insecure`, `mariadb-install-db --skip-test-db`, `initdb`), running as the service user.
+2. Start a temporary server with networking disabled (`--skip-networking` / `listen_addresses=127.0.0.1`).
+3. Run every file in `/sql-init.d/`, in lexical order, connecting over the unix socket as the local superuser:
+   - `*.sql` — piped to the client (`mysql -uroot` / `mariadb -uroot` / `psql -U postgres`)
+   - `*.sql.gz` — gunzipped and piped
+   - `*.sh` — sourced into the entrypoint shell (runs as root; `"${mysql_client[@]}"` / `"${psql[@]}"` are available)
+4. Stop the temporary server and `exec` the real one as uid 950.
+
+Any failing statement or script aborts the init (`bash -e`, `psql -v ON_ERROR_STOP=1`): the container exits with status 1, later files are not run, and statements before the failing one have already been applied. Since "initialized" is detected only by the presence of `/var/lib/mysql/mysql` (or `PG_VERSION`), the next start would skip the init phase on a half-populated volume — wipe the data directory and start again.
+
+### Default accounts
+
+Images ship **no** files in `/sql-init.d/` and create **no** network-reachable account. Right after initialization the only accounts are the ones the upstream initializer creates:
+
+| Image | Accounts after init | Reachable from |
+|---|---|---|
+| mysql8 / mysql9 | `root@localhost` (empty password), `mysql.sys`, `mysql.session`, `mysql.infoschema` (locked) | unix socket / TCP from inside the container only |
+| mariadb12 | `root@localhost` (`unix_socket` auth), `mariadb.sys@localhost` (locked, no privileges) | unix socket, as OS user `root` |
+| postgres | `postgres` superuser, no password | as allowed by the mounted `pg_hba.conf` |
+
+There is no `test` database (`mysqld --initialize` never creates one; MariaDB is initialized with `--skip-test-db`, which also skips the anonymous `PUBLIC` grants on `test%`).
+
+Environment variables such as `MYSQL_ROOT_PASSWORD`, `MYSQL_DATABASE`, `POSTGRES_PASSWORD` are **not** honored — these are not the official images. Creating application users and databases is the job of the mounted init scripts, e.g. `/sql-init.d/00_users.sql` for mysql/mariadb:
+
+```sql
+CREATE USER 'root'@'%' IDENTIFIED BY 'password' ;
+GRANT ALL ON *.* TO 'root'@'%' WITH GRANT OPTION ;
+CREATE DATABASE app ;
+```
+
+Mounting a directory on `/sql-init.d/` replaces its contents entirely, which is why the images keep nothing there: anything baked into that path would be hidden by the mount.
+
+### Granting access
+
+Scripts run in lexical order, so put role/user creation in a file that sorts before the schema dumps (e.g. `000_users.sql`, then `00_init_app.sql`).
+
+**mysql / mariadb**: `CREATE USER` alone gives only `USAGE` (login, nothing else) — always pair it with a `GRANT`. Global grants (`ON *.*`) and database-level grants (`ON app.*`) are matched by name at check time, so they can be issued before the database exists.
+
+**postgres**: `pg_hba.conf` (mounted in `/var/lib/postgresql/conf/`) decides *who can connect as which role from where*; grants and ownership decide *what the role can do*. `GRANT ... ON DATABASE x` requires `x` to exist, and there is no `*.*` wildcard. To prepare access for databases created by later scripts, either:
+
+- make the role the owner: `CREATE DATABASE app OWNER approle;` (or grant the role membership in a NOLOGIN owner role beforehand) — owners need no further grants;
+- give it `CREATEDB` and let it create its own databases;
+- grant in `template1` (`GRANT ALL ON SCHEMA public TO approle; ALTER DEFAULT PRIVILEGES ...`), which is cloned by every later `CREATE DATABASE` — but **not** by `pg_dump` output, which uses `TEMPLATE = template0`.
+
+Restored `pg_dump` files carry their own `OWNER TO` / `GRANT` statements: the roles they reference must exist before the dump runs. Note that `psql -c "A; B"` executes both statements in one transaction, so a failing `GRANT` also rolls back the `CREATE ROLE` before it.
+
+### Logging
+
+Everything goes to the container's stderr, nothing to tables or files in the data volume:
+
+| Image | Error log | Slow queries | Statement log |
+|---|---|---|---|
+| mysql / mariadb | stderr (default) | `slow_query_log=1`, `long_query_time=3` | `general_log=0`; enable at runtime with `SET GLOBAL general_log=1` |
+| postgres | `log_destination=stderr`, `logging_collector=off` | `log_min_duration_statement=10000` | `log_statement` (off by default) |
+
+MySQL and MariaDB cannot write query logs to the container's stderr directly (mysqld only accepts regular files; mariadbd gets `Permission denied` on docker's pipes and `ESPIPE` on a TTY), so `log_output=FILE` points the slow and general logs at `/var/run/mysqld/{slow,general}.log` — in the container layer, not the data volume — and the entrypoint runs `tail -F` on them to stderr. A watchdog in the entrypoint truncates each file once it exceeds `QUERY_LOG_MAX_BYTES` (default 10 MiB), checked every `QUERY_LOG_CHECK_SECONDS` (default 60): the server appends, so truncation is safe and `tail -F` follows it. A truncation can drop lines written in the instant between tail's last read and the truncate — irrelevant since stdout is the only consumer. `tail` and the watchdog are children of the server process and die with the container; the server is not an init, so a helper that dies would linger as a zombie until then — run with `--init` (tini) if that matters to you.
+
+### Process model
+
+Entrypoints start as root only to run the bootstrap above; the server itself is started with `exec setpriv --reuid=<mysql|postgres> --regid=docker-machines --init-groups` and runs as PID 1 with uid/gid `950:950`. The daemons' own `--user` switches are not used, so file ownership is uniform across images regardless of which groups the distro packages created. The only other process in the mysql/mariadb containers is the root-owned `tail` forwarding the query logs (see [Logging](#logging)).
+
 ## Building
 
 Requirements: `make`, `docker` configured as described below, `curl`, `jq`, `unzip`, `python3-venv` (for the test suite, a `.venv` is created on demand).
@@ -219,7 +297,7 @@ To publish to ghcr.io instead (emergency fallback), uncomment the `ghcr.io` tags
 
 ## Conventions
 
-- **Privileges**: Dockerfiles do not declare `USER`. Entrypoints start as root to perform init (chowns, initdb, certificate renewal), then drop to a dedicated user with `exec setpriv --reuid=<service> --regid=docker-machines --init-groups`. This mirrors the official postgres/mariadb images and allows volume permissions to be fixed at startup.
+- **Privileges**: Dockerfiles do not declare `USER`. Entrypoints start as root to perform init (initdb, bootstrap scripts, certificate renewal), then drop to a dedicated user with `exec setpriv --reuid=<service> --regid=docker-machines --init-groups`. Entrypoints do not chown volumes: mounted data directories must already be owned by uid/gid 950 (see [Databases](#databases)).
 - **Shared ids**: every service account uses uid/gid 950, group `docker-machines`, so containers can share volumes regardless of the image they come from.
 - **deps flow**: `deps/<family>/` at the repo root caches downloaded artifacts, one directory per artifact family, containing exactly what the family's images need. Dockerfiles read them directly through named build contexts (`--mount=type=bind,from=distrib,target=/build`); install scripts are mounted from `scripts/` and executed as `/build-scripts/install-*.sh`. Editing a script takes effect on the next build — there is no sync step. Bumping a pinned version wipes and re-downloads the family directory (`.stamp-<version>` files). Corretto JDKs are pinned (`CORRETTO2x_VERSION`) and checked by `make check-updates` via the corretto.aws `latest` redirect.
 - **Tagging**: all images share one monotonically increasing `TAG_VERSION` (plus `latest`), bumped together with the version pins in the same commit. `make check-updates` compares the pins against upstream releases.
