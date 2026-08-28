@@ -151,7 +151,56 @@ docker run -d --rm \
 
 ## Building
 
-Requirements: `make`, `docker` with the containerd snapshotter (buildkit image store), the `docker buildx` plugin, `curl`, `jq`, `unzip`, `python3-venv` (for the test suite, a `.venv` is created on demand).
+Requirements: `make`, `docker` configured as described below, `curl`, `jq`, `unzip`, `python3-venv` (for the test suite, a `.venv` is created on demand).
+
+### Docker configuration
+
+Every bake target is built with `attest = ["type=sbom", "type=provenance,mode=max"]`, so each image is a multi-manifest index (image + attestation manifests). The classic `overlay2` image store cannot hold those, so the docker daemon **must** use the containerd image store (containerd snapshotter). `make build`/`test`/`publish` refuse to run otherwise (`verify-docker-backend`).
+
+1. Check what the daemon is using:
+
+   ```bash
+   docker info --format '{{.Driver}} {{json .DriverStatus}}'
+   # ok:  overlayfs [["driver-type","io.containerd.snapshotter.v1"]]
+   # bad: overlay2 [["Backing Filesystem","extfs"],...]
+   ```
+
+   Docker Engine ≥ 29 enables the containerd store by default on fresh installs, so a new machine usually needs nothing. Installs upgraded from older versions keep `overlay2` and need step 2.
+
+2. If needed, enable it in `/etc/docker/daemon.json` (create the file if missing) and restart the daemon:
+
+   ```json
+   {
+     "features": {
+       "containerd-snapshotter": true
+     }
+   }
+   ```
+
+   ```bash
+   sudo systemctl restart docker
+   ```
+
+   Switching image store hides the images, containers and volumes of the old store (they stay on disk and reappear if you switch back), so re-pull/rebuild what you need afterwards. Do not flip it back and forth casually.
+
+3. Make sure the `buildx` plugin is installed and the **default** builder (driver `docker`) is selected:
+
+   ```bash
+   docker buildx version          # e.g. github.com/docker/buildx v0.36.x
+   docker buildx ls               # default* ... DRIVER docker
+   ```
+
+   On Debian/Ubuntu the plugin is the `docker-buildx-plugin` package from Docker's apt repo. Do **not** create a `docker-container` builder for this repo: bake relies on the default `docker` driver so that built images land straight in the local image store (where `make test` finds them and `make publish` pushes them from). If you previously ran `docker buildx create --use`, switch back with `docker buildx use default`.
+
+4. For `make publish`, log in with an account that can push to the `optionfactory` Docker Hub organisation:
+
+   ```bash
+   docker login
+   ```
+
+`make verify-docker-backend` re-runs the check from step 1 (it is also a prerequisite of every build/test/publish target).
+
+### Make targets
 
 ```bash
 make check-updates              # compares pinned versions with upstream releases
@@ -175,4 +224,4 @@ To publish to ghcr.io instead (emergency fallback), uncomment the `ghcr.io` tags
 - **deps flow**: `deps/<family>/` at the repo root caches downloaded artifacts, one directory per artifact family, containing exactly what the family's images need. Dockerfiles read them directly through named build contexts (`--mount=type=bind,from=distrib,target=/build`); install scripts are mounted from `scripts/` and executed as `/build-scripts/install-*.sh`. Editing a script takes effect on the next build — there is no sync step. Bumping a pinned version wipes and re-downloads the family directory (`.stamp-<version>` files). Corretto JDKs are pinned (`CORRETTO2x_VERSION`) and checked by `make check-updates` via the corretto.aws `latest` redirect.
 - **Tagging**: all images share one monotonically increasing `TAG_VERSION` (plus `latest`), bumped together with the version pins in the same commit. `make check-updates` compares the pins against upstream releases.
 - **Naming**: image suffixes lock the packaged major version (e.g. `keycloak2`, `nginx130`, `postgres15`-`postgres18`, `mariadb12`); breaking upgrades get a new bake target/image name rather than overwriting the suffix.
-- **Build requirements**: docker must use the containerd snapshotter (checked by `verify-docker-backend`), because images are built with SBOM attestations. Dockerfiles live inline in `docker-bake.hcl` and use `FROM base`, resolved by bake — always build through the make/bake entry points, not standalone `docker build`.
+- **Build requirements**: docker must use the containerd snapshotter (checked by `verify-docker-backend`, see [Docker configuration](#docker-configuration)), because images are built with SBOM attestations. Dockerfiles live inline in `docker-bake.hcl` and use `FROM base`, resolved by bake — always build through the make/bake entry points, not standalone `docker build`.
