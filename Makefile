@@ -3,6 +3,7 @@ export TAG_VERSION=236
 #software versions
 
 SLOTH_VERSION=1.0.0
+DOCKER_SNITCH_VERSION=1.0.0
 SONARQUBE10_VERSION=26.8.0.126808
 CORRETTO21_VERSION=21.0.12.9.1
 CORRETTO25_VERSION=25.0.4.8.1
@@ -102,6 +103,7 @@ check-updates:
 	$(call check_updates_github,postgres_exporter,$(POSTGRES_EXPORTER_VERSION),prometheus-community/postgres_exporter)
 	$(call check_updates_github,nginx_exporter,$(NGINX_EXPORTER_VERSION),nginx/nginx-prometheus-exporter)
 	$(call check_updates_github,sloth,$(SLOTH_VERSION),optionfactory/sloth)
+	$(call check_updates_github,docker-snitch,$(DOCKER_SNITCH_VERSION),optionfactory/docker-heist)
 
 
 verify-docker-backend:
@@ -142,6 +144,9 @@ publish: verify-docker-backend all-deps
 build-optionfactory-sloth: deps-sloth
 build-optionfactory-debian13-journal-webd: deps-journal-webd
 build-optionfactory-debian13-etcd3: deps-etcd3
+build-optionfactory-debian13-mariadb12: deps-docker-snitch
+build-optionfactory-debian13-mysql8: deps-docker-snitch
+build-optionfactory-debian13-mysql9: deps-docker-snitch
 build-optionfactory-debian13-caddy2: deps-caddy2
 build-optionfactory-debian13-jdk21: deps-jdk21
 build-optionfactory-debian13-jdk25: deps-jdk25
@@ -170,7 +175,7 @@ build-optionfactory-debian13-monitoring-tempo: deps-tempo
 # artifact families: deps/<family> holds exactly the artifacts an image needs,
 # wiped and re-downloaded whenever any pinned version in its stamp changes
 
-all-deps: deps-jdk21 deps-jdk25 deps-maven3 deps-sonarqube10 deps-tomcat9 deps-tomcat10 deps-tomcat11 deps-keycloak2 deps-nginx130 deps-caddy2 deps-etcd3 deps-journal-webd deps-prometheus deps-alertmanager deps-grafana deps-cadvisor deps-postgres-exporter deps-nginx-exporter deps-node-exporter deps-tempo deps-sloth
+all-deps: deps-jdk21 deps-jdk25 deps-maven3 deps-sonarqube10 deps-tomcat9 deps-tomcat10 deps-tomcat11 deps-keycloak2 deps-nginx130 deps-caddy2 deps-etcd3 deps-journal-webd deps-prometheus deps-alertmanager deps-grafana deps-cadvisor deps-postgres-exporter deps-nginx-exporter deps-node-exporter deps-tempo deps-sloth deps-docker-snitch
 
 deps-jdk21: deps/jdk21/.stamp-$(CORRETTO21_VERSION)
 deps-jdk25: deps/jdk25/.stamp-$(CORRETTO25_VERSION)
@@ -193,6 +198,7 @@ deps-nginx-exporter: deps/nginx-exporter/.stamp-$(NGINX_EXPORTER_VERSION)
 deps-node-exporter: deps/node-exporter/.stamp-$(NODE_EXPORTER_VERSION)
 deps-tempo: deps/tempo/.stamp-$(TEMPO_VERSION)
 deps-sloth: deps/sloth/.stamp-$(SLOTH_VERSION)
+deps-docker-snitch: deps/docker-snitch/.stamp-$(DOCKER_SNITCH_VERSION)
 
 
 deps/jdk21/.stamp-$(CORRETTO21_VERSION):
@@ -319,6 +325,12 @@ deps/sloth/.stamp-$(SLOTH_VERSION):
 	$(call irun,$(CURL) https://github.com/optionfactory/sloth/releases/download/v$(SLOTH_VERSION)/sloth-v$(SLOTH_VERSION)-x86_64-unknown-linux-musl -o deps/sloth/sloth)
 	$(call irun,chmod +x deps/sloth/sloth)
 	$(call irun,touch $@)
+deps/docker-snitch/.stamp-$(DOCKER_SNITCH_VERSION):
+	$(call task,downloading docker-snitch $(DOCKER_SNITCH_VERSION))
+	$(call irun,rm -rf deps/docker-snitch && mkdir -p deps/docker-snitch)
+	$(call irun,$(CURL) https://github.com/optionfactory/docker-heist/releases/download/v$(DOCKER_SNITCH_VERSION)/docker-snitch-linux-amd64-musl -o deps/docker-snitch/docker-snitch-$(DOCKER_SNITCH_VERSION))
+	$(call irun,chmod +x deps/docker-snitch/docker-snitch-$(DOCKER_SNITCH_VERSION))
+	$(call irun,touch $@)
 
 
 clean-deps: FORCE
@@ -348,4 +360,4 @@ cleanup-docker-images: FORCE
 #This implies that all targets depending on this one will always have their recipe run.
 FORCE:
 .PHONY: build publish test check-updates verify-docker-backend pull-base all-deps clean-deps cleanup-docker-images
-.PHONY: deps-jdk21 deps-jdk25 deps-maven3 deps-sonarqube10 deps-tomcat9 deps-tomcat10 deps-tomcat11 deps-keycloak2 deps-nginx130 deps-caddy2 deps-etcd3 deps-journal-webd deps-prometheus deps-alertmanager deps-grafana deps-cadvisor deps-postgres-exporter deps-nginx-exporter deps-node-exporter deps-tempo deps-sloth
+.PHONY: deps-jdk21 deps-jdk25 deps-maven3 deps-sonarqube10 deps-tomcat9 deps-tomcat10 deps-tomcat11 deps-keycloak2 deps-nginx130 deps-caddy2 deps-etcd3 deps-journal-webd deps-prometheus deps-alertmanager deps-grafana deps-cadvisor deps-postgres-exporter deps-nginx-exporter deps-node-exporter deps-tempo deps-sloth deps-docker-snitch

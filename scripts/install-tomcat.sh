@@ -54,7 +54,6 @@ chown -R tomcat:docker-machines /opt/apache-tomcat
 
 cat <<'EOF' > /tomcat
 #!/bin/bash -e
-chown -R tomcat:docker-machines /opt/apache-tomcat/webapps
 exec setpriv --reuid=tomcat --regid=docker-machines --init-groups -- /opt/apache-tomcat/bin/catalina.sh run
 EOF
 

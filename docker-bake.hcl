@@ -137,11 +137,11 @@ target "debian13-barman2" {
 target "debian13-mariadb12" {
   attest = ["type=sbom", "type=provenance,mode=max"]
   tags = tags("debian13-mariadb12")
-  contexts = { scripts = "scripts", base = "target:debian13" }
+  contexts = { scripts = "scripts", base = "target:debian13", distrib = "deps/docker-snitch" }
   dockerfile-inline = <<-EOF
     ${base("base")}
 
-    ${run_debian13("install-mariadb.sh", false, ["MARIA_DB_VERSION=12.rolling"])}
+    ${run_debian13("install-mariadb.sh", true, ["MARIA_DB_VERSION=12.rolling"])}
 
     VOLUME ["/var/lib/mysql", "/sql-init.d/"]
     ENTRYPOINT ["/mariadb"]
@@ -151,11 +151,11 @@ target "debian13-mariadb12" {
 target "debian13-mysql8" {
   attest = ["type=sbom", "type=provenance,mode=max"]
   tags = tags("debian13-mysql8")
-  contexts = { scripts = "scripts", base = "target:debian13" }
+  contexts = { scripts = "scripts", base = "target:debian13", distrib = "deps/docker-snitch" }
   dockerfile-inline = <<-EOF
     ${base("base")}
 
-    ${run_debian13("install-mysql.sh", false, ["MYSQL_VERSION=8.4-lts"])}
+    ${run_debian13("install-mysql.sh", true, ["MYSQL_VERSION=8.4-lts"])}
 
     VOLUME ["/var/lib/mysql", "/sql-init.d/"]
     ENTRYPOINT ["/mysql"]
@@ -165,11 +165,11 @@ target "debian13-mysql8" {
 target "debian13-mysql9" {
   attest = ["type=sbom", "type=provenance,mode=max"]
   tags = tags("debian13-mysql9")
-  contexts = { scripts = "scripts", base = "target:debian13" }
+  contexts = { scripts = "scripts", base = "target:debian13", distrib = "deps/docker-snitch" }
   dockerfile-inline = <<-EOF
     ${base("base")}
 
-    ${run_debian13("install-mysql.sh", false, ["MYSQL_VERSION=9.7-lts"])}
+    ${run_debian13("install-mysql.sh", true, ["MYSQL_VERSION=9.7-lts"])}
 
     VOLUME ["/var/lib/mysql", "/sql-init.d/"]
     ENTRYPOINT ["/mysql"]

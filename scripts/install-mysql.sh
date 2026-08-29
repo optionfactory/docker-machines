@@ -64,4 +64,6 @@ chown -R mysql:mysql /etc/my.cnf
 mkdir -p /sql-init.d/
 chown -R mysql:mysql /sql-init.d/
 
+install -o root -g root -m 755 /build/docker-snitch-* /usr/local/bin/docker-snitch
+
 cp /build-scripts/init-mysql.sh /mysql

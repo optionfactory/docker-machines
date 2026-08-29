@@ -2,21 +2,8 @@
 set -o pipefail
 
 # slow/general logs are regular files (the server cannot reliably reopen the container's stderr):
-# forward them to stderr and cap their size. the server appends (O_APPEND), so truncating is safe;
-# tail -F follows truncation. both processes die with the container when the server (PID 1) exits.
-query_logs=( /var/run/mysqld/slow.log /var/run/mysqld/general.log )
-touch "${query_logs[@]}"
-chown mysql:docker-machines "${query_logs[@]}"
-tail -q -F -n 0 "${query_logs[@]}" >&2 2>/dev/null &
-(
-	while sleep "${QUERY_LOG_CHECK_SECONDS:-60}"; do
-		for f in "${query_logs[@]}"; do
-			if [ "$(stat -c %s "$f")" -gt "${QUERY_LOG_MAX_BYTES:-10485760}" ]; then
-				truncate -s 0 "$f"
-			fi
-		done
-	done
-) &
+# docker-snitch runs the server as its child, relays those files to stderr and keeps them capped
+snitch=( docker-snitch /var/run/mysqld/slow.log /var/run/mysqld/general.log -- )
 
 if [ ! -d "/var/lib/mysql/mysql" ]; then
 	echo "initializing database"
@@ -24,7 +11,7 @@ if [ ! -d "/var/lib/mysql/mysql" ]; then
 	echo "database initialized"
 
 	mysql_client=( mysql --protocol=socket -uroot )
-	setpriv --reuid=mysql --regid=docker-machines --init-groups -- mysqld --defaults-file=/etc/my.cnf --skip-networking &
+	setpriv --reuid=mysql --regid=docker-machines --init-groups -- "${snitch[@]}" mysqld --defaults-file=/etc/my.cnf --skip-networking &
 	jid="$!"
 	for i in {1..30}; do
 		kill -0 "$jid" 2>/dev/null || { echo >&2 'server exited during startup.'; wait "$jid" || true; exit 1; }
@@ -47,4 +34,4 @@ if [ ! -d "/var/lib/mysql/mysql" ]; then
 	kill -s TERM "$jid" && wait "$jid" || { echo >&2 'initialization failed.'; exit 1; }
 	echo "initialization complete"
 fi
-exec setpriv --reuid=mysql --regid=docker-machines --init-groups -- mysqld --defaults-file=/etc/my.cnf
+exec setpriv --reuid=mysql --regid=docker-machines --init-groups -- "${snitch[@]}" mysqld --defaults-file=/etc/my.cnf
