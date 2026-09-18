@@ -34,6 +34,18 @@ http {
     include       /etc/nginx/mime.types;
     default_type  application/octet-stream;
 
+    # websockets / HTTP upgrade: 'upgrade' for handshakes, empty for everything
+    # else. An empty value makes nginx omit the Connection header, which keeps
+    # upstream connections persistent so 'keepalive N' pools can be reused.
+    # Mapping to 'close' instead would disable pooling on every regular request.
+    # You might want to set something like
+    # upstream backend { server 127.0.0.1:8080; keepalive 32; }
+    # to keep a pool of idle connections ready
+    map $http_upgrade $connection_upgrade {
+        default upgrade;
+        ''      '';
+    }
+
     log_format main '[ts:${time_iso8601}]'
                     '[remote:${remote_user}@${remote_addr}]'
                     '[elapsed:${request_time}s]'
@@ -77,7 +89,11 @@ cat <<'EOF' > /etc/nginx/forwarded.conf
     proxy_set_header X-Scheme       $scheme;
     proxy_set_header X-Original-URI $request_uri;
 
-    # websockets / HTTP upgrade (Requires 'map $http_upgrade $connection_upgrade' in http block)
+    # websockets / HTTP upgrade. Requires 'map $http_upgrade $connection_upgrade'
+    # in the http block: the shipped nginx.conf defines it, but a config replacing
+    # nginx.conf must provide its own, mapping '' to '' and not to 'close', or
+    # upstream keepalive pools will never be reused.
+    proxy_http_version 1.1;
     proxy_set_header Upgrade        $http_upgrade;
     proxy_set_header Connection     $connection_upgrade;
 
@@ -108,7 +124,11 @@ cat <<'EOF' > /etc/nginx/reforwarded.conf
     proxy_set_header X-Scheme       $scheme;
     proxy_set_header X-Original-URI $request_uri;
 
-    # websockets / HTTP upgrade (Requires 'map $http_upgrade $connection_upgrade' in http block)
+    # websockets / HTTP upgrade. Requires 'map $http_upgrade $connection_upgrade'
+    # in the http block: the shipped nginx.conf defines it, but a config replacing
+    # nginx.conf must provide its own, mapping '' to '' and not to 'close', or
+    # upstream keepalive pools will never be reused.
+    proxy_http_version 1.1;
     proxy_set_header Upgrade        $http_upgrade;
     proxy_set_header Connection     $connection_upgrade;
 
