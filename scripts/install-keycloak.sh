@@ -9,7 +9,6 @@ cat <<-'EOF' > /opt/keycloak/conf/keycloak.conf
 #[build options]
 cache=local
 db=postgres
-transaction-xa-enabled=true
 #features=
 http-relative-path=/
 health-enabled=true
