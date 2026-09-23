@@ -1,4 +1,4 @@
-export TAG_VERSION=240
+export TAG_VERSION=241
 
 #software versions
 
@@ -15,11 +15,11 @@ TOMCAT11_VERSION=11.0.26
 TOMCAT11_ERROR_REPORT_VALVE_VERSION=2.1
 LEGOPFA_VERSION=3.0
 KEYCLOAK2_VERSION=26.7.4
-KEYCLOAK_OPFA_MODULES_VERSION=9.17
+KEYCLOAK_OPFA_MODULES_VERSION=9.18
 MAVEN3_VERSION=3.9.16
 CADDY2_VERSION=2.11.4
 JOURNAL_WEBD_VERSION=1.1
-ETCD3_VERSION=3.7.1
+ETCD3_VERSION=3.7.2
 export NGINX_MAJOR_VERSION=1.30
 NGINX_REMOVE_SERVER_HEADER_MODULE_VERSION=1.30.5-1
 
@@ -49,8 +49,8 @@ define irun
 endef
 
 help:
-	@echo usage: make [clean-deps] build
-	@echo usage: make [clean-deps] build-optionfactory-debian13-jdk25-tomcat11
+	@echo usage: make [clean] build
+	@echo usage: make [clean] build-optionfactory-debian13-jdk25-tomcat11
 	@echo usage: make test
 	@echo usage: make publish
 	exit 1
@@ -333,7 +333,7 @@ deps/docker-snitch/.stamp-$(DOCKER_SNITCH_VERSION):
 	$(call irun,touch $@)
 
 
-clean-deps: FORCE
+clean: FORCE
 	$(call task,removing cached deps)
 	$(call irun,rm -rf deps/*)
 
@@ -359,5 +359,5 @@ cleanup-docker-images: FORCE
 #then make imagines this target to have been updated whenever its rule is run.
 #This implies that all targets depending on this one will always have their recipe run.
 FORCE:
-.PHONY: build publish test check-updates verify-docker-backend pull-base all-deps clean-deps cleanup-docker-images
+.PHONY: build publish test check-updates verify-docker-backend pull-base all-deps clean cleanup-docker-images
 .PHONY: deps-jdk21 deps-jdk25 deps-maven3 deps-sonarqube10 deps-tomcat9 deps-tomcat10 deps-tomcat11 deps-keycloak2 deps-nginx130 deps-caddy2 deps-etcd3 deps-journal-webd deps-prometheus deps-alertmanager deps-grafana deps-cadvisor deps-postgres-exporter deps-nginx-exporter deps-node-exporter deps-tempo deps-sloth deps-docker-snitch
