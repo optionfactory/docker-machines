@@ -5,8 +5,9 @@ useradd --system --create-home --gid docker-machines --uid 950 barman
 
 DEBIAN_FRONTEND=noninteractive apt-get -y -q update
 DEBIAN_FRONTEND=noninteractive apt-get install -y -q curl
-curl -# -L https://www.postgresql.org/media/keys/ACCC4CF8.asc > /etc/apt/trusted.gpg.d/barman.asc
-echo "deb http://apt.postgresql.org/pub/repos/apt/ ${DISTRIB_CODENAME}-pgdg main" > /etc/apt/sources.list.d/pgdg.list
+install -d -m 0755 /etc/apt/keyrings
+curl -# -L https://www.postgresql.org/media/keys/ACCC4CF8.asc > /etc/apt/keyrings/pgdg.asc
+echo "deb [signed-by=/etc/apt/keyrings/pgdg.asc] https://apt.postgresql.org/pub/repos/apt/ ${DISTRIB_CODENAME}-pgdg main" > /etc/apt/sources.list.d/pgdg.list
 DEBIAN_FRONTEND=noninteractive apt-get -y -q update
 DEBIAN_FRONTEND=noninteractive apt-get install -y -q barman
 rm -rf /var/lib/apt/lists/*
