@@ -40,11 +40,13 @@ EOF
 chown -R barman:docker-machines /var/lib/barman
 
 cat <<'EOF' > /barman
-#!/bin/bash -e
+#!/bin/bash
+trap 'exit 0' TERM INT
 while :
 do
-    setpriv --reuid=barman --regid=docker-machines --init-groups -- barman cron
-    sleep 60
+    setpriv --reuid=barman --regid=docker-machines --init-groups -- barman cron || echo "barman cron failed (exit $?), retrying in 60s" >&2
+    sleep 60 &
+    wait $!
 done
 EOF
 
