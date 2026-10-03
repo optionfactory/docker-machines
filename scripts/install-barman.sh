@@ -1,7 +1,7 @@
 #!/bin/bash -e
 
-groupadd --system --gid 950 barman
-useradd --system --create-home --gid barman --uid 950 barman
+groupadd --system --gid 950 docker-machines
+useradd --system --create-home --gid docker-machines --uid 950 barman
 
 DEBIAN_FRONTEND=noninteractive apt-get -y -q update
 DEBIAN_FRONTEND=noninteractive apt-get install -y -q curl
@@ -36,13 +36,13 @@ EOF
 
 
 
-chown -R barman:barman /var/lib/barman
+chown -R barman:docker-machines /var/lib/barman
 
 cat <<'EOF' > /barman
 #!/bin/bash -e
 while :
 do
-    setpriv --reuid=barman --regid=barman --init-groups -- barman cron
+    setpriv --reuid=barman --regid=docker-machines --init-groups -- barman cron
     sleep 60
 done
 EOF

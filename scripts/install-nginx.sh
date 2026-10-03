@@ -21,7 +21,7 @@ cat <<'EOF' > /etc/nginx/nginx.conf
 load_module modules/opfa_http_remove_server_header_module.so;
 
 user  nginx;
-worker_processes  1;
+worker_processes  auto;
 
 error_log  /var/log/nginx/error.log warn;
 pid        /var/run/nginx.pid;

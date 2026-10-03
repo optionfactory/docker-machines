@@ -26,7 +26,7 @@ def wait_for_log(cid, expected, timeout):
 
 
 def test_postgres_boots_and_accepts_connections(boot):
-    with boot("debian13-postgres17", "-e", "POSTGRES_PASSWORD=test") as cid:
+    with boot("debian13-postgres17") as cid:
         logs = wait_for_log(cid, "database system is ready to accept connections", 120)
         assert "database system is ready to accept connections" in logs, logs[-800:]
 

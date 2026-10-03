@@ -2,8 +2,8 @@
 
 echo "Installing builder"
 
-groupadd --system --gid 950 builder
-useradd --system --create-home --gid builder --uid 950 builder
+groupadd --system --gid 950 docker-machines
+useradd --system --create-home --gid docker-machines --uid 950 builder
 
 mkdir -p /opt/apache-maven
 cp -R /build/apache-maven*/* /opt/apache-maven
