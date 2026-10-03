@@ -130,11 +130,13 @@ test: verify-docker-backend .venv/bin/python
 	$(call task,running smoke tests)
 	$(call irun,.venv/bin/python -m pytest test -v)
 
-publish: verify-docker-backend all-deps
+# --no-cache: cached apt layers would otherwise ship stale packages.
+# the push reuses that fresh cache, so the tested images are the pushed ones
+publish: pull-base verify-docker-backend all-deps
 	$(call task,checking TAG_VERSION is publishable)
 	@case '${TAG_VERSION}' in *-dev) echo "TAG_VERSION ${TAG_VERSION} ends with -dev: refusing to push" >&2; exit 1;; esac
-	$(call task,baking all images)
-	$(call irun,docker buildx bake)
+	$(call task,baking all images from scratch)
+	$(call irun,docker buildx bake --no-cache)
 	$(MAKE) test
 	$(call task,pushing tag: ${TAG_VERSION} and latest)
 	$(call irun,docker buildx bake --push)
