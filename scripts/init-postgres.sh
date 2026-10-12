@@ -3,14 +3,14 @@ set -o pipefail
 
 if [ -s /var/lib/postgresql/conf/patroni.yml ]; then
     echo "Patroni configuration detected. Starting patroni"
-    exec setpriv --reuid=postgres --regid=docker-machines --init-groups -- patroni /var/lib/postgresql/conf/patroni.yml
+    exec setpriv --reuid=postgres --regid=docker-machines --init-groups --no-new-privs -- patroni /var/lib/postgresql/conf/patroni.yml
 fi
 
 echo "Patroni configuration '/var/lib/postgresql/conf/patroni.yml' missing. Running as a standalone instance"
 
 if [ ! -s "/var/lib/postgresql/data/PG_VERSION" ]; then
     echo "initializing database"
-    setpriv --reuid=postgres --regid=docker-machines --init-groups -- /usr/lib/postgresql/*/bin/initdb \
+    setpriv --reuid=postgres --regid=docker-machines --init-groups --no-new-privs -- /usr/lib/postgresql/*/bin/initdb \
         -D /var/lib/postgresql/data \
         --encoding 'UTF-8' \
         --lc-collate='en_US.UTF-8' \
@@ -21,7 +21,7 @@ if [ ! -s "/var/lib/postgresql/data/PG_VERSION" ]; then
     echo "database initialized"
 
     psql=( psql -v ON_ERROR_STOP=1 --username "postgres" --dbname "postgres" )
-    setpriv --reuid=postgres --regid=docker-machines --init-groups -- /usr/lib/postgresql/*/bin/pg_ctl -s \
+    setpriv --reuid=postgres --regid=docker-machines --init-groups --no-new-privs -- /usr/lib/postgresql/*/bin/pg_ctl -s \
         -D "/var/lib/postgresql/data" \
         -o "-c listen_addresses='127.0.0.1'" \
         -o "-c config_file=/var/lib/postgresql/conf/postgresql.conf" \
@@ -37,11 +37,11 @@ if [ ! -s "/var/lib/postgresql/data/PG_VERSION" ]; then
         esac
     done
 
-    setpriv --reuid=postgres --regid=docker-machines --init-groups -- /usr/lib/postgresql/*/bin/pg_ctl -s \
+    setpriv --reuid=postgres --regid=docker-machines --init-groups --no-new-privs -- /usr/lib/postgresql/*/bin/pg_ctl -s \
         -D "/var/lib/postgresql/data" \
         -o "-c config_file=/var/lib/postgresql/conf/postgresql.conf" \
         -m fast \
         -w stop
     echo "initialization complete"
 fi
-exec setpriv --reuid=postgres --regid=docker-machines --init-groups -- /usr/lib/postgresql/*/bin/postgres -c config_file=/var/lib/postgresql/conf/postgresql.conf
+exec setpriv --reuid=postgres --regid=docker-machines --init-groups --no-new-privs -- /usr/lib/postgresql/*/bin/postgres -c config_file=/var/lib/postgresql/conf/postgresql.conf

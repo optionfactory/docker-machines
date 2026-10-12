@@ -4,7 +4,7 @@ groupadd --system --gid 950 docker-machines
 useradd --system --create-home --gid docker-machines --uid 950 mysql
 
 DEBIAN_FRONTEND=noninteractive apt-get -y -q update 
-DEBIAN_FRONTEND=noninteractive apt-get -y -q install curl gpg
+DEBIAN_FRONTEND=noninteractive apt-get -y -q --no-install-recommends install curl gpg
 
 mkdir -p /etc/apt/keyrings
 curl -LsS https://repo.mysql.com/RPM-GPG-KEY-mysql-2025 | gpg --dearmor > /etc/apt/keyrings/mysql.gpg
@@ -20,7 +20,8 @@ deb [arch=amd64 signed-by=/etc/apt/keyrings/mysql.gpg] https://repo.mysql.com/ap
 EOF
 
 DEBIAN_FRONTEND=noninteractive apt-get -y -q update 
-DEBIAN_FRONTEND=noninteractive apt-get -y -q install mysql-community-server
+DEBIAN_FRONTEND=noninteractive apt-get -y -q --no-install-recommends install mysql-community-server
+DEBIAN_FRONTEND=noninteractive apt-get -y -q purge --auto-remove curl gpg
 DEBIAN_FRONTEND=noninteractive apt-get -y -q autoclean
 DEBIAN_FRONTEND=noninteractive apt-get -y -q autoremove
 rm -rf /var/lib/apt/lists/*

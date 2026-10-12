@@ -23,7 +23,7 @@ EOF
 
 cat <<'EOF' > /alertmanager
 #!/bin/bash -e
-exec setpriv --reuid=monitoring --regid=docker-machines --init-groups -- /opt/alertmanager/bin/alertmanager \
+exec setpriv --reuid=monitoring --regid=docker-machines --init-groups --no-new-privs -- /opt/alertmanager/bin/alertmanager \
   --config.file=/opt/alertmanager/conf/alertmanager.yml \
   --storage.path=/opt/alertmanager/data/ \
   "$@"

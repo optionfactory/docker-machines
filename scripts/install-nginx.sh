@@ -5,7 +5,7 @@ groupadd --system --gid 950 docker-machines
 useradd --system --create-home --gid docker-machines --uid 950 nginx
 
 DEBIAN_FRONTEND=noninteractive apt-get -y -q update
-DEBIAN_FRONTEND=noninteractive apt-get -y -q install curl
+DEBIAN_FRONTEND=noninteractive apt-get -y -q --no-install-recommends install curl
 
 install -d -m 0755 /etc/apt/keyrings
 curl -# -L https://nginx.org/keys/nginx_signing.key > /etc/apt/keyrings/nginx.asc
@@ -13,6 +13,7 @@ echo "deb [signed-by=/etc/apt/keyrings/nginx.asc] https://nginx.org/packages/${D
 
 DEBIAN_FRONTEND=noninteractive apt-get -y -q update
 DEBIAN_FRONTEND=noninteractive apt-get -y -q install --no-install-recommends --no-install-suggests nginx=${NGINX_MAJOR_VERSION}.* nginx-module-acme=${NGINX_MAJOR_VERSION}.* gettext-base
+DEBIAN_FRONTEND=noninteractive apt-get -y -q purge --auto-remove curl
 
 rm -rf /var/lib/apt/lists/* /etc/apt/sources.list.d/nginx.list
 

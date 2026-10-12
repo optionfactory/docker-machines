@@ -5,15 +5,8 @@ echo "Installing Caddy"
 groupadd --system --gid 950 docker-machines
 useradd --system --create-home --gid docker-machines --uid 950 caddy
 
-DEBIAN_FRONTEND=noninteractive apt-get -y -q update
-DEBIAN_FRONTEND=noninteractive apt-get -y -q install libcap2-bin
-DEBIAN_FRONTEND=noninteractive apt-get -y -q autoclean
-DEBIAN_FRONTEND=noninteractive apt-get -y -q autoremove
-rm -rf /var/lib/apt/lists/* /etc/apt/sources.list.d/*
-
 mkdir -p /opt/caddy/{bin,conf,data}
 cp /build/caddy-* /opt/caddy/bin/caddy
-setcap cap_net_bind_service=+ep /opt/caddy/bin/caddy
 
 
 
@@ -41,7 +34,7 @@ chown -R caddy:docker-machines /opt/caddy
 cat <<'EOF' > /caddy
 #!/bin/bash -e
 
-XDG_DATA_HOME=/opt/caddy/data/ exec setpriv --reuid=caddy --regid=docker-machines --init-groups -- /opt/caddy/bin/caddy run --config /opt/caddy/conf/caddy.conf.json
+XDG_DATA_HOME=/opt/caddy/data/ exec setpriv --reuid=caddy --regid=docker-machines --init-groups --no-new-privs -- /opt/caddy/bin/caddy run --config /opt/caddy/conf/caddy.conf.json
 EOF
 
 chmod 750 /caddy

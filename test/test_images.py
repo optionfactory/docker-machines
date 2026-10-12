@@ -3,6 +3,7 @@
 its real binaries. Assertions are major-version level so routine pin bumps don't
 break the suite."""
 
+import subprocess
 import tomllib
 from dataclasses import dataclass
 from pathlib import Path
@@ -33,3 +34,13 @@ def test_image_content(run, check):
     output = result.stdout + result.stderr
     assert result.returncode == 0, f"exit {result.returncode}\n{output[:800]}"
     assert check.expect in output, f"expected {check.expect!r} not found in:\n{output[:800]}"
+
+
+def test_cinny_files(image):
+    """FROM scratch, nothing to run: the files are read straight from a created container."""
+    cid = subprocess.run(["docker", "create", image("debian13-cinny4"), "none"], capture_output=True, text=True, check=True).stdout.strip()
+    try:
+        result = subprocess.run(["docker", "cp", f"{cid}:/cinny/index.html", "-"], capture_output=True)
+        assert result.returncode == 0, result.stderr.decode()[:800]
+    finally:
+        subprocess.run(["docker", "rm", cid], capture_output=True)

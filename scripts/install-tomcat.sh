@@ -54,7 +54,7 @@ chown -R tomcat:docker-machines /opt/apache-tomcat
 
 cat <<'EOF' > /tomcat
 #!/bin/bash -e
-exec setpriv --reuid=tomcat --regid=docker-machines --init-groups -- /opt/apache-tomcat/bin/catalina.sh run
+exec setpriv --reuid=tomcat --regid=docker-machines --init-groups --no-new-privs -- /opt/apache-tomcat/bin/catalina.sh run
 EOF
 
 chmod 750 /tomcat

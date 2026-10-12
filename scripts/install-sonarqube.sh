@@ -15,7 +15,7 @@ chown -R sonarqube:docker-machines /opt/sonarqube
 
 cat <<'EOF' > /sonarqube
 #!/bin/bash -e
-exec setpriv --reuid=sonarqube --regid=docker-machines --init-groups -- java \
+exec setpriv --reuid=sonarqube --regid=docker-machines --init-groups --no-new-privs -- java \
     -Xms8m \
     -Xmx32m \
     --add-exports=java.base/jdk.internal.ref=ALL-UNNAMED \

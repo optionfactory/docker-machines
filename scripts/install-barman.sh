@@ -4,12 +4,13 @@ groupadd --system --gid 950 docker-machines
 useradd --system --create-home --gid docker-machines --uid 950 barman
 
 DEBIAN_FRONTEND=noninteractive apt-get -y -q update
-DEBIAN_FRONTEND=noninteractive apt-get install -y -q curl
+DEBIAN_FRONTEND=noninteractive apt-get install -y -q --no-install-recommends curl
 install -d -m 0755 /etc/apt/keyrings
 curl -# -L https://www.postgresql.org/media/keys/ACCC4CF8.asc > /etc/apt/keyrings/pgdg.asc
 echo "deb [signed-by=/etc/apt/keyrings/pgdg.asc] https://apt.postgresql.org/pub/repos/apt/ ${DISTRIB_CODENAME}-pgdg main" > /etc/apt/sources.list.d/pgdg.list
 DEBIAN_FRONTEND=noninteractive apt-get -y -q update
-DEBIAN_FRONTEND=noninteractive apt-get install -y -q barman
+DEBIAN_FRONTEND=noninteractive apt-get install -y -q --no-install-recommends barman postgresql-client openssh-client python3-lz4 python3-zstandard procps
+DEBIAN_FRONTEND=noninteractive apt-get -y -q purge --auto-remove curl
 rm -rf /var/lib/apt/lists/*
 
 cat <<-'EOF' > /etc/barman.conf
@@ -44,7 +45,7 @@ cat <<'EOF' > /barman
 trap 'exit 0' TERM INT
 while :
 do
-    setpriv --reuid=barman --regid=docker-machines --init-groups -- barman cron || echo "barman cron failed (exit $?), retrying in 60s" >&2
+    setpriv --reuid=barman --regid=docker-machines --init-groups --no-new-privs -- barman cron || echo "barman cron failed (exit $?), retrying in 60s" >&2
     sleep 60 &
     wait $!
 done

@@ -69,6 +69,12 @@ group "default" {
     "debian13-jdk21-builder",
     "debian13-jdk25-builder",
     "debian13-nginx130",
+    "debian13-headscale0",
+    "debian13-vaultwarden1",
+    "debian13-tuwunel1",
+    "debian13-livekit1",
+    "debian13-livekit-jwt0",
+    "debian13-cinny4",
     "debian13-monitoring-prometheus",
     "debian13-monitoring-alertmanager",
     "debian13-monitoring-grafana",
@@ -283,6 +289,86 @@ target "debian13-nginx130" {
     ${run_debian13("install-nginx.sh", true, ["NGINX_MAJOR_VERSION=${NGINX_MAJOR_VERSION}"])}
 
     ENTRYPOINT ["/nginx"]
+  EOF
+}
+
+# internal services: vpn, password manager, matrix
+
+target "debian13-headscale0" {
+  attest = ["type=sbom", "type=provenance,mode=max"]
+  tags = tags("debian13-headscale0")
+  contexts = { scripts = "scripts", base = "target:debian13", distrib = "deps/headscale" }
+  dockerfile-inline = <<-EOF
+    ${base("base")}
+
+    ${run_debian13("install-headscale.sh", true, [])}
+
+    ENTRYPOINT ["/headscale"]
+  EOF
+}
+
+target "debian13-vaultwarden1" {
+  attest = ["type=sbom", "type=provenance,mode=max"]
+  tags = tags("debian13-vaultwarden1")
+  contexts = { scripts = "scripts", base = "target:debian13", distrib = "deps/vaultwarden" }
+  dockerfile-inline = <<-EOF
+    ${base("base")}
+
+    ${run_debian13("install-vaultwarden.sh", true, [])}
+
+    ENTRYPOINT ["/vaultwarden"]
+  EOF
+}
+
+target "debian13-tuwunel1" {
+  attest = ["type=sbom", "type=provenance,mode=max"]
+  tags = tags("debian13-tuwunel1")
+  contexts = { scripts = "scripts", base = "target:debian13", distrib = "deps/tuwunel" }
+  dockerfile-inline = <<-EOF
+    ${base("base")}
+
+    ${run_debian13("install-tuwunel.sh", true, [])}
+
+    ENTRYPOINT ["/tuwunel"]
+  EOF
+}
+
+target "debian13-livekit1" {
+  attest = ["type=sbom", "type=provenance,mode=max"]
+  tags = tags("debian13-livekit1")
+  contexts = { scripts = "scripts", base = "target:debian13", distrib = "deps/livekit" }
+  dockerfile-inline = <<-EOF
+    ${base("base")}
+
+    ${run_debian13("install-livekit.sh", true, [])}
+
+    ENTRYPOINT ["/livekit"]
+  EOF
+}
+
+# element-hq/lk-jwt-service
+target "debian13-livekit-jwt0" {
+  attest = ["type=sbom", "type=provenance,mode=max"]
+  tags = tags("debian13-livekit-jwt0")
+  contexts = { scripts = "scripts", base = "target:debian13", distrib = "deps/livekit-jwt" }
+  dockerfile-inline = <<-EOF
+    ${base("base")}
+
+    ${run_debian13("install-livekit-jwt.sh", true, [])}
+
+    ENTRYPOINT ["/livekit-jwt"]
+  EOF
+}
+
+# static files only, in a FROM scratch image: mounted read-only into a web server (docker --mount type=image)
+target "debian13-cinny4" {
+  attest = ["type=sbom", "type=provenance,mode=max"]
+  tags = tags("debian13-cinny4")
+  contexts = { distrib = "deps/cinny" }
+  dockerfile-inline = <<-EOF
+    ${base("scratch")}
+
+    COPY --from=distrib dist/ /cinny/
   EOF
 }
 

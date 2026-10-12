@@ -5,14 +5,17 @@ useradd --system --create-home --gid docker-machines --uid 950 postgres
 
 
 DEBIAN_FRONTEND=noninteractive apt-get -y -q update
-DEBIAN_FRONTEND=noninteractive apt-get install -y -q curl less
+DEBIAN_FRONTEND=noninteractive apt-get install -y -q --no-install-recommends curl less locales
 install -d -m 0755 /etc/apt/keyrings
 curl -# -L https://www.postgresql.org/media/keys/ACCC4CF8.asc > /etc/apt/keyrings/pgdg.asc
 echo "deb [signed-by=/etc/apt/keyrings/pgdg.asc] https://apt.postgresql.org/pub/repos/apt/ ${DISTRIB_CODENAME}-pgdg main" > /etc/apt/sources.list.d/pgdg.list
 DEBIAN_FRONTEND=noninteractive apt-get -y -q update
-DEBIAN_FRONTEND=noninteractive apt-get install -y -q postgresql-common 
+DEBIAN_FRONTEND=noninteractive apt-get install -y -q --no-install-recommends postgresql-common
 sed -ri 's/^# *(create_main_cluster) .*$/\1 = false/' /etc/postgresql-common/createcluster.conf
-DEBIAN_FRONTEND=noninteractive apt-get install -y -q postgresql-${PSQL_MAJOR_VERSION} postgresql-contrib-${PSQL_MAJOR_VERSION} postgresql-${PSQL_MAJOR_VERSION}-postgis-3 postgresql-${PSQL_MAJOR_VERSION}-pgvector patroni
+# since 18 jit is a separate package, only recommended by the server
+jit=$([ "${PSQL_MAJOR_VERSION}" -ge 18 ] && echo "postgresql-${PSQL_MAJOR_VERSION}-jit" || true)
+DEBIAN_FRONTEND=noninteractive apt-get install -y -q --no-install-recommends postgresql-${PSQL_MAJOR_VERSION} ${jit} postgresql-contrib-${PSQL_MAJOR_VERSION} postgresql-${PSQL_MAJOR_VERSION}-postgis-3 postgresql-${PSQL_MAJOR_VERSION}-pgvector patroni
+DEBIAN_FRONTEND=noninteractive apt-get -y -q purge --auto-remove curl
 rm -rf /var/lib/apt/lists/*
 
 

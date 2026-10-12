@@ -11,7 +11,7 @@ cp -r /build/nginx-exporter-* /opt/nginx-exporter/bin/nginx-exporter
 
 cat <<'EOF' > /monitoring-nginx
 #!/bin/bash -e
-exec setpriv --reuid=monitoring --regid=docker-machines --init-groups -- /opt/nginx-exporter/bin/nginx-exporter "$@"
+exec setpriv --reuid=monitoring --regid=docker-machines --init-groups --no-new-privs -- /opt/nginx-exporter/bin/nginx-exporter "$@"
 EOF
 
 chown -R monitoring:docker-machines /opt/nginx-exporter

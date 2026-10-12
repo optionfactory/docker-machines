@@ -1,10 +1,10 @@
-export TAG_VERSION=243
+export TAG_VERSION=244
 
 #software versions
 
 SLOTH_VERSION=1.0.0
 DOCKER_SNITCH_VERSION=1.0.0
-SONARQUBE10_VERSION=26.9.0.129388
+SONARQUBE10_VERSION=26.10.0.133078
 CORRETTO21_VERSION=21.0.12.12.1
 CORRETTO25_VERSION=25.0.4.10.1
 TOMCAT9_VERSION=9.0.122
@@ -17,11 +17,19 @@ LEGOPFA_VERSION=3.0
 KEYCLOAK2_VERSION=26.8.0
 KEYCLOAK_OPFA_MODULES_VERSION=9.20
 MAVEN3_VERSION=3.9.16
-CADDY2_VERSION=2.11.4
+CADDY2_VERSION=2.11.7
 JOURNAL_WEBD_VERSION=1.1
 ETCD3_VERSION=3.7.2
 export NGINX_MAJOR_VERSION=1.30
 NGINX_REMOVE_SERVER_HEADER_MODULE_VERSION=1.30.5-1
+
+HEADSCALE_VERSION=0.29.4
+VAULTWARDEN_VERSION=1.37.4
+TUWUNEL_VERSION=1.9.4
+LIVEKIT_VERSION=1.13.9
+LIVEKIT_JWT_VERSION=0.8.0
+CINNY_VERSION=4.12.7
+
 
 GRAFANA_VERSION=13.2.3
 TEMPO_VERSION=3.1.0
@@ -31,6 +39,7 @@ NODE_EXPORTER_VERSION=1.12.1
 CADVISOR_VERSION=0.60.6
 POSTGRES_EXPORTER_VERSION=0.20.1
 NGINX_EXPORTER_VERSION=1.5.3
+
 
 #/software versions
 
@@ -104,6 +113,12 @@ check-updates:
 	$(call check_updates_github,nginx_exporter,$(NGINX_EXPORTER_VERSION),nginx/nginx-prometheus-exporter)
 	$(call check_updates_github,sloth,$(SLOTH_VERSION),optionfactory/sloth)
 	$(call check_updates_github,docker-snitch,$(DOCKER_SNITCH_VERSION),optionfactory/docker-heist)
+	$(call check_updates_github,headscale,$(HEADSCALE_VERSION),juanfont/headscale)
+	$(call check_updates_github,vaultwarden,$(VAULTWARDEN_VERSION),dani-garcia/vaultwarden)
+	$(call check_updates_github,tuwunel,$(TUWUNEL_VERSION),matrix-construct/tuwunel)
+	$(call check_updates_github,livekit,$(LIVEKIT_VERSION),livekit/livekit)
+	$(call check_updates_github,livekit-jwt,$(LIVEKIT_JWT_VERSION),element-hq/lk-jwt-service)
+	$(call check_updates_github,cinny,$(CINNY_VERSION),cinnyapp/cinny)
 
 
 verify-docker-backend:
@@ -172,12 +187,18 @@ build-optionfactory-debian13-monitoring-postgres: deps-postgres-exporter
 build-optionfactory-debian13-monitoring-nginx: deps-nginx-exporter
 build-optionfactory-debian13-monitoring-host: deps-node-exporter
 build-optionfactory-debian13-monitoring-tempo: deps-tempo
+build-optionfactory-debian13-headscale0: deps-headscale
+build-optionfactory-debian13-vaultwarden1: deps-vaultwarden
+build-optionfactory-debian13-tuwunel1: deps-tuwunel
+build-optionfactory-debian13-livekit1: deps-livekit
+build-optionfactory-debian13-livekit-jwt0: deps-livekit-jwt
+build-optionfactory-debian13-cinny4: deps-cinny
 
 
 # artifact families: deps/<family> holds exactly the artifacts an image needs,
 # wiped and re-downloaded whenever any pinned version in its stamp changes
 
-all-deps: deps-jdk21 deps-jdk25 deps-maven3 deps-sonarqube10 deps-tomcat9 deps-tomcat10 deps-tomcat11 deps-keycloak2 deps-nginx130 deps-caddy2 deps-etcd3 deps-journal-webd deps-prometheus deps-alertmanager deps-grafana deps-cadvisor deps-postgres-exporter deps-nginx-exporter deps-node-exporter deps-tempo deps-sloth deps-docker-snitch
+all-deps: deps-jdk21 deps-jdk25 deps-maven3 deps-sonarqube10 deps-tomcat9 deps-tomcat10 deps-tomcat11 deps-keycloak2 deps-nginx130 deps-caddy2 deps-etcd3 deps-journal-webd deps-prometheus deps-alertmanager deps-grafana deps-cadvisor deps-postgres-exporter deps-nginx-exporter deps-node-exporter deps-tempo deps-sloth deps-docker-snitch deps-headscale deps-vaultwarden deps-tuwunel deps-livekit deps-livekit-jwt deps-cinny
 
 deps-jdk21: deps/jdk21/.stamp-$(CORRETTO21_VERSION)
 deps-jdk25: deps/jdk25/.stamp-$(CORRETTO25_VERSION)
@@ -201,6 +222,12 @@ deps-node-exporter: deps/node-exporter/.stamp-$(NODE_EXPORTER_VERSION)
 deps-tempo: deps/tempo/.stamp-$(TEMPO_VERSION)
 deps-sloth: deps/sloth/.stamp-$(SLOTH_VERSION)
 deps-docker-snitch: deps/docker-snitch/.stamp-$(DOCKER_SNITCH_VERSION)
+deps-headscale: deps/headscale/.stamp-$(HEADSCALE_VERSION)
+deps-vaultwarden: deps/vaultwarden/.stamp-$(VAULTWARDEN_VERSION)
+deps-tuwunel: deps/tuwunel/.stamp-$(TUWUNEL_VERSION)
+deps-livekit: deps/livekit/.stamp-$(LIVEKIT_VERSION)
+deps-livekit-jwt: deps/livekit-jwt/.stamp-$(LIVEKIT_JWT_VERSION)
+deps-cinny: deps/cinny/.stamp-$(CINNY_VERSION)
 
 
 deps/jdk21/.stamp-$(CORRETTO21_VERSION):
@@ -334,6 +361,43 @@ deps/docker-snitch/.stamp-$(DOCKER_SNITCH_VERSION):
 	$(call irun,chmod +x deps/docker-snitch/docker-snitch-$(DOCKER_SNITCH_VERSION))
 	$(call irun,touch $@)
 
+deps/headscale/.stamp-$(HEADSCALE_VERSION):
+	$(call task,downloading headscale $(HEADSCALE_VERSION))
+	$(call irun,rm -rf deps/headscale && mkdir -p deps/headscale)
+	$(call irun,$(CURL) https://github.com/juanfont/headscale/releases/download/v$(HEADSCALE_VERSION)/headscale_$(HEADSCALE_VERSION)_linux_amd64 -o deps/headscale/headscale-$(HEADSCALE_VERSION))
+	$(call irun,chmod +x deps/headscale/headscale-$(HEADSCALE_VERSION))
+	$(call irun,touch $@)
+# vaultwarden publishes no binaries: binary and web vault come from the official (static, musl) alpine image
+deps/vaultwarden/.stamp-$(VAULTWARDEN_VERSION):
+	$(call task,extracting vaultwarden $(VAULTWARDEN_VERSION))
+	$(call irun,rm -rf deps/vaultwarden && mkdir -p deps/vaultwarden)
+	$(call irun,docker pull -q vaultwarden/server:$(VAULTWARDEN_VERSION)-alpine)
+	$(call irun,cid=$$(docker create vaultwarden/server:$(VAULTWARDEN_VERSION)-alpine) && docker cp $$cid:/vaultwarden deps/vaultwarden/vaultwarden-$(VAULTWARDEN_VERSION) && docker cp $$cid:/web-vault deps/vaultwarden/web-vault; docker rm $$cid >/dev/null)
+	$(call irun,touch $@)
+# needs zstd on the build host
+deps/tuwunel/.stamp-$(TUWUNEL_VERSION):
+	$(call task,downloading tuwunel $(TUWUNEL_VERSION))
+	$(call irun,rm -rf deps/tuwunel && mkdir -p deps/tuwunel)
+	$(call irun,$(CURL) https://github.com/matrix-construct/tuwunel/releases/download/v$(TUWUNEL_VERSION)/v$(TUWUNEL_VERSION)-release-all-x86_64-v1-linux-gnu-tuwunel.zst | zstd -d -q -o deps/tuwunel/tuwunel-$(TUWUNEL_VERSION))
+	$(call irun,chmod +x deps/tuwunel/tuwunel-$(TUWUNEL_VERSION))
+	$(call irun,touch $@)
+deps/livekit/.stamp-$(LIVEKIT_VERSION):
+	$(call task,downloading livekit $(LIVEKIT_VERSION))
+	$(call irun,rm -rf deps/livekit && mkdir -p deps/livekit)
+	$(call irun,$(CURL) https://github.com/livekit/livekit/releases/download/v$(LIVEKIT_VERSION)/livekit_$(LIVEKIT_VERSION)_linux_amd64.tar.gz | tar xz -C deps/livekit livekit-server && mv deps/livekit/livekit-server deps/livekit/livekit-server-$(LIVEKIT_VERSION))
+	$(call irun,touch $@)
+deps/livekit-jwt/.stamp-$(LIVEKIT_JWT_VERSION):
+	$(call task,downloading lk-jwt-service $(LIVEKIT_JWT_VERSION))
+	$(call irun,rm -rf deps/livekit-jwt && mkdir -p deps/livekit-jwt)
+	$(call irun,$(CURL) https://github.com/element-hq/lk-jwt-service/releases/download/v$(LIVEKIT_JWT_VERSION)/lk-jwt-service_linux_amd64 -o deps/livekit-jwt/lk-jwt-service-$(LIVEKIT_JWT_VERSION))
+	$(call irun,chmod +x deps/livekit-jwt/lk-jwt-service-$(LIVEKIT_JWT_VERSION))
+	$(call irun,touch $@)
+deps/cinny/.stamp-$(CINNY_VERSION):
+	$(call task,downloading cinny $(CINNY_VERSION))
+	$(call irun,rm -rf deps/cinny && mkdir -p deps/cinny)
+	$(call irun,$(CURL) https://github.com/cinnyapp/cinny/releases/download/v$(CINNY_VERSION)/cinny-v$(CINNY_VERSION).tar.gz | tar xz -C deps/cinny)
+	$(call irun,touch $@)
+
 
 clean: FORCE
 	$(call task,removing cached deps)
@@ -362,4 +426,4 @@ cleanup-docker-images: FORCE
 #This implies that all targets depending on this one will always have their recipe run.
 FORCE:
 .PHONY: build publish test check-updates verify-docker-backend pull-base all-deps clean cleanup-docker-images
-.PHONY: deps-jdk21 deps-jdk25 deps-maven3 deps-sonarqube10 deps-tomcat9 deps-tomcat10 deps-tomcat11 deps-keycloak2 deps-nginx130 deps-caddy2 deps-etcd3 deps-journal-webd deps-prometheus deps-alertmanager deps-grafana deps-cadvisor deps-postgres-exporter deps-nginx-exporter deps-node-exporter deps-tempo deps-sloth deps-docker-snitch
+.PHONY: deps-headscale deps-vaultwarden deps-tuwunel deps-livekit deps-livekit-jwt deps-cinny deps-jdk21 deps-jdk25 deps-maven3 deps-sonarqube10 deps-tomcat9 deps-tomcat10 deps-tomcat11 deps-keycloak2 deps-nginx130 deps-caddy2 deps-etcd3 deps-journal-webd deps-prometheus deps-alertmanager deps-grafana deps-cadvisor deps-postgres-exporter deps-nginx-exporter deps-node-exporter deps-tempo deps-sloth deps-docker-snitch deps-headscale deps-vaultwarden deps-tuwunel deps-livekit deps-livekit-jwt deps-cinny

@@ -4,7 +4,7 @@ groupadd --system --gid 950 docker-machines
 useradd --system --create-home --gid docker-machines --uid 950 mysql
 
 DEBIAN_FRONTEND=noninteractive apt-get -y -q update 
-DEBIAN_FRONTEND=noninteractive apt-get -y -q install curl
+DEBIAN_FRONTEND=noninteractive apt-get -y -q --no-install-recommends install curl
 
 curl -LsSo /etc/apt/keyrings/mariadb.gpg https://supplychain.mariadb.com/mariadb-keyring-2019.gpg
 
@@ -19,7 +19,8 @@ deb [arch=amd64 signed-by=/etc/apt/keyrings/mariadb.gpg] https://dlm.mariadb.com
 EOF
 
 DEBIAN_FRONTEND=noninteractive apt-get -y -q update 
-DEBIAN_FRONTEND=noninteractive apt-get -y -q install mariadb-server
+DEBIAN_FRONTEND=noninteractive apt-get -y -q --no-install-recommends install mariadb-server mariadb-client-compat mariadb-server-compat
+DEBIAN_FRONTEND=noninteractive apt-get -y -q purge --auto-remove curl
 DEBIAN_FRONTEND=noninteractive apt-get -y -q autoclean
 DEBIAN_FRONTEND=noninteractive apt-get -y -q autoremove
 rm -rf /var/lib/apt/lists/*

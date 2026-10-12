@@ -7,11 +7,11 @@ snitch=( docker-snitch /var/run/mysqld/slow.log /var/run/mysqld/general.log -- )
 
 if [ ! -d "/var/lib/mysql/mysql" ]; then
 	echo "initializing database"
-	setpriv --reuid=mysql --regid=docker-machines --init-groups -- mariadb-install-db --datadir="/var/lib/mysql" --skip-test-db
+	setpriv --reuid=mysql --regid=docker-machines --init-groups --no-new-privs -- mariadb-install-db --datadir="/var/lib/mysql" --skip-test-db
 	echo "database initialized"
 
 	mysql_client=( mariadb --protocol=socket -uroot )
-	setpriv --reuid=mysql --regid=docker-machines --init-groups -- "${snitch[@]}" mariadbd --defaults-file=/etc/my.cnf --skip-networking &
+	setpriv --reuid=mysql --regid=docker-machines --init-groups --no-new-privs -- "${snitch[@]}" mariadbd --defaults-file=/etc/my.cnf --skip-networking &
 	jid="$!"
 	for i in {1..30}; do
 		kill -0 "$jid" 2>/dev/null || { echo >&2 'server exited during startup.'; wait "$jid" || true; exit 1; }
@@ -34,4 +34,4 @@ if [ ! -d "/var/lib/mysql/mysql" ]; then
 	kill -s TERM "$jid" && wait "$jid" || { echo >&2 'initialization failed.'; exit 1; }
 	echo "initialization complete"
 fi
-exec setpriv --reuid=mysql --regid=docker-machines --init-groups -- "${snitch[@]}" mariadbd --defaults-file=/etc/my.cnf
+exec setpriv --reuid=mysql --regid=docker-machines --init-groups --no-new-privs -- "${snitch[@]}" mariadbd --defaults-file=/etc/my.cnf

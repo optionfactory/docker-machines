@@ -56,6 +56,21 @@ Services run as dedicated non-root users via `setpriv`; init steps (initdb, boot
 | `optionfactory/debian13-medic` | network diagnostics toolbox (ping, traceroute, tcpdump, ...) |
 | `optionfactory/sloth` | [sloth](https://github.com/optionfactory/sloth), static binary in a `FROM scratch` image |
 
+### Internal services
+
+VPN, password manager and Matrix. Configuration and data are mounted in `/opt/<service>/conf` and `/opt/<service>/data`.
+
+| Image | Contents |
+|---|---|
+| `optionfactory/debian13-headscale0` | [Headscale](https://github.com/juanfont/headscale); the cli is `headscale` in the container (`docker exec <name> headscale nodes list`) |
+| `optionfactory/debian13-vaultwarden1` | [Vaultwarden](https://github.com/dani-garcia/vaultwarden) and its web vault, both taken from the official (static, alpine) image of the same version: upstream publishes no binaries |
+| `optionfactory/debian13-tuwunel1` | [tuwunel](https://github.com/matrix-construct/tuwunel) Matrix homeserver (x86_64-v1 build) |
+| `optionfactory/debian13-livekit1` | [LiveKit](https://github.com/livekit/livekit) SFU |
+| `optionfactory/debian13-livekit-jwt0` | [lk-jwt-service](https://github.com/element-hq/lk-jwt-service), the MatrixRTC authorization service for LiveKit, configured through `LIVEKIT_*` variables |
+| `optionfactory/debian13-cinny4` | [Cinny](https://github.com/cinnyapp/cinny) static files only, in a `FROM scratch` image under `/cinny`: mount it read-only into a web server with `--mount type=image,source=optionfactory/debian13-cinny4:<tag>,image-subpath=cinny,target=<root>` (docker 28+) |
+
+Building `debian13-tuwunel1` needs `zstd` on the build host.
+
 ## Monitoring
 
 Prometheus metrics stack and exporters.

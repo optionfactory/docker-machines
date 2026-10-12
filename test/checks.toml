@@ -41,6 +41,30 @@ command = ["/usr/lib/postgresql/18/bin/postgres", "--version"]
 expect = "PostgreSQL) 18"
 
 [[check]]
+image = "debian13-postgres15"
+command = ["ls", "/usr/lib/postgresql/15/lib/llvmjit.so"]
+expect = "llvmjit.so"
+id = "postgres15-jit"
+
+[[check]]
+image = "debian13-postgres16"
+command = ["ls", "/usr/lib/postgresql/16/lib/llvmjit.so"]
+expect = "llvmjit.so"
+id = "postgres16-jit"
+
+[[check]]
+image = "debian13-postgres17"
+command = ["ls", "/usr/lib/postgresql/17/lib/llvmjit.so"]
+expect = "llvmjit.so"
+id = "postgres17-jit"
+
+[[check]]
+image = "debian13-postgres18"
+command = ["ls", "/usr/lib/postgresql/18/lib/llvmjit.so"]
+expect = "llvmjit.so"
+id = "postgres18-jit"
+
+[[check]]
 image = "debian13-mariadb12"
 command = ["mariadbd", "--version"]
 expect = "MariaDB"
@@ -145,6 +169,30 @@ command = ["mvn", "-v"]
 expect = "Apache Maven"
 id = "builder-jdk25-maven"
 
+[[check]]
+image = "debian13-jdk21-builder"
+command = ["ssh", "-V"]
+expect = "OpenSSH"
+id = "builder-jdk21-ssh"
+
+[[check]]
+image = "debian13-jdk21-builder"
+command = ["python3", "-c", "import cryptography, jmespath; print('ansible extras ok')"]
+expect = "ansible extras ok"
+id = "builder-jdk21-ansible-extras"
+
+[[check]]
+image = "debian13-jdk25-builder"
+command = ["ssh", "-V"]
+expect = "OpenSSH"
+id = "builder-jdk25-ssh"
+
+[[check]]
+image = "debian13-jdk25-builder"
+command = ["python3", "-c", "import cryptography, jmespath; print('ansible extras ok')"]
+expect = "ansible extras ok"
+id = "builder-jdk25-ansible-extras"
+
 # web servers / proxies
 [[check]]
 image = "debian13-nginx130"
@@ -173,6 +221,18 @@ expect = "v2."
 image = "debian13-barman2"
 command = ["barman", "--version"]
 expect = "Barman by EnterpriseDB"
+
+[[check]]
+image = "debian13-barman2"
+command = ["pg_basebackup", "--version"]
+expect = "pg_basebackup (PostgreSQL)"
+id = "barman2-pg-client"
+
+[[check]]
+image = "debian13-barman2"
+command = ["ssh", "-V"]
+expect = "OpenSSH"
+id = "barman2-ssh"
 
 [[check]]
 image = "debian13-journal-webd"
@@ -224,3 +284,36 @@ expect = "postgres_exporter, version"
 image = "debian13-monitoring-nginx"
 command = ["/opt/nginx-exporter/bin/nginx-exporter", "--version"]
 expect = "nginx_exporter, version"
+
+# internal services
+
+[[check]]
+image = "debian13-headscale0"
+command = ["/opt/headscale/bin/headscale", "version"]
+expect = "0."
+
+[[check]]
+image = "debian13-vaultwarden1"
+command = ["/opt/vaultwarden/bin/vaultwarden", "--version"]
+expect = "Vaultwarden 1."
+
+[[check]]
+image = "debian13-vaultwarden1"
+command = ["ls", "/opt/vaultwarden/web-vault/index.html"]
+expect = "index.html"
+id = "vaultwarden1-web-vault"
+
+[[check]]
+image = "debian13-tuwunel1"
+command = ["/opt/tuwunel/bin/tuwunel", "--version"]
+expect = "1."
+
+[[check]]
+image = "debian13-livekit1"
+command = ["/opt/livekit/bin/livekit-server", "--version"]
+expect = "1."
+
+[[check]]
+image = "debian13-livekit-jwt0"
+command = ["ls", "/opt/livekit-jwt/bin/lk-jwt-service"]
+expect = "lk-jwt-service"

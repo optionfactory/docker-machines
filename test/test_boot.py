@@ -11,7 +11,8 @@ TOMCAT_PORT = 18084
 
 
 def logs_of(cid):
-    return subprocess.run(["docker", "logs", cid], capture_output=True, text=True).stdout
+    result = subprocess.run(["docker", "logs", cid], capture_output=True, text=True)
+    return result.stdout + result.stderr
 
 
 def wait_for_log(cid, expected, timeout):
@@ -25,10 +26,30 @@ def wait_for_log(cid, expected, timeout):
     return logs
 
 
+def wait_for_no_new_privs(cid, timeout):
+    """PID 1 is the root entrypoint until it execs the service through setpriv."""
+    deadline = time.monotonic() + timeout
+    status = ""
+    while time.monotonic() < deadline:
+        status = subprocess.run(["docker", "exec", cid, "grep", "NoNewPrivs", "/proc/1/status"], capture_output=True, text=True).stdout
+        if status.split() == ["NoNewPrivs:", "1"]:
+            return status
+        time.sleep(1)
+    return status
+
+
+def listening_ports(cid):
+    tables = subprocess.run(["docker", "exec", cid, "cat", "/proc/net/tcp", "/proc/net/tcp6"], capture_output=True, text=True).stdout
+    rows = [line.split() for line in tables.splitlines()]
+    return {int(row[1].rsplit(":", 1)[1], 16) for row in rows if len(row) > 3 and row[3] == "0A"}
+
+
 def test_postgres_boots_and_accepts_connections(boot):
     with boot("debian13-postgres17") as cid:
         logs = wait_for_log(cid, "database system is ready to accept connections", 120)
         assert "database system is ready to accept connections" in logs, logs[-800:]
+        status = wait_for_no_new_privs(cid, 30)
+        assert status.split() == ["NoNewPrivs:", "1"], status
 
 
 def test_tomcat_serves_http(boot):
@@ -46,6 +67,15 @@ def test_tomcat_serves_http(boot):
                 last_error = error
                 time.sleep(1)
         pytest.fail(f"tomcat never answered: {last_error}\n{logs_of(cid)[-800:]}")
+
+
+def test_caddy_binds_privileged_port_without_capabilities(boot):
+    with boot("debian13-caddy2") as cid:
+        logs = wait_for_log(cid, "serving initial configuration", 30)
+        assert "serving initial configuration" in logs, logs[-800:]
+        assert 80 in listening_ports(cid), logs[-800:]
+        status = wait_for_no_new_privs(cid, 10)
+        assert status.split() == ["NoNewPrivs:", "1"], status
 
 
 def test_sloth_keeps_running(boot):

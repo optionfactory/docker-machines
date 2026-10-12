@@ -20,7 +20,7 @@ EOF
 
 cat <<'EOF' > /prometheus
 #!/bin/bash -e
-exec setpriv --reuid=monitoring --regid=docker-machines --init-groups -- /opt/prometheus/bin/prometheus \
+exec setpriv --reuid=monitoring --regid=docker-machines --init-groups --no-new-privs -- /opt/prometheus/bin/prometheus \
     --config.file=/opt/prometheus/conf/prometheus.yml \
     --storage.tsdb.path=/opt/prometheus/data/ \
     --web.console.libraries=/opt/prometheus/console-libs \

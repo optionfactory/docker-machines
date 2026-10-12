@@ -16,7 +16,7 @@ EOF
 
 cat <<'EOF' > /monitoring-postgres
 #!/bin/bash -e
-exec setpriv --reuid=monitoring --regid=docker-machines --init-groups -- /opt/postgres-exporter/bin/postgres-exporter --config.file /opt/postgres-exporter/conf/postgres-exporter.yml "$@"
+exec setpriv --reuid=monitoring --regid=docker-machines --init-groups --no-new-privs -- /opt/postgres-exporter/bin/postgres-exporter --config.file /opt/postgres-exporter/conf/postgres-exporter.yml "$@"
 EOF
 
 chown -R monitoring:docker-machines /opt/postgres-exporter
