@@ -68,8 +68,14 @@ define check_updates_tomcat
 	printf "%b %-25s: current: %-20s latest: %s\n" "$$symbol" "$1" "$2" "$$latest"
 endef
 
+# unauthenticated github api calls are capped at 60/hour: use the gh cli token when available
+ifndef GITHUB_TOKEN
+GITHUB_TOKEN := $(shell gh auth token 2>/dev/null)
+endif
+export GITHUB_TOKEN
+
 define check_updates_github
-	@latest=$$(curl -s https://api.github.com/repos/$3/releases | jq -r '.[] | select(.prerelease == false) | .tag_name | ltrimstr("v")' | sort -V | tail -n 1); \
+	@latest=$$(curl -s $${GITHUB_TOKEN:+-H "Authorization: Bearer $$GITHUB_TOKEN"} https://api.github.com/repos/$3/releases | jq -r 'if type == "object" then error(.message) else .[] | select(.prerelease == false) | .tag_name | ltrimstr("v") end' | sort -V | tail -n 1); \
 	[ "$2" = "$$latest" ] && symbol="\033[1;32m✓\033[0m" || symbol="\033[1;31m✗\033[0m"; \
 	printf "%b %-25s: current: %-20s latest: %s\n" "$$symbol" "$1" "$2" "$$latest"
 endef
