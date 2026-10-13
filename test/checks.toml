@@ -309,11 +309,7 @@ command = ["/opt/tuwunel/bin/tuwunel", "--version"]
 expect = "1."
 
 [[check]]
-image = "debian13-livekit1"
-command = ["/opt/livekit/bin/livekit-server", "--version"]
-expect = "1."
-
-[[check]]
-image = "debian13-livekit-jwt0"
-command = ["ls", "/opt/livekit-jwt/bin/lk-jwt-service"]
-expect = "lk-jwt-service"
+image = "debian13-nginx130-cinny4"
+command = ["nginx", "-t"]
+expect = "syntax is ok"
+id = "nginx130-cinny4"

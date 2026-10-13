@@ -72,9 +72,7 @@ group "default" {
     "debian13-headscale0",
     "debian13-vaultwarden1",
     "debian13-tuwunel1",
-    "debian13-livekit1",
-    "debian13-livekit-jwt0",
-    "debian13-cinny4",
+    "debian13-nginx130-cinny4",
     "debian13-monitoring-prometheus",
     "debian13-monitoring-alertmanager",
     "debian13-monitoring-grafana",
@@ -333,42 +331,17 @@ target "debian13-tuwunel1" {
   EOF
 }
 
-target "debian13-livekit1" {
+target "debian13-nginx130-cinny4" {
   attest = ["type=sbom", "type=provenance,mode=max"]
-  tags = tags("debian13-livekit1")
-  contexts = { scripts = "scripts", base = "target:debian13", distrib = "deps/livekit" }
+  tags = tags("debian13-nginx130-cinny4")
+  contexts = { scripts = "scripts", base = "target:debian13-nginx130", distrib = "deps/cinny" }
   dockerfile-inline = <<-EOF
     ${base("base")}
 
-    ${run_debian13("install-livekit.sh", true, [])}
+    ${run_debian13("install-cinny.sh", true, [])}
 
-    ENTRYPOINT ["/livekit"]
-  EOF
-}
-
-# element-hq/lk-jwt-service
-target "debian13-livekit-jwt0" {
-  attest = ["type=sbom", "type=provenance,mode=max"]
-  tags = tags("debian13-livekit-jwt0")
-  contexts = { scripts = "scripts", base = "target:debian13", distrib = "deps/livekit-jwt" }
-  dockerfile-inline = <<-EOF
-    ${base("base")}
-
-    ${run_debian13("install-livekit-jwt.sh", true, [])}
-
-    ENTRYPOINT ["/livekit-jwt"]
-  EOF
-}
-
-# static files only, in a FROM scratch image: mounted read-only into a web server (docker --mount type=image)
-target "debian13-cinny4" {
-  attest = ["type=sbom", "type=provenance,mode=max"]
-  tags = tags("debian13-cinny4")
-  contexts = { distrib = "deps/cinny" }
-  dockerfile-inline = <<-EOF
-    ${base("scratch")}
-
-    COPY --from=distrib dist/ /cinny/
+    EXPOSE 8080
+    ENTRYPOINT ["/cinny"]
   EOF
 }
 

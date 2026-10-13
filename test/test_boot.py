@@ -8,6 +8,7 @@ import urllib.request
 import pytest
 
 TOMCAT_PORT = 18084
+CINNY_PORT = 18085
 
 
 def logs_of(cid):
@@ -87,3 +88,19 @@ def test_sloth_keeps_running(boot):
             text=True,
         ).stdout.strip()
         assert state == "true", f"sloth exited early:\n{logs_of(cid)[-800:]}"
+
+
+def test_cinny_serves_the_client_and_falls_back_to_index(boot):
+    with boot("debian13-nginx130-cinny4", "-p", f"{CINNY_PORT}:8080") as cid:
+        deadline = time.monotonic() + 30
+        last_error = None
+        while time.monotonic() < deadline:
+            try:
+                for path in ("/", "/config.json", "/home/some/client/route"):
+                    with urllib.request.urlopen(f"http://localhost:{CINNY_PORT}{path}", timeout=2) as response:
+                        assert response.status == 200, path
+                return
+            except urllib.error.URLError as error:  # connection refused while starting
+                last_error = error
+                time.sleep(1)
+        pytest.fail(f"cinny never answered: {last_error}\n{logs_of(cid)[-800:]}")
