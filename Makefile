@@ -8,11 +8,9 @@ SONARQUBE10_VERSION=26.10.0.133078
 CORRETTO21_VERSION=21.0.12.12.1
 CORRETTO25_VERSION=25.0.4.10.1
 TOMCAT9_VERSION=9.0.123
-TOMCAT9_ERROR_REPORT_VALVE_VERSION=2.1
 TOMCAT10_VERSION=10.1.61
-TOMCAT10_ERROR_REPORT_VALVE_VERSION=2.1
 TOMCAT11_VERSION=11.0.27
-TOMCAT11_ERROR_REPORT_VALVE_VERSION=2.1
+TOMCAT_ERROR_REPORT_VALVE_VERSION=2.1
 LEGOPFA_VERSION=3.0
 KEYCLOAK2_VERSION=26.8.1
 KEYCLOAK_OPFA_MODULES_VERSION=9.21
@@ -64,8 +62,8 @@ help:
 	exit 1
 
 
-define check_updates_tomcat
-	@latest=$$(curl -s https://dlcdn.apache.org/tomcat/$1/ | grep -Po '(?<=href="v)[0-9.]+' | tail -1); \
+define check_updates_apache
+	@latest=$$(curl -s https://dlcdn.apache.org/$3/ | grep -Po 'href="v?\K[0-9.]+(?=/)' | sort -V | tail -1); \
 	[ "$2" = "$$latest" ] && symbol="\033[1;32m✓\033[0m" || symbol="\033[1;31m✗\033[0m"; \
 	printf "%b %-25s: current: %-20s latest: %s\n" "$$symbol" "$1" "$2" "$$latest"
 endef
@@ -95,19 +93,29 @@ define check_updates_corretto
 endef
 
 check-updates:
+	$(call check_updates_github,sloth,$(SLOTH_VERSION),optionfactory/sloth)
+	$(call check_updates_github,docker-snitch,$(DOCKER_SNITCH_VERSION),optionfactory/docker-heist)
+	$(call check_updates_github,sonarqube,$(SONARQUBE10_VERSION),SonarSource/sonarqube)
 	$(call check_updates_corretto,corretto21,$(CORRETTO21_VERSION),21)
 	$(call check_updates_corretto,corretto25,$(CORRETTO25_VERSION),25)
-	$(call check_updates_github,sonarqube,$(SONARQUBE10_VERSION),SonarSource/sonarqube)
-	$(call check_updates_tomcat,tomcat-9,$(TOMCAT9_VERSION))
-	$(call check_updates_tomcat,tomcat-10,$(TOMCAT10_VERSION))
-	$(call check_updates_tomcat,tomcat-11,$(TOMCAT11_VERSION))
+	$(call check_updates_apache,tomcat-9,$(TOMCAT9_VERSION),tomcat/tomcat-9)
+	$(call check_updates_apache,tomcat-10,$(TOMCAT10_VERSION),tomcat/tomcat-10)
+	$(call check_updates_apache,tomcat-11,$(TOMCAT11_VERSION),tomcat/tomcat-11)
+	$(call check_updates_maven,tomcat-valve,$(TOMCAT_ERROR_REPORT_VALVE_VERSION),net/optionfactory/tomcat9-logging-error-report-valve)
 	$(call check_updates_github,legopfa,$(LEGOPFA_VERSION),optionfactory/legopfa)
 	$(call check_updates_github,keycloak,$(KEYCLOAK2_VERSION),keycloak/keycloak)
 	$(call check_updates_maven,optionfactory-keycloak,$(KEYCLOAK_OPFA_MODULES_VERSION),net/optionfactory/keycloak/optionfactory-keycloak)
+	$(call check_updates_apache,maven-3,$(MAVEN3_VERSION),maven/maven-3)
 	$(call check_updates_github,caddy,$(CADDY2_VERSION),caddyserver/caddy)
 	$(call check_updates_github,journal-webd,$(JOURNAL_WEBD_VERSION),optionfactory/journal-webd)
 	$(call check_updates_github,etcd,$(ETCD3_VERSION),etcd-io/etcd)
 	$(call check_updates_github,nginx_remove_serv,$(NGINX_REMOVE_SERVER_HEADER_MODULE_VERSION),optionfactory/nginx-remove-server-header-module)
+	$(call check_updates_github,headscale,$(HEADSCALE_VERSION),juanfont/headscale)
+	$(call check_updates_github,vaultwarden,$(VAULTWARDEN_VERSION),dani-garcia/vaultwarden)
+	$(call check_updates_github,tuwunel,$(TUWUNEL_VERSION),matrix-construct/tuwunel)
+	$(call check_updates_github,cinny,$(CINNY_VERSION),cinnyapp/cinny)
+	$(call check_updates_github,step-ca,$(STEP_CA_VERSION),smallstep/certificates)
+	$(call check_updates_github,step-cli,$(STEP_CLI_VERSION),smallstep/cli)
 	$(call check_updates_github,grafana,$(GRAFANA_VERSION),grafana/grafana)
 	$(call check_updates_github,tempo,$(TEMPO_VERSION),grafana/tempo)
 	$(call check_updates_github,prometheus,$(PROMETHEUS_VERSION),prometheus/prometheus)
@@ -116,14 +124,6 @@ check-updates:
 	$(call check_updates_github,cadvisor,$(CADVISOR_VERSION),google/cadvisor)
 	$(call check_updates_github,postgres_exporter,$(POSTGRES_EXPORTER_VERSION),prometheus-community/postgres_exporter)
 	$(call check_updates_github,nginx_exporter,$(NGINX_EXPORTER_VERSION),nginx/nginx-prometheus-exporter)
-	$(call check_updates_github,sloth,$(SLOTH_VERSION),optionfactory/sloth)
-	$(call check_updates_github,docker-snitch,$(DOCKER_SNITCH_VERSION),optionfactory/docker-heist)
-	$(call check_updates_github,headscale,$(HEADSCALE_VERSION),juanfont/headscale)
-	$(call check_updates_github,vaultwarden,$(VAULTWARDEN_VERSION),dani-garcia/vaultwarden)
-	$(call check_updates_github,tuwunel,$(TUWUNEL_VERSION),matrix-construct/tuwunel)
-	$(call check_updates_github,cinny,$(CINNY_VERSION),cinnyapp/cinny)
-	$(call check_updates_github,step-ca,$(STEP_CA_VERSION),smallstep/certificates)
-	$(call check_updates_github,step-cli,$(STEP_CLI_VERSION),smallstep/cli)
 
 
 verify-docker-backend:
@@ -208,9 +208,9 @@ deps-jdk21: deps/jdk21/.stamp-$(CORRETTO21_VERSION)
 deps-jdk25: deps/jdk25/.stamp-$(CORRETTO25_VERSION)
 deps-maven3: deps/maven3/.stamp-$(MAVEN3_VERSION)
 deps-sonarqube10: deps/sonarqube10/.stamp-$(SONARQUBE10_VERSION)
-deps-tomcat9: deps/tomcat9/.stamp-$(TOMCAT9_VERSION)-$(TOMCAT9_ERROR_REPORT_VALVE_VERSION)
-deps-tomcat10: deps/tomcat10/.stamp-$(TOMCAT10_VERSION)-$(TOMCAT10_ERROR_REPORT_VALVE_VERSION)
-deps-tomcat11: deps/tomcat11/.stamp-$(TOMCAT11_VERSION)-$(TOMCAT11_ERROR_REPORT_VALVE_VERSION)
+deps-tomcat9: deps/tomcat9/.stamp-$(TOMCAT9_VERSION)-$(TOMCAT_ERROR_REPORT_VALVE_VERSION)
+deps-tomcat10: deps/tomcat10/.stamp-$(TOMCAT10_VERSION)-$(TOMCAT_ERROR_REPORT_VALVE_VERSION)
+deps-tomcat11: deps/tomcat11/.stamp-$(TOMCAT11_VERSION)-$(TOMCAT_ERROR_REPORT_VALVE_VERSION)
 deps-keycloak2: deps/keycloak2/.stamp-$(KEYCLOAK2_VERSION)-$(KEYCLOAK_OPFA_MODULES_VERSION)
 deps-nginx130: deps/nginx130/.stamp-$(NGINX_REMOVE_SERVER_HEADER_MODULE_VERSION)-$(LEGOPFA_VERSION)
 deps-caddy2: deps/caddy2/.stamp-$(CADDY2_VERSION)
@@ -246,30 +246,30 @@ deps/jdk25/.stamp-$(CORRETTO25_VERSION):
 deps/maven3/.stamp-$(MAVEN3_VERSION):
 	$(call task,downloading maven $(MAVEN3_VERSION))
 	$(call irun,rm -rf deps/maven3 && mkdir -p deps/maven3)
-	$(call irun,$(CURL) https://downloads.apache.org/maven/maven-3/$(MAVEN3_VERSION)/binaries/apache-maven-$(MAVEN3_VERSION)-bin.tar.gz | tar xz -C deps/maven3)
+	$(call irun,$(CURL) https://archive.apache.org/dist/maven/maven-3/$(MAVEN3_VERSION)/binaries/apache-maven-$(MAVEN3_VERSION)-bin.tar.gz | tar xz -C deps/maven3)
 	$(call irun,touch $@)
 deps/sonarqube10/.stamp-$(SONARQUBE10_VERSION):
 	$(call task,downloading sonarqube $(SONARQUBE10_VERSION))
 	$(call irun,rm -rf deps/sonarqube10 && mkdir -p deps/sonarqube10)
 	$(call irun,cd deps/sonarqube10 && $(CURL) https://binaries.sonarsource.com/Distribution/sonarqube/sonarqube-$(SONARQUBE10_VERSION).zip -o tmp.sonar.zip && unzip -q tmp.sonar.zip && rm tmp.sonar.zip)
 	$(call irun,touch $@)
-deps/tomcat9/.stamp-$(TOMCAT9_VERSION)-$(TOMCAT9_ERROR_REPORT_VALVE_VERSION):
+deps/tomcat9/.stamp-$(TOMCAT9_VERSION)-$(TOMCAT_ERROR_REPORT_VALVE_VERSION):
 	$(call task,downloading tomcat $(TOMCAT9_VERSION))
 	$(call irun,rm -rf deps/tomcat9 && mkdir -p deps/tomcat9)
 	$(call irun,$(CURL) https://archive.apache.org/dist/tomcat/tomcat-9/v$(TOMCAT9_VERSION)/bin/apache-tomcat-$(TOMCAT9_VERSION).tar.gz | tar xz -C deps/tomcat9)
-	$(call irun,$(CURL) https://repo1.maven.org/maven2/net/optionfactory/tomcat9-logging-error-report-valve/$(TOMCAT9_ERROR_REPORT_VALVE_VERSION)/tomcat9-logging-error-report-valve-$(TOMCAT9_ERROR_REPORT_VALVE_VERSION).jar -o deps/tomcat9/tomcat9-logging-error-report-valve-$(TOMCAT9_ERROR_REPORT_VALVE_VERSION).jar)
+	$(call irun,$(CURL) https://repo1.maven.org/maven2/net/optionfactory/tomcat9-logging-error-report-valve/$(TOMCAT_ERROR_REPORT_VALVE_VERSION)/tomcat9-logging-error-report-valve-$(TOMCAT_ERROR_REPORT_VALVE_VERSION).jar -o deps/tomcat9/tomcat9-logging-error-report-valve-$(TOMCAT_ERROR_REPORT_VALVE_VERSION).jar)
 	$(call irun,touch $@)
-deps/tomcat10/.stamp-$(TOMCAT10_VERSION)-$(TOMCAT10_ERROR_REPORT_VALVE_VERSION):
+deps/tomcat10/.stamp-$(TOMCAT10_VERSION)-$(TOMCAT_ERROR_REPORT_VALVE_VERSION):
 	$(call task,downloading tomcat $(TOMCAT10_VERSION))
 	$(call irun,rm -rf deps/tomcat10 && mkdir -p deps/tomcat10)
 	$(call irun,$(CURL) https://archive.apache.org/dist/tomcat/tomcat-10/v$(TOMCAT10_VERSION)/bin/apache-tomcat-$(TOMCAT10_VERSION).tar.gz | tar xz -C deps/tomcat10)
-	$(call irun,$(CURL) https://repo1.maven.org/maven2/net/optionfactory/tomcat9-logging-error-report-valve/$(TOMCAT10_ERROR_REPORT_VALVE_VERSION)/tomcat9-logging-error-report-valve-$(TOMCAT10_ERROR_REPORT_VALVE_VERSION).jar -o deps/tomcat10/tomcat10-logging-error-report-valve-$(TOMCAT10_ERROR_REPORT_VALVE_VERSION).jar)
+	$(call irun,$(CURL) https://repo1.maven.org/maven2/net/optionfactory/tomcat9-logging-error-report-valve/$(TOMCAT_ERROR_REPORT_VALVE_VERSION)/tomcat9-logging-error-report-valve-$(TOMCAT_ERROR_REPORT_VALVE_VERSION).jar -o deps/tomcat10/tomcat10-logging-error-report-valve-$(TOMCAT_ERROR_REPORT_VALVE_VERSION).jar)
 	$(call irun,touch $@)
-deps/tomcat11/.stamp-$(TOMCAT11_VERSION)-$(TOMCAT11_ERROR_REPORT_VALVE_VERSION):
+deps/tomcat11/.stamp-$(TOMCAT11_VERSION)-$(TOMCAT_ERROR_REPORT_VALVE_VERSION):
 	$(call task,downloading tomcat $(TOMCAT11_VERSION))
 	$(call irun,rm -rf deps/tomcat11 && mkdir -p deps/tomcat11)
 	$(call irun,$(CURL) https://archive.apache.org/dist/tomcat/tomcat-11/v$(TOMCAT11_VERSION)/bin/apache-tomcat-$(TOMCAT11_VERSION).tar.gz | tar xz -C deps/tomcat11)
-	$(call irun,$(CURL) https://repo1.maven.org/maven2/net/optionfactory/tomcat9-logging-error-report-valve/$(TOMCAT11_ERROR_REPORT_VALVE_VERSION)/tomcat9-logging-error-report-valve-$(TOMCAT11_ERROR_REPORT_VALVE_VERSION).jar -o deps/tomcat11/tomcat11-logging-error-report-valve-$(TOMCAT11_ERROR_REPORT_VALVE_VERSION).jar)
+	$(call irun,$(CURL) https://repo1.maven.org/maven2/net/optionfactory/tomcat9-logging-error-report-valve/$(TOMCAT_ERROR_REPORT_VALVE_VERSION)/tomcat9-logging-error-report-valve-$(TOMCAT_ERROR_REPORT_VALVE_VERSION).jar -o deps/tomcat11/tomcat11-logging-error-report-valve-$(TOMCAT_ERROR_REPORT_VALVE_VERSION).jar)
 	$(call irun,touch $@)
 deps/keycloak2/.stamp-$(KEYCLOAK2_VERSION)-$(KEYCLOAK_OPFA_MODULES_VERSION):
 	$(call task,downloading keycloak $(KEYCLOAK2_VERSION) + optionfactory-keycloak $(KEYCLOAK_OPFA_MODULES_VERSION))
@@ -425,4 +425,4 @@ cleanup-docker-images: FORCE
 #This implies that all targets depending on this one will always have their recipe run.
 FORCE:
 .PHONY: build publish test check-updates verify-docker-backend pull-base all-deps clean cleanup-docker-images
-.PHONY: deps-headscale deps-vaultwarden deps-tuwunel deps-cinny deps-jdk21 deps-jdk25 deps-maven3 deps-sonarqube10 deps-tomcat9 deps-tomcat10 deps-tomcat11 deps-keycloak2 deps-nginx130 deps-caddy2 deps-etcd3 deps-journal-webd deps-prometheus deps-alertmanager deps-grafana deps-cadvisor deps-postgres-exporter deps-nginx-exporter deps-node-exporter deps-tempo deps-sloth deps-docker-snitch deps-headscale deps-vaultwarden deps-tuwunel deps-cinny deps-step-ca
+.PHONY: deps-jdk21 deps-jdk25 deps-maven3 deps-sonarqube10 deps-tomcat9 deps-tomcat10 deps-tomcat11 deps-keycloak2 deps-nginx130 deps-caddy2 deps-etcd3 deps-journal-webd deps-prometheus deps-alertmanager deps-grafana deps-cadvisor deps-postgres-exporter deps-nginx-exporter deps-node-exporter deps-tempo deps-sloth deps-docker-snitch deps-headscale deps-vaultwarden deps-tuwunel deps-cinny deps-step-ca
