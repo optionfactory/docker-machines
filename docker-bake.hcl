@@ -73,6 +73,7 @@ group "default" {
     "debian13-vaultwarden1",
     "debian13-tuwunel1",
     "debian13-nginx130-cinny4",
+    "debian13-step-ca0",
     "debian13-monitoring-prometheus",
     "debian13-monitoring-alertmanager",
     "debian13-monitoring-grafana",
@@ -342,6 +343,19 @@ target "debian13-nginx130-cinny4" {
 
     EXPOSE 8080
     ENTRYPOINT ["/cinny"]
+  EOF
+}
+
+target "debian13-step-ca0" {
+  attest = ["type=sbom", "type=provenance,mode=max"]
+  tags = tags("debian13-step-ca0")
+  contexts = { scripts = "scripts", base = "target:debian13", distrib = "deps/step-ca" }
+  dockerfile-inline = <<-EOF
+    ${base("base")}
+
+    ${run_debian13("install-step-ca.sh", true, [])}
+
+    ENTRYPOINT ["/step-ca"]
   EOF
 }
 

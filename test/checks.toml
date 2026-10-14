@@ -309,6 +309,17 @@ command = ["/opt/tuwunel/bin/tuwunel", "--version"]
 expect = "1."
 
 [[check]]
+image = "debian13-step-ca0"
+command = ["/opt/step-ca/bin/step-ca", "version"]
+expect = "Smallstep CA/0."
+
+[[check]]
+image = "debian13-step-ca0"
+command = ["/opt/step-ca/bin/step", "version"]
+expect = "Smallstep CLI/0."
+id = "step-ca0-cli"
+
+[[check]]
 image = "debian13-nginx130-cinny4"
 command = ["nginx", "-t"]
 expect = "syntax is ok"

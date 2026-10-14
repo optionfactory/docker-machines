@@ -27,6 +27,8 @@ HEADSCALE_VERSION=0.29.4
 VAULTWARDEN_VERSION=1.37.4
 TUWUNEL_VERSION=1.9.4
 CINNY_VERSION=4.12.7
+STEP_CA_VERSION=0.30.2
+STEP_CLI_VERSION=0.31.0
 
 GRAFANA_VERSION=13.2.3
 TEMPO_VERSION=3.1.0
@@ -120,6 +122,8 @@ check-updates:
 	$(call check_updates_github,vaultwarden,$(VAULTWARDEN_VERSION),dani-garcia/vaultwarden)
 	$(call check_updates_github,tuwunel,$(TUWUNEL_VERSION),matrix-construct/tuwunel)
 	$(call check_updates_github,cinny,$(CINNY_VERSION),cinnyapp/cinny)
+	$(call check_updates_github,step-ca,$(STEP_CA_VERSION),smallstep/certificates)
+	$(call check_updates_github,step-cli,$(STEP_CLI_VERSION),smallstep/cli)
 
 
 verify-docker-backend:
@@ -192,12 +196,13 @@ build-optionfactory-debian13-headscale0: deps-headscale
 build-optionfactory-debian13-vaultwarden1: deps-vaultwarden
 build-optionfactory-debian13-tuwunel1: deps-tuwunel
 build-optionfactory-debian13-nginx130-cinny4: deps-cinny
+build-optionfactory-debian13-step-ca0: deps-step-ca
 
 
 # artifact families: deps/<family> holds exactly the artifacts an image needs,
 # wiped and re-downloaded whenever any pinned version in its stamp changes
 
-all-deps: deps-jdk21 deps-jdk25 deps-maven3 deps-sonarqube10 deps-tomcat9 deps-tomcat10 deps-tomcat11 deps-keycloak2 deps-nginx130 deps-caddy2 deps-etcd3 deps-journal-webd deps-prometheus deps-alertmanager deps-grafana deps-cadvisor deps-postgres-exporter deps-nginx-exporter deps-node-exporter deps-tempo deps-sloth deps-docker-snitch deps-headscale deps-vaultwarden deps-tuwunel deps-cinny
+all-deps: deps-jdk21 deps-jdk25 deps-maven3 deps-sonarqube10 deps-tomcat9 deps-tomcat10 deps-tomcat11 deps-keycloak2 deps-nginx130 deps-caddy2 deps-etcd3 deps-journal-webd deps-prometheus deps-alertmanager deps-grafana deps-cadvisor deps-postgres-exporter deps-nginx-exporter deps-node-exporter deps-tempo deps-sloth deps-docker-snitch deps-headscale deps-vaultwarden deps-tuwunel deps-cinny deps-step-ca
 
 deps-jdk21: deps/jdk21/.stamp-$(CORRETTO21_VERSION)
 deps-jdk25: deps/jdk25/.stamp-$(CORRETTO25_VERSION)
@@ -225,6 +230,7 @@ deps-headscale: deps/headscale/.stamp-$(HEADSCALE_VERSION)
 deps-vaultwarden: deps/vaultwarden/.stamp-$(VAULTWARDEN_VERSION)
 deps-tuwunel: deps/tuwunel/.stamp-$(TUWUNEL_VERSION)
 deps-cinny: deps/cinny/.stamp-$(CINNY_VERSION)
+deps-step-ca: deps/step-ca/.stamp-$(STEP_CA_VERSION)-$(STEP_CLI_VERSION)
 
 
 deps/jdk21/.stamp-$(CORRETTO21_VERSION):
@@ -383,6 +389,13 @@ deps/cinny/.stamp-$(CINNY_VERSION):
 	$(call irun,rm -rf deps/cinny && mkdir -p deps/cinny)
 	$(call irun,$(CURL) https://github.com/cinnyapp/cinny/releases/download/v$(CINNY_VERSION)/cinny-v$(CINNY_VERSION).tar.gz | tar xz -C deps/cinny)
 	$(call irun,touch $@)
+# the server (step-ca) and the cli (step, for init and provisioners), released separately
+deps/step-ca/.stamp-$(STEP_CA_VERSION)-$(STEP_CLI_VERSION):
+	$(call task,downloading step-ca $(STEP_CA_VERSION) and step $(STEP_CLI_VERSION))
+	$(call irun,rm -rf deps/step-ca && mkdir -p deps/step-ca)
+	$(call irun,$(CURL) https://github.com/smallstep/certificates/releases/download/v$(STEP_CA_VERSION)/step-ca_linux_$(STEP_CA_VERSION)_amd64.tar.gz | tar xz -C deps/step-ca step-ca)
+	$(call irun,$(CURL) https://github.com/smallstep/cli/releases/download/v$(STEP_CLI_VERSION)/step_linux_$(STEP_CLI_VERSION)_amd64.tar.gz | tar xz -C deps/step-ca --strip-components=2 step_$(STEP_CLI_VERSION)/bin/step)
+	$(call irun,touch $@)
 
 
 clean: FORCE
@@ -412,4 +425,4 @@ cleanup-docker-images: FORCE
 #This implies that all targets depending on this one will always have their recipe run.
 FORCE:
 .PHONY: build publish test check-updates verify-docker-backend pull-base all-deps clean cleanup-docker-images
-.PHONY: deps-headscale deps-vaultwarden deps-tuwunel deps-cinny deps-jdk21 deps-jdk25 deps-maven3 deps-sonarqube10 deps-tomcat9 deps-tomcat10 deps-tomcat11 deps-keycloak2 deps-nginx130 deps-caddy2 deps-etcd3 deps-journal-webd deps-prometheus deps-alertmanager deps-grafana deps-cadvisor deps-postgres-exporter deps-nginx-exporter deps-node-exporter deps-tempo deps-sloth deps-docker-snitch deps-headscale deps-vaultwarden deps-tuwunel deps-cinny
+.PHONY: deps-headscale deps-vaultwarden deps-tuwunel deps-cinny deps-jdk21 deps-jdk25 deps-maven3 deps-sonarqube10 deps-tomcat9 deps-tomcat10 deps-tomcat11 deps-keycloak2 deps-nginx130 deps-caddy2 deps-etcd3 deps-journal-webd deps-prometheus deps-alertmanager deps-grafana deps-cadvisor deps-postgres-exporter deps-nginx-exporter deps-node-exporter deps-tempo deps-sloth deps-docker-snitch deps-headscale deps-vaultwarden deps-tuwunel deps-cinny deps-step-ca
