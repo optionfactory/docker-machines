@@ -24,25 +24,28 @@ if ((logo_size > logo_length)); then
 fi
 { cat /build-scripts/headscale/logo.svg; head -c $((logo_length - logo_size)) /dev/zero | tr '\0' ' '; } | dd of=/opt/headscale/bin/headscale bs=1 seek="${logo_start}" conv=notrunc status=none
 
-# ico header with four images, the first 64x64
-icon_start=$(LC_ALL=C grep -obaP '\x00\x00\x01\x00\x04\x00\x40\x40' /opt/headscale/bin/headscale | cut -d: -f1)
-if [[ ! ${icon_start} =~ ^[0-9]+$ ]]; then
+# the favicon is a 500x500 png (hscontrol/assets/favicon.png), served at /favicon.ico: found by its IHDR chunk, since
+# grep works by lines and the png signature holds a newline; its length is the sum of its chunks up to IEND
+ihdr=$(LC_ALL=C grep -obaP 'IHDR\x00\x00\x01\xf4\x00\x00\x01\xf4' /opt/headscale/bin/headscale | cut -d: -f1)
+if [[ ! ${ihdr} =~ ^[0-9]+$ ]]; then
     echo "headscale favicon not found exactly once" >&2
     exit 1
 fi
-icon_length=0
-for i in 0 1 2 3; do
-    read -r image_size image_offset < <(od -An -tu4 -j $((icon_start + 6 + 16 * i + 8)) -N8 /opt/headscale/bin/headscale)
-    if ((image_offset + image_size > icon_length)); then
-        icon_length=$((image_offset + image_size))
-    fi
+icon_start=$((ihdr - 12))
+chunk=$((icon_start + 8))
+while :; do
+    read -r b1 b2 b3 b4 < <(od -An -tu1 -j "${chunk}" -N4 /opt/headscale/bin/headscale)
+    chunk_type=$(dd if=/opt/headscale/bin/headscale bs=1 skip=$((chunk + 4)) count=4 status=none)
+    chunk=$((chunk + 12 + (b1 << 24 | b2 << 16 | b3 << 8 | b4)))
+    [[ ${chunk_type} == IEND ]] && break
 done
-icon_size=$(stat -c %s /build-scripts/branding/access/favicon.ico)
+icon_length=$((chunk - icon_start))
+icon_size=$(stat -c %s /build-scripts/branding/access/favicon.png)
 if ((icon_size > icon_length)); then
-    echo "favicon.ico is ${icon_size} bytes, only ${icon_length} available" >&2
+    echo "favicon.png is ${icon_size} bytes, only ${icon_length} available" >&2
     exit 1
 fi
-{ cat /build-scripts/branding/access/favicon.ico; head -c $((icon_length - icon_size)) /dev/zero; } | dd of=/opt/headscale/bin/headscale bs=1 seek="${icon_start}" conv=notrunc status=none
+{ cat /build-scripts/branding/access/favicon.png; head -c $((icon_length - icon_size)) /dev/zero; } | dd of=/opt/headscale/bin/headscale bs=1 seek="${icon_start}" conv=notrunc status=none
 
 chown -R headscale:docker-machines /opt/headscale
 chmod 750 /opt/headscale/bin/headscale
