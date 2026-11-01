@@ -37,12 +37,12 @@ for i in 0 1 2 3; do
         icon_length=$((image_offset + image_size))
     fi
 done
-icon_size=$(stat -c %s /build-scripts/headscale/favicon.ico)
+icon_size=$(stat -c %s /build-scripts/branding/access/favicon.ico)
 if ((icon_size > icon_length)); then
     echo "favicon.ico is ${icon_size} bytes, only ${icon_length} available" >&2
     exit 1
 fi
-{ cat /build-scripts/headscale/favicon.ico; head -c $((icon_length - icon_size)) /dev/zero; } | dd of=/opt/headscale/bin/headscale bs=1 seek="${icon_start}" conv=notrunc status=none
+{ cat /build-scripts/branding/access/favicon.ico; head -c $((icon_length - icon_size)) /dev/zero; } | dd of=/opt/headscale/bin/headscale bs=1 seek="${icon_start}" conv=notrunc status=none
 
 chown -R headscale:docker-machines /opt/headscale
 chmod 750 /opt/headscale/bin/headscale
