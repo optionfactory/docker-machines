@@ -6,7 +6,7 @@ rm -rf /usr/share/cinny
 cp -r /build/dist /usr/share/cinny
 rm -f /usr/share/cinny/netlify.toml /usr/share/cinny/sw.js.map
 
-# OptionFactory icons in place of Cinny's (scripts/branding/matrix, made by tools/favicons in internal-infra)
+# OptionFactory icons in place of Cinny's (scripts/branding/matrix)
 cinny=/usr/share/cinny
 branding=/build-scripts/branding/matrix
 icons=("${cinny}"/assets/favicon-*.ico)
