@@ -45,7 +45,8 @@ cat <<'EOF' > /barman
 trap 'exit 0' TERM INT
 while :
 do
-    setpriv --reuid=barman --regid=docker-machines --init-groups --no-new-privs -- barman cron || echo "barman cron failed (exit $?), retrying in 60s" >&2
+    # setpriv keeps root's HOME; libpq reads ~/.pgpass
+    HOME=/home/barman setpriv --reuid=barman --regid=docker-machines --init-groups --no-new-privs -- barman cron || echo "barman cron failed (exit $?), retrying in 60s" >&2
     sleep 60 &
     wait $!
 done

@@ -3,7 +3,8 @@ set -o pipefail
 
 if [ -s /var/lib/postgresql/conf/patroni.yml ]; then
     echo "Patroni configuration detected. Starting patroni"
-    exec setpriv --reuid=postgres --regid=docker-machines --init-groups --no-new-privs -- patroni /var/lib/postgresql/conf/patroni.yml
+    # setpriv keeps root's HOME; patroni writes ~/.pgpass
+    HOME=/home/postgres exec setpriv --reuid=postgres --regid=docker-machines --init-groups --no-new-privs -- patroni /var/lib/postgresql/conf/patroni.yml
 fi
 
 echo "Patroni configuration '/var/lib/postgresql/conf/patroni.yml' missing. Running as a standalone instance"
