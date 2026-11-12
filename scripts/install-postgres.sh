@@ -14,7 +14,7 @@ DEBIAN_FRONTEND=noninteractive apt-get install -y -q --no-install-recommends pos
 sed -ri 's/^# *(create_main_cluster) .*$/\1 = false/' /etc/postgresql-common/createcluster.conf
 # since 18 jit is a separate package, only recommended by the server
 jit=$([ "${PSQL_MAJOR_VERSION}" -ge 18 ] && echo "postgresql-${PSQL_MAJOR_VERSION}-jit" || true)
-DEBIAN_FRONTEND=noninteractive apt-get install -y -q --no-install-recommends postgresql-${PSQL_MAJOR_VERSION} ${jit} postgresql-contrib-${PSQL_MAJOR_VERSION} postgresql-${PSQL_MAJOR_VERSION}-postgis-3 postgresql-${PSQL_MAJOR_VERSION}-pgvector patroni
+DEBIAN_FRONTEND=noninteractive apt-get install -y -q --no-install-recommends postgresql-${PSQL_MAJOR_VERSION} ${jit} postgresql-contrib-${PSQL_MAJOR_VERSION} postgresql-${PSQL_MAJOR_VERSION}-postgis-3 postgresql-${PSQL_MAJOR_VERSION}-pgvector patroni python3-etcd
 DEBIAN_FRONTEND=noninteractive apt-get -y -q purge --auto-remove curl
 rm -rf /var/lib/apt/lists/*
 
