@@ -1,22 +1,22 @@
-export TAG_VERSION=254
+export TAG_VERSION=255
 
 #software versions
 
-SLOTH_VERSION=1.0.0
-DOCKER_SNITCH_VERSION=1.1.1
+SLOTH_VERSION=1.0.1
+DOCKER_SNITCH_VERSION=1.1.2
 SONARQUBE10_VERSION=26.11.0.134175
 CORRETTO21_VERSION=21.0.13.0.11
 CORRETTO25_VERSION=25.0.5.0.10
-TOMCAT9_VERSION=9.0.123
+TOMCAT9_VERSION=9.0.124
 TOMCAT10_VERSION=10.1.61
-TOMCAT11_VERSION=11.0.27
+TOMCAT11_VERSION=11.0.29
 TOMCAT_ERROR_REPORT_VALVE_VERSION=2.1
-LEGOPFA_VERSION=3.0
+LEGOPFA_VERSION=3.1
 KEYCLOAK2_VERSION=26.8.2
 KEYCLOAK_OPFA_MODULES_VERSION=9.22
-MAVEN3_VERSION=3.10.0
+MAVEN3_VERSION=3.10.1
 CADDY2_VERSION=2.11.9
-JOURNAL_WEBD_VERSION=1.1
+JOURNAL_WEBD_VERSION=1.2
 ETCD3_VERSION=3.7.3
 export NGINX_MAJOR_VERSION=1.30
 NGINX_REMOVE_SERVER_HEADER_MODULE_VERSION=1.30.6-1
@@ -303,7 +303,7 @@ deps/etcd3/.stamp-$(ETCD3_VERSION):
 deps/journal-webd/.stamp-$(JOURNAL_WEBD_VERSION):
 	$(call task,downloading journal-webd $(JOURNAL_WEBD_VERSION))
 	$(call irun,rm -rf deps/journal-webd && mkdir -p deps/journal-webd)
-	$(call irun,$(CURL) "https://github.com/optionfactory/journal-webd/releases/download/$(JOURNAL_WEBD_VERSION)/journal-webd-$(JOURNAL_WEBD_VERSION)" -o deps/journal-webd/journal-webd-$(JOURNAL_WEBD_VERSION))
+	$(call irun,$(CURL) "https://github.com/optionfactory/journal-webd/releases/download/v$(JOURNAL_WEBD_VERSION)/journal-webd-linux-amd64" -o deps/journal-webd/journal-webd-$(JOURNAL_WEBD_VERSION))
 	$(call irun,chmod +x deps/journal-webd/journal-webd-$(JOURNAL_WEBD_VERSION))
 	$(call irun,touch $@)
 deps/prometheus/.stamp-$(PROMETHEUS_VERSION):
@@ -354,7 +354,7 @@ deps/tempo/.stamp-$(TEMPO_VERSION):
 deps/sloth/.stamp-$(SLOTH_VERSION):
 	$(call task,downloading sloth $(SLOTH_VERSION))
 	$(call irun,rm -rf deps/sloth && mkdir -p deps/sloth)
-	$(call irun,$(CURL) https://github.com/optionfactory/sloth/releases/download/v$(SLOTH_VERSION)/sloth-v$(SLOTH_VERSION)-x86_64-unknown-linux-musl -o deps/sloth/sloth)
+	$(call irun,$(CURL) https://github.com/optionfactory/sloth/releases/download/v$(SLOTH_VERSION)/sloth-linux-amd64-musl -o deps/sloth/sloth)
 	$(call irun,chmod +x deps/sloth/sloth)
 	$(call irun,touch $@)
 deps/docker-snitch/.stamp-$(DOCKER_SNITCH_VERSION):
