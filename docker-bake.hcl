@@ -71,7 +71,7 @@ group "default" {
     "debian13-nginx130",
     "debian13-headscale0",
     "debian13-vaultwarden1",
-    "debian13-tuwunel1",
+    "debian13-tuwunel2",
     "debian13-nginx130-cinny4",
     "debian13-step-ca0",
     "debian13-monitoring-prometheus",
@@ -319,9 +319,9 @@ target "debian13-vaultwarden1" {
   EOF
 }
 
-target "debian13-tuwunel1" {
+target "debian13-tuwunel2" {
   attest = ["type=sbom", "type=provenance,mode=max"]
-  tags = tags("debian13-tuwunel1")
+  tags = tags("debian13-tuwunel2")
   contexts = { scripts = "scripts", base = "target:debian13", distrib = "deps/tuwunel" }
   dockerfile-inline = <<-EOF
     ${base("base")}

@@ -304,7 +304,7 @@ expect = "index.html"
 id = "vaultwarden1-web-vault"
 
 [[check]]
-image = "debian13-tuwunel1"
+image = "debian13-tuwunel2"
 command = ["/opt/tuwunel/bin/tuwunel", "--version"]
 expect = "1."
 

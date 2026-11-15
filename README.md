@@ -64,7 +64,7 @@ VPN, password manager, Matrix and SSH certificate authority. Configuration and d
 |---|---|
 | `optionfactory/debian13-headscale0` | [Headscale](https://github.com/juanfont/headscale); the cli is `headscale` in the container (`docker exec <name> headscale nodes list`) |
 | `optionfactory/debian13-vaultwarden1` | [Vaultwarden](https://github.com/dani-garcia/vaultwarden) and its web vault, both taken from the official (static, alpine) image of the same version: upstream publishes no binaries |
-| `optionfactory/debian13-tuwunel1` | [tuwunel](https://github.com/matrix-construct/tuwunel) Matrix homeserver (x86_64-v1 build) |
+| `optionfactory/debian13-tuwunel2` | [tuwunel](https://github.com/matrix-construct/tuwunel) Matrix homeserver (x86_64-v1 build) |
 | `optionfactory/debian13-step-ca0` | [step-ca](https://github.com/smallstep/certificates) with the [step](https://github.com/smallstep/cli) cli; state (`STEPPATH`) in `/opt/step-ca/data`, the ca keys' password in `/opt/step-ca/data/secrets/password`; the cli is `step` in the container (`docker exec <name> step ca provisioner list`), and `step ca init` runs with `--entrypoint step` |
 | `optionfactory/debian13-nginx130-cinny4` | [Cinny](https://github.com/cinnyapp/cinny) served by nginx (from `debian13-nginx130`) on plain http `8080`, to put behind an edge proxy; the client configuration is `/usr/share/cinny/config.json`, to mount over the default one |
 

@@ -23,7 +23,7 @@ NGINX_REMOVE_SERVER_HEADER_MODULE_VERSION=1.30.6-1
 
 HEADSCALE_VERSION=0.29.7
 VAULTWARDEN_VERSION=1.37.5
-TUWUNEL_VERSION=1.9.4
+TUWUNEL_VERSION=2.0.0-assets
 CINNY_VERSION=4.12.8
 STEP_CA_VERSION=0.30.2
 STEP_CLI_VERSION=0.31.0
@@ -194,7 +194,7 @@ build-optionfactory-debian13-monitoring-host: deps-node-exporter
 build-optionfactory-debian13-monitoring-tempo: deps-tempo
 build-optionfactory-debian13-headscale0: deps-headscale
 build-optionfactory-debian13-vaultwarden1: deps-vaultwarden
-build-optionfactory-debian13-tuwunel1: deps-tuwunel
+build-optionfactory-debian13-tuwunel2: deps-tuwunel
 build-optionfactory-debian13-nginx130-cinny4: deps-cinny
 build-optionfactory-debian13-step-ca0: deps-step-ca
 
@@ -381,7 +381,7 @@ deps/vaultwarden/.stamp-$(VAULTWARDEN_VERSION):
 deps/tuwunel/.stamp-$(TUWUNEL_VERSION):
 	$(call task,downloading tuwunel $(TUWUNEL_VERSION))
 	$(call irun,rm -rf deps/tuwunel && mkdir -p deps/tuwunel)
-	$(call irun,$(CURL) https://github.com/matrix-construct/tuwunel/releases/download/v$(TUWUNEL_VERSION)/v$(TUWUNEL_VERSION)-release-all-x86_64-v1-linux-gnu-tuwunel.zst | zstd -d -q -o deps/tuwunel/tuwunel-$(TUWUNEL_VERSION))
+	$(call irun,$(CURL) https://github.com/matrix-construct/tuwunel/releases/download/v$(TUWUNEL_VERSION)/v$(TUWUNEL_VERSION)-release-default-x86_64-v1-linux-gnu-tuwunel.zst | zstd -d -q -o deps/tuwunel/tuwunel-$(TUWUNEL_VERSION))
 	$(call irun,chmod +x deps/tuwunel/tuwunel-$(TUWUNEL_VERSION))
 	$(call irun,touch $@)
 deps/cinny/.stamp-$(CINNY_VERSION):
