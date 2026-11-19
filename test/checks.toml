@@ -41,6 +41,11 @@ command = ["/usr/lib/postgresql/18/bin/postgres", "--version"]
 expect = "PostgreSQL) 18"
 
 [[check]]
+image = "debian13-postgres19"
+command = ["/usr/lib/postgresql/19/bin/postgres", "--version"]
+expect = "PostgreSQL) 19"
+
+[[check]]
 image = "debian13-postgres15"
 command = ["ls", "/usr/lib/postgresql/15/lib/llvmjit.so"]
 expect = "llvmjit.so"
@@ -63,6 +68,12 @@ image = "debian13-postgres18"
 command = ["ls", "/usr/lib/postgresql/18/lib/llvmjit.so"]
 expect = "llvmjit.so"
 id = "postgres18-jit"
+
+[[check]]
+image = "debian13-postgres19"
+command = ["ls", "/usr/lib/postgresql/19/lib/llvmjit.so"]
+expect = "llvmjit.so"
+id = "postgres19-jit"
 
 [[check]]
 image = "debian13-mariadb12"

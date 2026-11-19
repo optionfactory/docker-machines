@@ -71,5 +71,14 @@ host    all             all             0.0.0.0/0               scram-sha-256
 
 EOF
 
+# since 19 the server also needs hosts_file: like hba_file, it cannot be located without -D
+if [ "${PSQL_MAJOR_VERSION}" -ge 19 ]; then
+    echo "hosts_file = '/var/lib/postgresql/conf/pg_hosts.conf'" >> /var/lib/postgresql/conf/postgresql.conf
+    cat << EOF > /var/lib/postgresql/conf/pg_hosts.conf
+# HOSTNAME       SSL CERTIFICATE             SSL KEY     SSL CA       PASSPHRASE COMMAND         PASSPHRASE COMMAND RELOAD
+
+EOF
+fi
+
 chown -R postgres:docker-machines /var/lib/postgresql/{data,conf} /var/run/postgresql
 cp /build-scripts/init-postgres.sh /postgres

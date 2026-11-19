@@ -45,10 +45,12 @@ def listening_ports(cid):
     return {int(row[1].rsplit(":", 1)[1], 16) for row in rows if len(row) > 3 and row[3] == "0A"}
 
 
-def test_postgres_boots_and_accepts_connections(boot):
-    with boot("debian13-postgres17") as cid:
-        logs = wait_for_log(cid, "database system is ready to accept connections", 120)
-        assert "database system is ready to accept connections" in logs, logs[-800:]
+@pytest.mark.parametrize("image_name", ["debian13-postgres15", "debian13-postgres19"])
+def test_postgres_boots_and_accepts_connections(boot, image_name):
+    with boot(image_name) as cid:
+        # the bootstrap server listens on 127.0.0.1 only and also logs "ready to accept connections"
+        logs = wait_for_log(cid, 'listening on IPv4 address "0.0.0.0", port 5432', 120)
+        assert 'listening on IPv4 address "0.0.0.0", port 5432' in logs, logs[-800:]
         status = wait_for_no_new_privs(cid, 30)
         assert status.split() == ["NoNewPrivs:", "1"], status
 

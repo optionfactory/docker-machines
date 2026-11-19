@@ -55,6 +55,7 @@ group "default" {
     "debian13-postgres16",
     "debian13-postgres17",
     "debian13-postgres18",
+    "debian13-postgres19",
     "debian13-jdk21",
     "debian13-jdk25",
     "debian13-jdk21-tomcat9",
@@ -231,6 +232,20 @@ target "debian13-postgres18" {
     ${base("base")}
 
     ${run_debian13("install-postgres.sh", false, ["PSQL_MAJOR_VERSION=18"])}
+
+    VOLUME ["/var/lib/postgresql/data/", "/sql-init.d/"]
+    ENTRYPOINT ["/postgres"]
+  EOF
+}
+
+target "debian13-postgres19" {
+  attest = ["type=sbom", "type=provenance,mode=max"]
+  tags = tags("debian13-postgres19")
+  contexts = { scripts = "scripts", base = "target:debian13" }
+  dockerfile-inline = <<-EOF
+    ${base("base")}
+
+    ${run_debian13("install-postgres.sh", false, ["PSQL_MAJOR_VERSION=19"])}
 
     VOLUME ["/var/lib/postgresql/data/", "/sql-init.d/"]
     ENTRYPOINT ["/postgres"]

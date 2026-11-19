@@ -18,7 +18,7 @@ if [ ! -s "/var/lib/postgresql/data/PG_VERSION" ]; then
         --lc-ctype='en_US.UTF-8' \
         --allow-group-access \
         --no-instructions
-    rm /var/lib/postgresql/data/{postgresql.conf,pg_hba.conf,pg_ident.conf}
+    rm -f /var/lib/postgresql/data/{postgresql.conf,pg_hba.conf,pg_ident.conf,pg_hosts.conf}
     echo "database initialized"
 
     psql=( psql -v ON_ERROR_STOP=1 --username "postgres" --dbname "postgres" )

@@ -22,6 +22,7 @@ Images are published to [Docker Hub](https://hub.docker.com/u/optionfactory) wit
 | `optionfactory/debian13-postgres16` | PostgreSQL 16 + Patroni (optional) |
 | `optionfactory/debian13-postgres17` | PostgreSQL 17 + Patroni (optional) |
 | `optionfactory/debian13-postgres18` | PostgreSQL 18 + Patroni (optional) |
+| `optionfactory/debian13-postgres19` | PostgreSQL 19 + Patroni (optional) |
 | `optionfactory/debian13-mariadb12` | MariaDB 12 |
 | `optionfactory/debian13-mysql8` | MySQL 8.4 (LTS, from repo.mysql.com) |
 | `optionfactory/debian13-mysql9` | MySQL 9 (LTS, from repo.mysql.com) |
@@ -165,14 +166,14 @@ docker run -d --rm \
 
 ## Databases
 
-`debian13-mysql8`, `debian13-mysql9`, `debian13-mariadb12` and `debian13-postgres{15,16,17,18}` share the same bootstrap model.
+`debian13-mysql8`, `debian13-mysql9`, `debian13-mariadb12` and `debian13-postgres{15,16,17,18,19}` share the same bootstrap model.
 
 ### Volumes
 
 | Image | Data directory | Init scripts |
 |---|---|---|
 | `mysql8`, `mysql9`, `mariadb12` | `/var/lib/mysql` | `/sql-init.d/` |
-| `postgres15`-`postgres18` | `/var/lib/postgresql/data` | `/sql-init.d/` (config in `/var/lib/postgresql/conf/`) |
+| `postgres15`-`postgres19` | `/var/lib/postgresql/data` | `/sql-init.d/` (config in `/var/lib/postgresql/conf/`) |
 
 Both paths are declared as `VOLUME`s. The data directory must be writable by uid/gid `950` (`docker-machines`): the entrypoints do **not** chown it at startup, so with a bind mount either pre-create the directory with that ownership or remap ids (e.g. pinch `remap_ids: ["me:950"]`).
 
@@ -315,5 +316,5 @@ To publish to ghcr.io instead (emergency fallback), uncomment the `ghcr.io` tags
 - **Shared ids**: every service account uses uid/gid 950, group `docker-machines`, so containers can share volumes regardless of the image they come from.
 - **deps flow**: `deps/<family>/` at the repo root caches downloaded artifacts, one directory per artifact family, containing exactly what the family's images need. Dockerfiles read them directly through named build contexts (`--mount=type=bind,from=distrib,target=/build`); install scripts are mounted from `scripts/` and executed as `/build-scripts/install-*.sh`. Editing a script takes effect on the next build — there is no sync step. Bumping a pinned version wipes and re-downloads the family directory (`.stamp-<version>` files). Corretto JDKs are pinned (`CORRETTO2x_VERSION`) and checked by `make check-updates` via the corretto.aws `latest` redirect.
 - **Tagging**: all images share one monotonically increasing `TAG_VERSION` (plus `latest`), bumped together with the version pins in the same commit. `make check-updates` compares the pins against upstream releases.
-- **Naming**: image suffixes lock the packaged major version (e.g. `keycloak2`, `nginx130`, `postgres15`-`postgres18`, `mariadb12`); breaking upgrades get a new bake target/image name rather than overwriting the suffix.
+- **Naming**: image suffixes lock the packaged major version (e.g. `keycloak2`, `nginx130`, `postgres15`-`postgres19`, `mariadb12`); breaking upgrades get a new bake target/image name rather than overwriting the suffix.
 - **Build requirements**: docker must use the containerd snapshotter (checked by `verify-docker-backend`, see [Docker configuration](#docker-configuration)), because images are built with SBOM attestations. Dockerfiles live inline in `docker-bake.hcl` and use `FROM base`, resolved by bake — always build through the make/bake entry points, not standalone `docker build`.
