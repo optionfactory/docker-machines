@@ -177,7 +177,7 @@ docker run -d --rm \
 | `mysql8`, `mysql9`, `mariadb12` | `/var/lib/mysql` | `/sql-init.d/` |
 | `postgres15`-`postgres19` | `/var/lib/postgresql/data` | `/sql-init.d/` (config in `/var/lib/postgresql/conf/`) |
 
-Both paths are declared as `VOLUME`s. The data directory must be writable by uid/gid `950` (`docker-machines`): the entrypoints do **not** chown it at startup, so with a bind mount either pre-create the directory with that ownership or remap ids (e.g. pinch `remap_ids: ["me:950"]`, or `--userns=keep-id:uid=950,gid=950` under rootless podman, see [Podman](#podman)).
+Both paths are declared as `VOLUME`s. The data directory must be writable by uid/gid `950` (`docker-machines`): the entrypoints do **not** chown it at startup, so with a bind mount either pre-create the directory with that ownership or remap ids (e.g. pinch `remap_ids: ["me:950"]`, or `--userns=keep-id:uid=950,gid=950 --user 0:0` under rootless podman, see [Podman](#podman)).
 
 ### First start
 
@@ -249,7 +249,7 @@ Entrypoints start as root only to run the bootstrap above; the server itself is 
 The images run unchanged under podman, rootful or rootless; they are built with docker only (see [Building](#building)). Differences from docker that matter for these images:
 
 - **Image names**: use fully qualified names (`docker.io/optionfactory/debian13-postgres18:<tag>`). Without a TTY, podman refuses a short name it cannot resolve, and Debian/Ubuntu ship no unqualified search registry.
-- **Volume ownership (rootless)**: a host directory owned by your user appears as owned by root in the container, not by uid 950. Map your user to 950 with `--userns=keep-id:uid=950,gid=950` (podman 4.3 or later): the services can write the directory, and the files stay owned by your user on the host. Alternatively give the directory to 950 inside the user namespace with `podman unshare chown -R 950:950 <dir>`.
+- **Volume ownership (rootless)**: a host directory owned by your user appears as owned by root in the container, not by uid 950. Map your user to 950 with `--userns=keep-id:uid=950,gid=950 --user 0:0` (podman 4.3 or later): the services can write the directory, and the files stay owned by your user on the host. `--user 0:0` is required because `keep-id` otherwise starts the container as the mapped uid, and the entrypoint must start as root to drop to its service user. Alternatively give the directory to 950 inside the user namespace with `podman unshare chown -R 950:950 <dir>`.
 - **SELinux** (Fedora, RHEL): add `:Z` to bind mounts.
 - **Host ports below 1024 (rootless)**: publishing e.g. nginx on 80/443 needs `net.ipv4.ip_unprivileged_port_start=80` (or lower) on the host. Inside the container nothing changes: nginx binds as root, and caddy keeps `net_bind_service` as its only, ambient, capability, because podman does not lower `ip_unprivileged_port_start` in the container as docker does.
 - **Capabilities**: podman does not grant `NET_RAW` by default. `debian13-medic` needs `--cap-add NET_RAW,NET_ADMIN` for tcpdump, mtr and nmap raw scans; ping and tracepath work without it.
