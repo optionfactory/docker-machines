@@ -1,5 +1,6 @@
 """Boot/integration tests: real entrypoints, readiness log lines, HTTP, running state."""
 
+import os
 import subprocess
 import time
 import urllib.error
@@ -9,10 +10,11 @@ import pytest
 
 TOMCAT_PORT = 18084
 CINNY_PORT = 18085
+ENGINE = os.environ.get("CONTAINER_ENGINE", "docker")
 
 
 def logs_of(cid):
-    result = subprocess.run(["docker", "logs", cid], capture_output=True, text=True)
+    result = subprocess.run([ENGINE, "logs", cid], capture_output=True, text=True)
     return result.stdout + result.stderr
 
 
@@ -32,7 +34,7 @@ def wait_for_no_new_privs(cid, timeout):
     deadline = time.monotonic() + timeout
     status = ""
     while time.monotonic() < deadline:
-        status = subprocess.run(["docker", "exec", cid, "grep", "NoNewPrivs", "/proc/1/status"], capture_output=True, text=True).stdout
+        status = subprocess.run([ENGINE, "exec", cid, "grep", "NoNewPrivs", "/proc/1/status"], capture_output=True, text=True).stdout
         if status.split() == ["NoNewPrivs:", "1"]:
             return status
         time.sleep(1)
@@ -40,7 +42,7 @@ def wait_for_no_new_privs(cid, timeout):
 
 
 def listening_ports(cid):
-    tables = subprocess.run(["docker", "exec", cid, "cat", "/proc/net/tcp", "/proc/net/tcp6"], capture_output=True, text=True).stdout
+    tables = subprocess.run([ENGINE, "exec", cid, "cat", "/proc/net/tcp", "/proc/net/tcp6"], capture_output=True, text=True).stdout
     rows = [line.split() for line in tables.splitlines()]
     return {int(row[1].rsplit(":", 1)[1], 16) for row in rows if len(row) > 3 and row[3] == "0A"}
 
@@ -86,7 +88,7 @@ def test_sloth_keeps_running(boot):
     with boot("sloth") as cid:
         time.sleep(3)
         state = subprocess.run(
-            ["docker", "inspect", "-f", "{{.State.Running}}", cid],
+            [ENGINE, "inspect", "-f", "{{.State.Running}}", cid],
             capture_output=True,
             text=True,
         ).stdout.strip()
@@ -110,10 +112,10 @@ def test_cinny_serves_the_client_and_falls_back_to_index(boot):
 
 
 def test_step_ca_inits_and_serves(image):
-    volume = subprocess.run(["docker", "volume", "create"], capture_output=True, text=True, check=True).stdout.strip()
+    volume = subprocess.run([ENGINE, "volume", "create"], capture_output=True, text=True, check=True).stdout.strip()
     try:
         init = subprocess.run(
-            ["docker", "run", "--rm", "-v", f"{volume}:/opt/step-ca/data", "--entrypoint", "bash", image("debian13-step-ca0"), "-c",
+            [ENGINE, "run", "--rm", "-v", f"{volume}:/opt/step-ca/data", "--entrypoint", "bash", image("debian13-step-ca0"), "-c",
              "mkdir -p /opt/step-ca/data/secrets && echo test > /opt/step-ca/data/secrets/password"
              " && chown -R step-ca:docker-machines /opt/step-ca/data"
              " && step ca init --ssh --deployment-type=standalone --name=test --dns=localhost --address=:9000"
@@ -125,7 +127,7 @@ def test_step_ca_inits_and_serves(image):
         )
         assert init.returncode == 0, init.stdout + init.stderr
         cid = subprocess.run(
-            ["docker", "run", "-d", "-v", f"{volume}:/opt/step-ca/data", image("debian13-step-ca0")],
+            [ENGINE, "run", "-d", "-v", f"{volume}:/opt/step-ca/data", image("debian13-step-ca0")],
             capture_output=True,
             text=True,
             check=True,
@@ -135,10 +137,10 @@ def test_step_ca_inits_and_serves(image):
             assert "Serving HTTPS on :9000" in logs, logs[-800:]
             status = wait_for_no_new_privs(cid, 10)
             assert status.split() == ["NoNewPrivs:", "1"], status
-            health = subprocess.run(["docker", "exec", cid, "step", "ca", "health", "--ca-url", "https://localhost:9000",
+            health = subprocess.run([ENGINE, "exec", cid, "step", "ca", "health", "--ca-url", "https://localhost:9000",
                                      "--root", "/opt/step-ca/data/certs/root_ca.crt"], capture_output=True, text=True)
             assert health.stdout.strip() == "ok", health.stdout + health.stderr
         finally:
-            subprocess.run(["docker", "rm", "-f", cid], capture_output=True)
+            subprocess.run([ENGINE, "rm", "-f", cid], capture_output=True)
     finally:
-        subprocess.run(["docker", "volume", "rm", volume], capture_output=True)
+        subprocess.run([ENGINE, "volume", "rm", volume], capture_output=True)

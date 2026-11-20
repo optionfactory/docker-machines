@@ -6,6 +6,7 @@ from contextlib import contextmanager
 import pytest
 
 TAG = os.environ.get("TAG_VERSION", "")
+ENGINE = os.environ.get("CONTAINER_ENGINE", "docker")
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -17,7 +18,8 @@ def require_tag_version():
 @pytest.fixture(scope="session")
 def image():
     def _image(name):
-        return f"optionfactory/{name}:{TAG}"
+        # fully qualified: podman refuses short names when it has no search registry to resolve them
+        return f"docker.io/optionfactory/{name}:{TAG}"
 
     return _image
 
@@ -29,7 +31,7 @@ def run(image):
     def _run(image_name, *args, timeout=90):
         try:
             return subprocess.run(
-                ["docker", "run", "--rm", "--entrypoint", args[0], image(image_name), *args[1:]],
+                [ENGINE, "run", "--rm", "--entrypoint", args[0], image(image_name), *args[1:]],
                 capture_output=True,
                 text=True,
                 timeout=timeout,
@@ -47,7 +49,7 @@ def boot(image):
     @contextmanager
     def _boot(image_name, *docker_args):
         cid = subprocess.run(
-            ["docker", "run", "-d", *docker_args, image(image_name)],
+            [ENGINE, "run", "-d", *docker_args, image(image_name)],
             capture_output=True,
             text=True,
             check=True,
@@ -55,6 +57,6 @@ def boot(image):
         try:
             yield cid
         finally:
-            subprocess.run(["docker", "rm", "-f", cid], capture_output=True)
+            subprocess.run([ENGINE, "rm", "-f", cid], capture_output=True)
 
     return _boot

@@ -150,6 +150,13 @@ test: verify-docker-backend .venv/bin/python
 	$(call task,running smoke tests)
 	$(call irun,.venv/bin/python -m pytest test -v)
 
+# images are built by docker: copy them into the (rootless) podman store, then run the same suite there
+test-podman: .venv/bin/python
+	$(call task,copying images from docker to podman)
+	$(call irun,docker save $$(docker images --format '{{.Repository}}:{{.Tag}}' --filter 'reference=optionfactory/*:${TAG_VERSION}') | podman load -q)
+	$(call task,running smoke tests on podman)
+	$(call irun,CONTAINER_ENGINE=podman .venv/bin/python -m pytest test -v)
+
 # --no-cache: cached apt layers would otherwise ship stale packages.
 # the push reuses that fresh cache, so the tested images are the pushed ones
 publish: pull-base verify-docker-backend all-deps
