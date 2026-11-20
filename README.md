@@ -91,7 +91,7 @@ docker run -d --rm \
   --network host \
   --pid host \
   --volume=/:/host:ro,rslave \
-  optionfactory/debian13-monitoring-host \
+  docker.io/optionfactory/debian13-monitoring-host \
   --path.rootfs=/host
 ```
 
@@ -116,8 +116,10 @@ docker run -d --rm \
   --volume=/sys:/sys:ro \
   --volume=/var/lib/docker/:/var/lib/docker:ro \
   --volume=/dev/disk/:/dev/disk:ro \
-  optionfactory/debian13-monitoring-cadvisor
+  docker.io/optionfactory/debian13-monitoring-cadvisor
 ```
+
+Under podman (rootful), mount `/var/lib/containers/` instead of `/var/lib/docker/` and enable the API socket (`systemctl enable --now podman.socket`): cAdvisor reads it from `/var/run/podman/podman.sock` (its `-podman` flag). Containers of rootless podman users are not resolved to names.
 
 ### optionfactory/debian13-monitoring-nginx
 
@@ -131,7 +133,7 @@ docker run -d --rm \
     --name monitoring-host \
     --network monitoring \
     --ip 172.18.xxx.100 \
-    optionfactory/debian13-monitoring-nginx \
+    docker.io/optionfactory/debian13-monitoring-nginx \
     --nginx.scrape-uri=http://172.17.0.1/stub-status 
 ```
 
@@ -151,7 +153,7 @@ docker run -d --rm \
     -e DATA_SOURCE_URI="localhost:5432/?sslmode=disable" \
     -e DATA_SOURCE_USER="postgres" \
     -e DATA_SOURCE_PASS="postgres" \
-    optionfactory/debian13-monitoring-postgres
+    docker.io/optionfactory/debian13-monitoring-postgres
 
 ```
 
@@ -175,7 +177,7 @@ docker run -d --rm \
 | `mysql8`, `mysql9`, `mariadb12` | `/var/lib/mysql` | `/sql-init.d/` |
 | `postgres15`-`postgres19` | `/var/lib/postgresql/data` | `/sql-init.d/` (config in `/var/lib/postgresql/conf/`) |
 
-Both paths are declared as `VOLUME`s. The data directory must be writable by uid/gid `950` (`docker-machines`): the entrypoints do **not** chown it at startup, so with a bind mount either pre-create the directory with that ownership or remap ids (e.g. pinch `remap_ids: ["me:950"]`).
+Both paths are declared as `VOLUME`s. The data directory must be writable by uid/gid `950` (`docker-machines`): the entrypoints do **not** chown it at startup, so with a bind mount either pre-create the directory with that ownership or remap ids (e.g. pinch `remap_ids: ["me:950"]`, or `--userns=keep-id:uid=950,gid=950` under rootless podman, see [Podman](#podman)).
 
 ### First start
 
@@ -242,9 +244,23 @@ MySQL and MariaDB cannot write query logs to the container's stderr directly (my
 
 Entrypoints start as root only to run the bootstrap above; the server itself is started with `exec setpriv --reuid=<mysql|postgres> --regid=docker-machines --init-groups` and runs as uid/gid `950:950`. The daemons' own `--user` switches are not used, so file ownership is uniform across images regardless of which groups the distro packages created. Postgres is PID 1; in the mysql/mariadb containers PID 1 is `docker-snitch` (same uid, no capabilities) with the server as its only child (see [Logging](#logging)).
 
+## Podman
+
+The images run unchanged under podman, rootful or rootless; they are built with docker only (see [Building](#building)). Differences from docker that matter for these images:
+
+- **Image names**: use fully qualified names (`docker.io/optionfactory/debian13-postgres18:<tag>`). Without a TTY, podman refuses a short name it cannot resolve, and Debian/Ubuntu ship no unqualified search registry.
+- **Volume ownership (rootless)**: a host directory owned by your user appears as owned by root in the container, not by uid 950. Map your user to 950 with `--userns=keep-id:uid=950,gid=950` (podman 4.3 or later): the services can write the directory, and the files stay owned by your user on the host. Alternatively give the directory to 950 inside the user namespace with `podman unshare chown -R 950:950 <dir>`.
+- **SELinux** (Fedora, RHEL): add `:Z` to bind mounts.
+- **Host ports below 1024 (rootless)**: publishing e.g. nginx on 80/443 needs `net.ipv4.ip_unprivileged_port_start=80` (or lower) on the host. Inside the container nothing changes: nginx binds as root, and caddy keeps `net_bind_service` as its only, ambient, capability, because podman does not lower `ip_unprivileged_port_start` in the container as docker does.
+- **Capabilities**: podman does not grant `NET_RAW` by default. `debian13-medic` needs `--cap-add NET_RAW,NET_ADMIN` for tcpdump, mtr and nmap raw scans; ping and tracepath work without it.
+- **Process limit**: podman limits every container to 2048 pids, threads included. Raise it with `--pids-limit` for busy JVM services (keycloak, tomcat, sonarqube).
+- **Monitoring**: see [cAdvisor](#optionfactorydebian13-monitoring-cadvisor) for the podman mounts.
+
+`make test-podman` copies the images built by docker into the podman store of the current user and runs the smoke test suite with rootless podman.
+
 ## Building
 
-Requirements: `make`, `docker` configured as described below, `curl`, `jq`, `unzip`, `python3-venv` (for the test suite, a `.venv` is created on demand).
+Requirements: `make`, `docker` configured as described below, `curl`, `jq`, `unzip`, `python3-venv` (for the test suite, a `.venv` is created on demand), `podman` for `make test-podman`.
 
 ### Docker configuration
 
@@ -300,6 +316,7 @@ make check-updates              # compares pinned versions with upstream release
 make build                      # builds all images (docker buildx bake, parallel siblings)
 make build-optionfactory-debian13-jdk25-tomcat11   # builds one image and its parents
 make test                       # smoke-tests all built images (pytest)
+make test-podman                # same suite, on rootless podman
 make clean-deps                 # removes cached deps/ downloads
 make publish                    # builds, tests, then pushes TAG_VERSION and latest to Docker Hub
 ```
@@ -312,7 +329,7 @@ To publish to ghcr.io instead (emergency fallback), uncomment the `ghcr.io` tags
 
 ## Conventions
 
-- **Privileges**: Dockerfiles do not declare `USER`. Entrypoints start as root to perform init (initdb, bootstrap scripts, certificate renewal), then drop to a dedicated user with `exec setpriv --reuid=<service> --regid=docker-machines --init-groups`. Entrypoints do not chown volumes: mounted data directories must already be owned by uid/gid 950 (see [Databases](#databases)).
+- **Privileges**: Dockerfiles do not declare `USER`. Entrypoints start as root to perform init (initdb, bootstrap scripts, certificate renewal), then drop to a dedicated user with `exec setpriv --reuid=<service> --regid=docker-machines --init-groups`. A service that binds a port below 1024 keeps `net_bind_service` as an ambient capability instead of relying on docker's `ip_unprivileged_port_start=0` (caddy). Entrypoints do not chown volumes: mounted data directories must already be owned by uid/gid 950 (see [Databases](#databases)).
 - **Shared ids**: every service account uses uid/gid 950, group `docker-machines`, so containers can share volumes regardless of the image they come from.
 - **deps flow**: `deps/<family>/` at the repo root caches downloaded artifacts, one directory per artifact family, containing exactly what the family's images need. Dockerfiles read them directly through named build contexts (`--mount=type=bind,from=distrib,target=/build`); install scripts are mounted from `scripts/` and executed as `/build-scripts/install-*.sh`. Editing a script takes effect on the next build — there is no sync step. Bumping a pinned version wipes and re-downloads the family directory (`.stamp-<version>` files). Corretto JDKs are pinned (`CORRETTO2x_VERSION`) and checked by `make check-updates` via the corretto.aws `latest` redirect.
 - **Tagging**: all images share one monotonically increasing `TAG_VERSION` (plus `latest`), bumped together with the version pins in the same commit. `make check-updates` compares the pins against upstream releases.
