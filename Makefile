@@ -153,7 +153,8 @@ test: verify-docker-backend .venv/bin/python
 # images are built by docker: copy them into the (rootless) podman store, then run the same suite there
 test-podman: .venv/bin/python
 	$(call task,copying images from docker to podman)
-	$(call irun,docker save $$(docker images --format '{{.Repository}}:{{.Tag}}' --filter 'reference=optionfactory/*:${TAG_VERSION}') | podman load -q)
+	@# one image per archive: podman names a multi-image archive localhost/... instead of docker.io/...
+	$(call irun,docker images --format '{{.Repository}}:{{.Tag}}' --filter 'reference=optionfactory/*:${TAG_VERSION}' | xargs -I{} sh -c 'docker save {} | podman load -q')
 	$(call task,running smoke tests on podman)
 	$(call irun,CONTAINER_ENGINE=podman .venv/bin/python -m pytest test -v)
 
