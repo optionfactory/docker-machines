@@ -57,6 +57,6 @@ def boot(image):
         try:
             yield cid
         finally:
-            subprocess.run([ENGINE, "rm", "-f", cid], capture_output=True)
+            subprocess.run([ENGINE, "rm", "-f", "-v", cid], capture_output=True)
 
     return _boot
