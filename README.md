@@ -254,6 +254,8 @@ The images run unchanged under podman, rootful or rootless; they are built with 
 - **Host ports below 1024 (rootless)**: publishing e.g. nginx on 80/443 needs `net.ipv4.ip_unprivileged_port_start=80` (or lower) on the host. Inside the container nothing changes: nginx binds as root, and caddy keeps `net_bind_service` as its only, ambient, capability, because podman does not lower `ip_unprivileged_port_start` in the container as docker does.
 - **Capabilities**: podman does not grant `NET_RAW` by default. `debian13-medic` needs `--cap-add NET_RAW,NET_ADMIN` for tcpdump, mtr and nmap raw scans; ping and tracepath work without it.
 - **Process limit**: podman limits every container to 2048 pids, threads included. Raise it with `--pids-limit` for busy JVM services (keycloak, tomcat, sonarqube).
+- **MySQL and seccomp**: the seccomp profile of containers-common 0.57 (podman 4.9 on Ubuntu 24.04) denies `io_pgetevents`, so `mysqld` logs `Linux Native AIO check on tmpdir returned error[1]` and runs InnoDB with simulated AIO. It works, but slower; run it with a copy of `/usr/share/containers/seccomp.json` that allows `io_pgetevents` (`--security-opt seccomp=<file>`). MariaDB is not affected.
+- **fuse-overlayfs**: rootless setups whose storage uses `fuse-overlayfs` instead of the kernel overlay cannot collapse ranges (FUSE does not forward it), so docker-snitch falls back to punching holes in the mysql/mariadb log files, with a warning at startup (see [Logging](#logging)).
 - **Monitoring**: see [cAdvisor](#optionfactorydebian13-monitoring-cadvisor) for the podman mounts.
 
 `make test-podman` copies the images built by docker into the podman store of the current user and runs the smoke test suite with rootless podman.
