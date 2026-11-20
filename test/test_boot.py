@@ -72,8 +72,9 @@ def test_tomcat_serves_http(boot):
         pytest.fail(f"tomcat never answered: {last_error}\n{logs_of(cid)[-800:]}")
 
 
-def test_caddy_binds_privileged_port_without_capabilities(boot):
-    with boot("debian13-caddy2") as cid:
+def test_caddy_binds_privileged_port_without_unprivileged_port_sysctl(boot):
+    # docker lowers ip_unprivileged_port_start to 0 in every container, podman does not
+    with boot("debian13-caddy2", "--sysctl", "net.ipv4.ip_unprivileged_port_start=1024") as cid:
         logs = wait_for_log(cid, "serving initial configuration", 30)
         assert "serving initial configuration" in logs, logs[-800:]
         assert 80 in listening_ports(cid), logs[-800:]
