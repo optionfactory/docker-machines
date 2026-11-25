@@ -313,7 +313,7 @@ deps/keycloak2/.stamp-$(KEYCLOAK2_VERSION)-$(KEYCLOAK_OPFA_MODULES_VERSION):
 deps/nginx130/.stamp-$(NGINX_REMOVE_SERVER_HEADER_MODULE_VERSION)-$(LEGOPFA_VERSION):
 	$(call task,downloading nginx-remove-server-header-module $(NGINX_REMOVE_SERVER_HEADER_MODULE_VERSION) + legopfa $(LEGOPFA_VERSION))
 	$(call irun,rm -rf deps/nginx130 && mkdir -p deps/nginx130)
-	$(call irun,$(CURL) https://github.com/optionfactory/nginx-remove-server-header-module/releases/download/v$(NGINX_REMOVE_SERVER_HEADER_MODULE_VERSION)/opfa_http_remove_server_header_module-$(NGINX_REMOVE_SERVER_HEADER_MODULE_VERSION).so -o deps/nginx130/opfa_http_remove_server_header_module-$(NGINX_REMOVE_SERVER_HEADER_MODULE_VERSION).so)
+	$(call irun,$(CURL) https://github.com/optionfactory/nginx-remove-server-header-module/releases/download/v$(NGINX_REMOVE_SERVER_HEADER_MODULE_VERSION)/nginx-remove-server-header-module-linux-amd64.so -o deps/nginx130/opfa_http_remove_server_header_module-$(NGINX_REMOVE_SERVER_HEADER_MODULE_VERSION).so)
 	$(call irun,$(CURL) https://github.com/optionfactory/legopfa/releases/download/v$(LEGOPFA_VERSION)/legopfa-linux-amd64 -o deps/nginx130/legopfa-$(LEGOPFA_VERSION))
 	$(call irun,chmod +x deps/nginx130/legopfa-$(LEGOPFA_VERSION))
 	$(call irun,touch $@)
