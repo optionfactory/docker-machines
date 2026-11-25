@@ -92,7 +92,17 @@ define check_updates_corretto
 	printf "%b %-25s: current: %-20s latest: %s\n" "$$symbol" "corretto-$3" "$2" "$$latest"
 endef
 
+# the base tag is not pinned: compare the bottom layer of our published image with the upstream one
+define check_updates_base_image
+	@base_layer='(if has("linux/amd64") then .["linux/amd64"] else . end) | "\(.rootfs.diff_ids[0]) \(.history[0].created[:10])"'; \
+	read current current_date < <(docker buildx imagetools inspect $2 --format '{{json .Image}}' | jq -r "$$base_layer"); \
+	read latest latest_date < <(docker buildx imagetools inspect $3 --format '{{json .Image}}' | jq -r "$$base_layer"); \
+	[ "$$current" = "$$latest" ] && symbol="\033[1;32m✓\033[0m" || symbol="\033[1;31m✗\033[0m"; \
+	printf "%b %-25s: current: %-20s latest: %s\n" "$$symbol" "$1" "$$current_date" "$$latest_date"
+endef
+
 check-updates:
+	$(call check_updates_base_image,debian-trixie-slim,optionfactory/debian13:latest,debian:trixie-slim)
 	$(call check_updates_github,sloth,$(SLOTH_VERSION),optionfactory/sloth)
 	$(call check_updates_github,docker-snitch,$(DOCKER_SNITCH_VERSION),optionfactory/docker-heist)
 	$(call check_updates_github,sonarqube,$(SONARQUBE10_VERSION),SonarSource/sonarqube)
