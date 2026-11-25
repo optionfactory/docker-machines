@@ -101,8 +101,17 @@ define check_updates_base_image
 	printf "%b %-25s: current: %-20s latest: %s\n" "$$symbol" "$1" "$$current_date" "$$latest_date"
 endef
 
+# the remove-server-header module is versioned after the nginx package it is built against,
+# and nginx refuses to load a module built for a different version
+define check_updates_nginx_stable
+	@latest=$$(curl -s https://nginx.org/packages/debian/dists/trixie/nginx/binary-amd64/Packages | grep -A2 '^Package: nginx$$' | grep -Po '^Version: \K[^~]+' | sort -V | tail -1); \
+	[ "$2" = "$$latest" ] && symbol="\033[1;32m✓\033[0m" || symbol="\033[1;31m✗\033[0m"; \
+	printf "%b %-25s: current: %-20s latest: %s\n" "$$symbol" "$1" "$2" "$$latest"
+endef
+
 check-updates:
 	$(call check_updates_base_image,debian-trixie-slim,optionfactory/debian13:latest,debian:trixie-slim)
+	$(call check_updates_nginx_stable,nginx-stable,$(NGINX_REMOVE_SERVER_HEADER_MODULE_VERSION))
 	$(call check_updates_github,sloth,$(SLOTH_VERSION),optionfactory/sloth)
 	$(call check_updates_github,docker-snitch,$(DOCKER_SNITCH_VERSION),optionfactory/docker-heist)
 	$(call check_updates_github,sonarqube,$(SONARQUBE10_VERSION),SonarSource/sonarqube)
